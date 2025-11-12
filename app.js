@@ -13,17 +13,18 @@ const methodOverride = require('method-override');
 const compression = require('compression');
 const i18n = require('i18n');
 
-// Route imports
-const authRoutes = require('./routes/auth');
-const studentRoutes = require('./routes/student');
-const teacherRoutes = require('./routes/teacher');
-const forumRoutes = require('./routes/forum');
+// ROUTES
+const authRoutes = require('./routes/authRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+const teacherRoutes = require('./routes/teacherRoutes');
+const forumRoutes = require('./routes/forumRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 // Initialize app
 const app = express();
 
 // ==========================
-// MongoDB Atlas Connection
+// Database Connection
 // ==========================
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -33,7 +34,7 @@ mongoose.connect(process.env.MONGO_URI, {
   .catch(err => console.error('❌ Mongo Connection Error:', err));
 
 // ==========================
-// App Configurations
+// App Configuration
 // ==========================
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
@@ -46,7 +47,7 @@ app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==========================
-// i18n Setup (Multilingual)
+// i18n Setup (Multilingual Support)
 // ==========================
 i18n.configure({
   locales: ['en', 'hi'],
@@ -72,37 +73,37 @@ app.use(session(sessionConfig));
 app.use(flash());
 
 // ==========================
-// Global Middleware
+// Middleware for Globals
 // ==========================
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   res.locals.__ = res.__;
+  res.locals.currentUser = req.session.userId || null;
+  res.locals.role = req.session.role || null;
   next();
 });
 
 // ==========================
-// Routes
+// ROUTES
 // ==========================
 app.use('/', authRoutes);
 app.use('/student', studentRoutes);
 app.use('/teacher', teacherRoutes);
 app.use('/forum', forumRoutes);
+app.use('/admin', adminRoutes);
 
-// Offline fallback route
-app.get('/offline', (req, res) => {
-  res.render('offline');
-});
+// ==========================
+// OFFLINE + DEFAULT ROUTES
+// ==========================
+app.get('/offline', (req, res) => res.render('offline'));
 
-// Home Route
-app.get('/', (req, res) => {
-  res.render('home');
-});
+app.get('/', (req, res) => res.render('home'));
 
 // ==========================
 // 404 Handler
 // ==========================
-app.all(/.*/, (req, res) => {
+app.all('*', (req, res) => {
   res.status(404).render('error', { message: 'Page Not Found' });
 });
 
@@ -110,6 +111,4 @@ app.all(/.*/, (req, res) => {
 // Start Server
 // ==========================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 EduBridge Kids running on http://localhost:${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 EduBridge Kids running on http://localhost:${PORT}`));
