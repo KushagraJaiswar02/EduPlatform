@@ -8,43 +8,59 @@
 
       <% if (forum && forum.length > 0) { %>
         <% forum.slice().reverse().forEach(post => { %>
-          <div class="card mb-3 shadow-sm">
-            <div class="card-header d-flex justify-content-between align-items-center">
-              <h6 class="mb-0"><%= post.subject %></h6>
-              <small class="text-muted"><%= new Date(post.createdAt).toLocaleString() %></small>
-            </div>
-            <div class="card-body">
-              <p class="card-text"><%= post.question %></p>
-              <footer class="blockquote-footer mb-0">
-                <%= __('Asked by') %>: <strong><%= post.askedBy.name %></strong>
-              </footer>
+          <article class="forum-card mb-3">
+            <div class="forum-header">
+              <div class="avatar"><%= post.askedBy && post.askedBy.name ? post.askedBy.name.split(' ').map(n=>n[0]).slice(0,2).join('') : 'U' %></div>
+              <div class="forum-meta">
+                <p class="forum-title"><%= post.subject %></p>
+                <div class="forum-submeta">
+                  <span><%= post.askedBy ? post.askedBy.name : 'Deleted user' %></span>
+                  &middot;
+                  <small class="text-muted"><%= new Date(post.createdAt).toLocaleString() %></small>
+                  <% if (post.classRef && post.classRef.classNumber) { %>
+                    &middot;
+                    <small class="ms-2 text-muted">Class <strong><%= post.classRef.classNumber %></strong></small>
+                  <% } %>
+                </div>
+                <% if (post.tags && post.tags.length) { %>
+                  <div class="mt-2">
+                    <% post.tags.forEach(tag => { %>
+                      <span class="tag-badge"><%= tag %></span>
+                    <% }) %>
+                  </div>
+                <% } %>
+              </div>
             </div>
 
-            <div class="card-footer bg-light">
-              <h6 class="mb-2"><%= __('Answers') %>:</h6>
-              
+            <div class="forum-body">
+              <p><%= post.question %></p>
+            </div>
+
+            <div class="answers-wrap">
+              <h6 class="mb-2"><%= __('Answers') %></h6>
               <% if (post.answers && post.answers.length > 0) { %>
                 <% post.answers.forEach(answer => { %>
-                  <div class="border-bottom pb-2 mb-2">
-                    <p class="mb-1"><%= answer.text %></p>
-                    <small class="text-muted d-block">
-                      — <strong><%= answer.answeredBy.name %></strong> 
-                      <span class="ms-2">(<%= new Date(answer.createdAt).toLocaleString() %>)</span>
-                    </small>
+                  <div class="answer">
+                    <div class="avatar"><%= answer.answeredBy && answer.answeredBy.name ? answer.answeredBy.name.split(' ').map(n=>n[0]).slice(0,2).join('') : 'U' %></div>
+                    <div>
+                      <p class="mb-1"><%= answer.text %></p>
+                      <small class="text-muted">— <strong><%= answer.answeredBy ? answer.answeredBy.name : __('User deleted') %></strong>
+                      <span class="ms-2">(<%= new Date(answer.createdAt).toLocaleString() %>)</span></small>
+                    </div>
                   </div>
                 <% }) %>
               <% } else { %>
-                <p class="text-muted"><small><%= __('No answers yet.') %></small></p>
+                <p class="text-muted"><small><%= __('No answers yet.') %> <%= __('Be the first to reply!') %></small></p>
               <% } %>
 
-              <form action="/forum/reply/<%= post._id %>" method="POST" class="mt-3">
-                <div class="input-group">
+              <div class="reply-box">
+                <form action="/forum/<%= post._id %>/answer" method="POST" class="d-flex gap-2">
                   <input type="text" class="form-control form-control-sm" name="text" placeholder="<%= __('Write your answer...') %>" required>
-                  <button class="btn btn-outline-secondary btn-sm" type="submit"><%= __('Reply') %></button>
-                </div>
-              </form>
+                  <button class="btn btn-primary reply-btn" type="submit"><%= __('Reply') %></button>
+                </form>
+              </div>
             </div>
-          </div>
+          </article>
         <% }) %>
       <% } else { %>
         <p><%= __('No questions have been asked in this forum yet.') %></p>

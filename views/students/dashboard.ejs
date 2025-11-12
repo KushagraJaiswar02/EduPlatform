@@ -1,67 +1,73 @@
 <%- include('../partials/header') %>
+
 <div class="container mt-4">
     <div class="row mb-4">
-        <div class="col">
-            <h1 class="text-success">👋 Welcome, <%= currentUser.name %>!</h1>
-            <p class="lead">Aap apne class ka content aur doubts yahan access kar sakte hain.</p>
-        </div>
-    </div>
-
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        
-        <div class="col">
-            <div class="card h-100 shadow-sm border-primary">
-                <div class="card-body">
-                    <h5 class="card-title text-primary">❓ Doubt Forum</h5>
-                    <p class="card-text">Apne doubts poochhen aur dusre students/teachers ke questions ka answer dein. Yahan se naya doubt post karein.</p>
-                    <a href="/forum/ask" class="btn btn-outline-primary mt-2">Post New Doubt</a>
-                    <a href="/forum" class="btn btn-primary mt-2">View All Doubts</a>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="avatar mb-3" style="width:72px;height:72px;font-size:1.6rem;margin:auto;">
+                        <%= (typeof user !== 'undefined' && user.name) ? user.name.split(' ').map(n=>n[0]).slice(0,2).join('') : (currentUser && currentUser.name ? currentUser.name.split(' ').map(n=>n[0]).slice(0,2).join('') : 'U') %>
+                    </div>
+                    <h4 class="mb-0">
+                        <%= (typeof user !== 'undefined' && user.name) ? user.name : (currentUser && currentUser.name ? currentUser.name : __('User')) %>
+                    </h4>
+                    <p class="text-muted small mb-1">
+                        <%= (typeof user !== 'undefined' && user.email) ? user.email : (currentUser && currentUser.email ? currentUser.email : '') %>
+                    </p>
+                    <p class="mb-0"><strong><%= __('Role') %>:</strong> <%= (typeof user !== 'undefined' && user.role) ? __('I\'m a ' + user.role.charAt(0).toUpperCase() + user.role.slice(1)) : (currentUser && currentUser.role ? __('I\'m a ' + currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)) : __("I'm a Student")) %></p>
                 </div>
-            </div>
-        </div>
-        
-        <div class="col">
-            <div class="card h-100 shadow-sm border-info">
-                <div class="card-body">
-                    <h5 class="card-title text-info">📚 Lessons & Study Material</h5>
-                    <p class="card-text">Apne subject ke lessons aur study material access karein.</p>
-                    <a href="/student/lessons" class="btn btn-outline-info mt-2">Go to Lessons</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col">
-            <div class="card h-100 shadow-sm border-warning">
-                <div class="card-body">
-                    <h5 class="card-title text-warning">📝 Quizzes & Tests</h5>
-                    <p class="card-text">Apne knowledge ko test karne ke liye quizzes aur tests attempt karein.</p>
-                    <a href="/student/quizzes" class="btn btn-outline-warning mt-2">Take Quiz</a>
-                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong><%= __('Class') %>:</strong> 
+                            <% let cr = (typeof user !== 'undefined' && user.classRef) ? user.classRef : (currentUser && currentUser.classRef ? currentUser.classRef : null); %>
+                        <% if (cr && cr.classNumber) { %>
+                            <%= __('Class') %> <%= cr.classNumber %>
+                        <% } else if (cr) { %>
+                            <%= __('Assigned') %>
+                        <% } else { %>
+                            <%= __('Not Assigned') %>
+                        <% } %>
+                    </li>
+                    <li class="list-group-item"><strong><%= __('Quizzes Taken') %>:</strong> <%= (typeof user !== 'undefined' && user.profile) ? user.profile.totalQuizzesTaken : ((currentUser && currentUser.profile) ? currentUser.profile.totalQuizzesTaken : 0) %></li>
+                    <li class="list-group-item"><strong><%= __('Avg. Score') %>:</strong> <%= (typeof user !== 'undefined' && user.profile) ? user.profile.averageScore : ((currentUser && currentUser.profile) ? currentUser.profile.averageScore : 0) %></li>
+                </ul>
             </div>
         </div>
 
-    </div>
-    
-    <hr class="my-5">
-    
-    <div class="row">
-        <div class="col-md-6 offset-md-3 text-center">
-            <h4 class="text-secondary">Quick Info</h4>
-            <ul class="list-group list-group-flush shadow-sm">
-<li class="list-group-item">
-    <strong>Current Class:</strong> <%= currentUser.classRef ? currentUser.classRef.name : 'Not Assigned' %>
-</li>                <li class="list-group-item"><strong>Role:</strong> <%= currentUser.role %></li>
-            </ul>
+        <div class="col-md-8">
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-primary">
+                        <div class="card-body">
+                            <h5 class="card-title text-primary">❓ <%= __('Doubt Forum') %></h5>
+                            <p class="card-text"><%= __('Ask questions and discuss with peers and teachers. Post a new doubt here.') %></p>
+                            <a href="/forum/ask" class="btn btn-outline-primary mt-2"><%= __('Post New Doubt') %></a>
+                            <a href="/forum" class="btn btn-primary mt-2"><%= __('View All Doubts') %></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-info">
+                        <div class="card-body">
+                            <h5 class="card-title text-info">📚 <%= __('Lessons & Study Material') %></h5>
+                            <p class="card-text"><%= __('Access lessons and study material for your subjects.') %></p>
+                            <a href="/student/lessons" class="btn btn-outline-info mt-2"><%= __('Go to Lessons') %></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-warning">
+                        <div class="card-body">
+                            <h5 class="card-title text-warning">📝 <%= __('Quizzes & Tests') %></h5>
+                            <p class="card-text"><%= __('Take quizzes and tests to assess your knowledge.') %></p>
+                            <a href="/student/quizzes" class="btn btn-outline-warning mt-2"><%= __('Take Quiz') %></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<script>
-    // Optional: Add some client-side script here if needed
-</script>
-
-<<<<<<< HEAD
 <%- include('../partials/footer') %>
-=======
-<%- include('../partials/footer') %>
->>>>>>> 82974339caab0fc351e34ee94ce0034f124ea063

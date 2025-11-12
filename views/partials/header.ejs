@@ -41,8 +41,8 @@
       <ul class="navbar-nav ms-auto align-items-center">
         <!-- Language toggle -->
         <li class="nav-item me-3">
-          <a href="/setLang/en" class="btn btn-sm btn-outline-secondary me-1">EN</a>
-          <a href="/setLang/hi" class="btn btn-sm btn-outline-secondary">HI</a>
+          <a href="/setLang/en" class="btn btn-sm <%= currentLocale === 'en' ? 'btn-primary' : 'btn-outline-secondary' %> me-1">EN</a>
+          <a href="/setLang/hi" class="btn btn-sm <%= currentLocale === 'hi' ? 'btn-primary' : 'btn-outline-secondary' %>">HI</a>
         </li>
 
         <% if (typeof role !== 'undefined' && role) { %>

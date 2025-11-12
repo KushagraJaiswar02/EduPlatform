@@ -122,22 +122,35 @@ exports.addSubjectToClass = async (req, res) => {
 };
 
 exports.reassignTeacher = async (req, res) => {
-  const { oldTeacherId, newTeacherId, fromClassId, subjectName } = req.body;
+  try {
+    // Support both 'fromClassId' and 'classId' (forms use classId)
+    const { oldTeacherId, newTeacherId, fromClassId, classId, subjectName } = req.body;
+    const targetClassId = fromClassId || classId;
 
-  // Remove old teacher from the old class
-  await Class.updateOne(
-    { _id: fromClassId, "subjects.name": subjectName },
-    { $unset: { "subjects.$.teacher": "" } }
-  );
+    if (!targetClassId || !subjectName) {
+      req.flash('error', 'Missing class or subject information.');
+      return res.redirect('/admin/classes');
+    }
 
-  // Optionally assign a new teacher
-  if (newTeacherId) {
+    // Remove old teacher assignment for the subject (if present)
     await Class.updateOne(
-      { _id: fromClassId, "subjects.name": subjectName },
-      { $set: { "subjects.$.teacher": newTeacherId } }
+      { _id: targetClassId, "subjects.name": subjectName },
+      { $unset: { "subjects.$.teacher": "" } }
     );
-  }
 
-  req.flash('success', 'Teacher reassigned successfully.');
-  res.redirect('/admin/classes');
+    // Optionally assign a new teacher
+    if (newTeacherId) {
+      await Class.updateOne(
+        { _id: targetClassId, "subjects.name": subjectName },
+        { $set: { "subjects.$.teacher": newTeacherId } }
+      );
+    }
+
+    req.flash('success', 'Teacher reassigned successfully.');
+    res.redirect('/admin/classes');
+  } catch (err) {
+    console.error('Error reassigning teacher:', err);
+    req.flash('error', 'Could not reassign teacher.');
+    res.redirect('/admin/classes');
+  }
 };

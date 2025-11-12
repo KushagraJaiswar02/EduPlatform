@@ -5,85 +5,85 @@
     <div class="card shadow-sm border-0">
       <div class="card-body p-4">
         <h3 class="text-center mb-4 fw-semibold text-primary">
-          <i class="bi bi-person-plus-fill me-2"></i> Register
+          <i class="bi bi-person-plus-fill me-2"></i> <%= __('Register') %>
         </h3>
 
         <!-- Register Form -->
         <form action="/register" method="POST">
   <div class="mb-3">
-    <label for="name" class="form-label fw-semibold">Full Name</label>
+    <label for="name" class="form-label fw-semibold"><%= __('Full Name') %></label>
     <input 
       type="text" 
       class="form-control" 
       id="name" 
       name="name" 
-      placeholder="Enter your full name" 
+      placeholder="<%= __('Enter your full name') %>" 
       required
     />
   </div>
 
   <div class="mb-3">
-    <label for="email" class="form-label fw-semibold">Email address</label>
+    <label for="email" class="form-label fw-semibold"><%= __('Email address') %></label>
     <input 
       type="email" 
       class="form-control" 
       id="email" 
       name="email" 
-      placeholder="Enter your email" 
+      placeholder="<%= __('Enter your email') %>" 
       required
     />
   </div>
 
   <div class="mb-3">
-    <label for="password" class="form-label fw-semibold">Password</label>
+    <label for="password" class="form-label fw-semibold"><%= __('Password') %></label>
     <input 
       type="password" 
       class="form-control" 
       id="password" 
       name="password" 
-      placeholder="Create a password" 
+      placeholder="<%= __('Create a password') %>" 
       required
     />
   </div>
 
   <div class="mb-3">
-    <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
+    <label for="confirmPassword" class="form-label fw-semibold"><%= __('Confirm Password') %></label>
     <input 
       type="password" 
       class="form-control" 
       id="confirmPassword" 
       name="confirmPassword" 
-      placeholder="Re-enter your password" 
+      placeholder="<%= __('Confirm your password') %>" 
       required
     />
   </div>
 
   <div class="mb-3">
-    <label for="role" class="form-label fw-semibold">Select Role</label>
+    <label for="role" class="form-label fw-semibold"><%= __('Select your role') %></label>
     <select class="form-select" id="role" name="role" required>
-      <option value="student" selected>Student</option>
-      <option value="teacher">Teacher</option>
+      <option value="student" selected><%= __("I'm a Student") %></option>
+      <option value="teacher"><%= __("I'm a Teacher") %></option>
     </select>
   </div>
 
   <!-- Class Selection (only for students) -->
   <div class="mb-3" id="classSelection">
-    <label for="classNumber" class="form-label fw-semibold">Select Class</label>
+    <label for="classNumber" class="form-label fw-semibold"><%= __('Select a Class') %></label>
     <select class="form-select" id="classNumber" name="classNumber" required>
-      <option value="">-- Select Class --</option>
+      <option value="">-- <%= __('Select a Class') %> --</option>
       <% classes.forEach(cls => { %>
-        <option value="<%= cls.classNumber %>">Class <%= cls.classNumber %></option>
+        <option value="<%= cls.classNumber %>"><%= __('Class') %> <%= cls.classNumber %></option>
       <% }) %>
     </select>
   </div>
 
   <div class="d-grid mb-3">
-    <button type="submit" class="btn btn-primary btn-lg">Register</button>
+    <button type="submit" class="btn btn-primary btn-lg"><%= __('Register') %></button>
   </div>
 
   <div class="text-center small">
-    <span>Already have an account?</span>
-    <a href="/login" class="fw-semibold text-decoration-none">Login</a>
+    <span><%= __('Already have an account?') %></span>
+    <a href="/login" class="fw-semibold text-decoration-none"><%= __('Login') %></a>
   </div>
 </form>
 

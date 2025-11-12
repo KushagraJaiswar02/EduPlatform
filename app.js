@@ -75,18 +75,43 @@ app.use(flash());
 // ==========================
 // Middleware for Globals
 // ==========================
-app.use((req, res, next) => {
+const User = require('./models/User');
+
+app.use(async (req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
   res.locals.__ = res.__;
-  res.locals.currentUser = req.session.userId || null;
   res.locals.role = req.session.role || null;
+  res.locals.currentLocale = req.getLocale();
+
+  // Populate the full user object (with classRef) so views can access class data
+  try {
+    if (req.session && req.session.userId) {
+      const user = await User.findById(req.session.userId).populate('classRef');
+      res.locals.currentUser = user || null;
+    } else {
+      res.locals.currentUser = null;
+    }
+  } catch (err) {
+    console.error('Error loading current user for views:', err);
+    res.locals.currentUser = null;
+  }
   next();
 });
 
 // ==========================
 // ROUTES
 // ==========================
+// Language switching route
+app.get('/setLang/:lang', (req, res) => {
+  const lang = req.params.lang;
+  if (['en', 'hi'].includes(lang)) {
+    res.cookie('lang', lang, { maxAge: 1000 * 60 * 60 * 24 * 365 }); // 1 year
+    i18n.setLocale(lang);
+  }
+  res.redirect(req.header('Referer') || '/');
+});
+
 app.use('/', authRoutes);
 app.use('/student', studentRoutes);
 app.use('/teacher', teacherRoutes);

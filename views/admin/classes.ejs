@@ -82,46 +82,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById('add-subject-btn').addEventListener('click', function() {
-        const container = document.getElementById('subjects-container');
-        const firstRow = container.querySelector('.subject-row');
-        
-        // Pehle row ko clone karein
-        const newRow = firstRow.cloneNode(true);
-        
-        // Inputs ko reset karein
-        newRow.querySelector('input[name="subjectName"]').value = '';
-        newRow.querySelector('select[name="subjectTeacher"]').selectedIndex = 0;
-        
-        // Ek 'Remove' button add karein
-        const removeBtnCol = document.createElement('div');
-        removeBtnCol.className = 'col-12 text-end';
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'btn btn-sm btn-outline-danger mb-2';
-        removeBtn.innerText = 'Remove';
-        removeBtn.onclick = function() {
-            container.removeChild(newRow);
-        };
-        
-        // Row ko naye structure mein daalein (inputs upar, button neeche)
-        const rowContent = newRow.innerHTML;
-        newRow.innerHTML = ''; // Clear current content
-        newRow.classList.remove('row', 'g-2', 'mb-2'); // Remove old classes
-        newRow.className = 'subject-row-item border-top pt-2 mt-2'; // Add new container class
-        
-        const inputsDiv = document.createElement('div');
-        inputsDiv.className = 'row g-2 mb-2';
-        inputsDiv.innerHTML = rowContent;
-        
-        removeBtnCol.appendChild(removeBtn);
-        newRow.appendChild(inputsDiv);
-        newRow.appendChild(removeBtnCol);
-
-        container.appendChild(newRow);
-    });
-</script>
-
 <%- include('../partials/footer') %>

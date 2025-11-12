@@ -1,82 +1,136 @@
 <%- include('../partials/header') %>
 
 <div class="container mt-4">
-  <h2 class="fw-bold mb-4">Teacher Dashboard</h2>
+  <h2 class="fw-bold mb-4"><%= __('Teacher Dashboard') %></h2>
 
-  <!-- Flash messages -->
-  <% if (success && success.length) { %>
-    <div class="alert alert-success"><%= success %></div>
-  <% } %>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <div class="avatar mb-3" style="width:72px;height:72px;font-size:1.6rem;margin:auto;">
+            <%= (typeof user !== 'undefined' && user.name) ? user.name.split(' ').map(n=>n[0]).slice(0,2).join('') : (currentUser && currentUser.name ? currentUser.name.split(' ').map(n=>n[0]).slice(0,2).join('') : 'T') %>
+          </div>
+          <h4 class="mb-0"><%= (typeof user !== 'undefined' && user.name) ? user.name : (currentUser && currentUser.name ? currentUser.name : __('Teacher')) %></h4>
+          <p class="text-muted"><%= (typeof user !== 'undefined' && user.email) ? user.email : (currentUser && currentUser.email ? currentUser.email : '') %></p>
+          <p class="mb-0"><strong><%= __('Role') %>:</strong> <%= __('Teacher') %></p>
+        </div>
+        <% if (classes && classes.length) { %>
+          <ul class="list-group list-group-flush">
+            <% classes.forEach(cls => { %>
+              <li class="list-group-item"><%= __('Class') %> <strong><%= cls.classNumber %></strong></li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </div>
+    </div>
 
-  <!-- Add Lesson Form -->
-  <div class="card mb-4 shadow-sm">
-    <div class="card-body">
-      <h5 class="card-title">📘 Add New Lesson</h5>
-      <form action="/teacher/add-lesson" method="POST">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <label class="form-label">Class</label>
-            <select name="classNumber" class="form-select" required>
-              <% classes.forEach(cls => { %>
-                <option value="<%= cls.classNumber %>">Class <%= cls.classNumber %></option>
-              <% }) %>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Subject</label>
-            <input type="text" name="subject" class="form-control" placeholder="Science" required>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Lesson Type</label>
-            <select name="lessonType" class="form-select">
-              <option value="core">Core</option>
-              <option value="revision"></option>
-              <option value="practice">practice</option>
-            </select>
-          </div>
-          <div class="col-12">
-            <label class="form-label">Title</label>
-            <input type="text" name="title" class="form-control" placeholder="The Solar System" required>
-          </div>
-          <div class="col-12">
-            <label class="form-label">Content</label>
-            <textarea name="content" class="form-control" rows="4" placeholder="Lesson details here..." required></textarea>
+    <div class="col-md-8">
+      <div class="accordion" id="teacherAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingLesson">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLesson" aria-expanded="true" aria-controls="collapseLesson">
+              📘 <%= __('Add New Lesson') %>
+            </button>
+          </h2>
+          <div id="collapseLesson" class="accordion-collapse collapse show" aria-labelledby="headingLesson" data-bs-parent="#teacherAccordion">
+            <div class="accordion-body">
+              <form action="/teacher/add-lesson" method="POST">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label"><%= __('Class') %></label>
+                    <select name="classNumber" class="form-select" required>
+                      <% if (classes && classes.length) { %>
+                        <% classes.forEach(cls => { %>
+                          <option value="<%= cls.classNumber %>"><%= __('Class') %> <%= cls.classNumber %></option>
+                        <% }) %>
+                      <% } else { %>
+                        <option value=""><%= __('No classes assigned') %></option>
+                      <% } %>
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label"><%= __('Subject') %></label>
+                    <input type="text" name="subject" class="form-control" placeholder="<%= __('Science') %>" required>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label"><%= __('Lesson Type') %></label>
+                    <select name="lessonType" class="form-select">
+                      <option value="core"><%= __('Core') %></option>
+                      <option value="revision"><%= __('Revision') %></option>
+                      <option value="practice"><%= __('Practice') %></option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label"><%= __('Title') %></label>
+                    <input type="text" name="title" class="form-control" placeholder="<%= __('The Solar System') %>" required>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label"><%= __('Content') %></label>
+                    <textarea name="content" class="form-control" rows="4" placeholder="<%= __('Lesson details here...') %>" required></textarea>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3"><%= __('Add Lesson') %></button>
+              </form>
+            </div>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-3">Add Lesson</button>
-      </form>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingQuiz">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuiz" aria-expanded="false" aria-controls="collapseQuiz">
+              📝 <%= __('Create Quiz') %>
+            </button>
+          </h2>
+          <div id="collapseQuiz" class="accordion-collapse collapse" aria-labelledby="headingQuiz" data-bs-parent="#teacherAccordion">
+            <div class="accordion-body">
+              <form action="/teacher/add-quiz" method="POST" id="quizForm">
+                <div class="mb-3">
+                  <label class="form-label"><%= __('Select Lesson') %></label>
+                  <select name="lessonId" class="form-select" required>
+                    <option value="">-- <%= __('Select Lesson') %> --</option>
+                    <% if (lessons && lessons.length) { %>
+                      <% lessons.forEach(lesson => { %>
+                        <option value="<%= lesson._id %>"><%= __('Class') %> <%= lesson.classRef ? lesson.classRef.classNumber : '' %> - <%= lesson.title %> (<%= lesson.subject %>)</option>
+                      <% }) %>
+                    <% } %>
+                  </select>
+                </div>
+
+                <div id="questions-container"></div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-outline-primary btn-sm" id="addQuestionBtn">+ <%= __('Add Question') %></button>
+                  <button type="submit" class="btn btn-success"><%= __('Create Quiz') %></button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Add Quiz Form -->
-<!-- ================== Add Quiz Form ================== -->
-<div class="card mb-4 shadow-sm">
-  <div class="card-body">
-    <h5 class="card-title">📝 Create Quiz</h5>
-    <form action="/teacher/add-quiz" method="POST" id="quizForm">
-      <div class="mb-3">
-        <label class="form-label">Select Lesson</label>
-        <select name="lessonId" class="form-select" required>
-          <option value="">-- Select Lesson --</option>
-          <% lessons.forEach(lesson => { %>
-            <option value="<%= lesson._id %>">
-              Class <%= lesson.classRef.classNumber %> - <%= lesson.title %> (<%= lesson.subject %>)
-            </option>
-          <% }) %>
-        </select>
-      </div>
-
-      <!-- Questions will be dynamically added here -->
-      <div id="questions-container"></div>
-
-      <button type="button" class="btn btn-outline-primary btn-sm" id="addQuestionBtn">+ Add Question</button>
-      <button type="submit" class="btn btn-success mt-3">Create Quiz</button>
-    </form>
-  </div>
 </div>
 
-</div>
-
-
+<script>
+  // Add simple dynamic question UI for teacher
+  (function(){
+    const container = document.getElementById('questions-container');
+    const addBtn = document.getElementById('addQuestionBtn');
+    let qIndex = 0;
+    addBtn && addBtn.addEventListener('click', ()=>{
+      qIndex++;
+      const div = document.createElement('div');
+      div.className = 'mb-3 border rounded p-3';
+      div.innerHTML = `
+        <label class="form-label"><%= __('Question') %> ${qIndex}</label>
+        <input name="questions[${qIndex}][text]" class="form-control mb-2" required />
+        <label class="form-label"><%= __('Answer') %></label>
+        <input name="questions[${qIndex}][answer]" class="form-control mb-2" required />
+      `;
+      container.appendChild(div);
+    });
+  })();
+</script>
 
 <%- include('../partials/footer') %>

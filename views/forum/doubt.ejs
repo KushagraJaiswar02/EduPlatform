@@ -1,42 +1,50 @@
-<<<<<<< HEAD
-<%- include('../partials/header') %> 
-=======
-<%- include('../partials/header') %>    
->>>>>>> 82974339caab0fc351e34ee94ce0034f124ea063
+<%- include('../partials/header') %>
+
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-8 offset-md-2">
-            <h1 class="mb-4 text-primary">Naya Doubt/Forum Post Banaen</h1>
+            <h1 class="mb-4 text-primary"><%= __('New Doubt/Forum Post') %></h1>
 
-            <form action="/forum" method="POST" class="needs-validation" novalidate>
+            <form action="/forum/ask" method="POST" class="needs-validation" novalidate>
                 <div class="mb-3">
-                    <label for="title" class="form-label">Title/Topic:</label>
-                    <input type="text" class="form-control" id="title" name="forum[title]" required 
-                           placeholder="Apne doubt ka short title likhen">
+                    <label for="title" class="form-label"><%= __('Title/Topic') %></label>
+                    <input type="text" class="form-control" id="title" name="subject" required 
+                           placeholder="<%= __('Apne doubt ka short title likhen') %>">
                     <div class="invalid-feedback">
-                        Please provide a title for your doubt.
+                        <%= __('Please provide a title for your doubt.') %>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="description" class="form-label">Detailed Description:</label>
-                    <textarea class="form-control" id="description" name="forum[description]" rows="7" required
-                              placeholder="Apne doubt ko detail mein explain karein."></textarea>
+                    <label for="description" class="form-label"><%= __('Detailed Description') %></label>
+                    <textarea class="form-control" id="description" name="question" rows="7" required
+                              placeholder="<%= __('Apne doubt ko detail mein explain karein.') %>"></textarea>
                     <div class="invalid-feedback">
-                        Please provide a detailed description of your doubt.
+                        <%= __('Please provide a detailed description of your doubt.') %>
                     </div>
                 </div>
                 
                 <div class="mb-3">
-                    <label for="tags" class="form-label">Tags (e.g., nodejs, math, mongo):</label>
-                    <input type="text" class="form-control" id="tags" name="forum[tags]"
-                           placeholder="Tags ko comma se separate karein">
-                    <div class="form-text">Separate tags with commas for better visibility.</div>
+                    <label for="tags" class="form-label"><%= __('Tags (e.g., nodejs, math, mongo)') %></label>
+                    <input type="text" class="form-control" id="tags" name="tags"
+                                                 placeholder="<%= __('Tags ko comma se separate karein') %>">
+                    <div class="form-text"><%= __('Separate tags with commas for better visibility.') %></div>
                 </div>
 
+                                <% if (locals.classes && locals.classes.length) { %>
+                                    <div class="mb-3">
+                                        <label for="classId" class="form-label"><%= __('Post to Class') %></label>
+                                        <select name="classId" id="classId" class="form-select">
+                                            <% locals.classes.forEach(c => { %>
+                                                <option value="<%= c._id %>"><%= __('Class') %> <%= c.classNumber %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                <% } %>
+
                 <div class="d-grid gap-2">
-                    <button class="btn btn-success btn-lg" type="submit">Post Doubt</button>
-                    <a href="/forum" class="btn btn-secondary">Cancel</a>
+                    <button class="btn btn-success btn-lg" type="submit"><%= __('Post Doubt') %></button>
+                    <a href="/forum" class="btn btn-secondary"><%= __('Cancel') %></a>
                 </div>
             </form>
 

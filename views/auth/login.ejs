@@ -5,43 +5,43 @@
     <div class="card shadow-sm border-0">
       <div class="card-body p-4">
         <h3 class="text-center mb-4 fw-semibold text-primary">
-          <i class="bi bi-person-circle me-1"></i> Login
+          <i class="bi bi-person-circle me-1"></i> <%= __('Login') %>
         </h3>
 
 
         <!-- Login Form -->
         <form action="/login" method="POST">
           <div class="mb-3">
-            <label for="email" class="form-label fw-semibold">Email address</label>
+            <label for="email" class="form-label fw-semibold"><%= __('Email address') %></label>
             <input 
               type="email" 
               class="form-control" 
               id="email" 
               name="email" 
-              placeholder="Enter your email" 
+              placeholder="<%= __('Enter your email') %>" 
               required
             />
           </div>
 
           <div class="mb-3">
-            <label for="password" class="form-label fw-semibold">Password</label>
+            <label for="password" class="form-label fw-semibold"><%= __('Password') %></label>
             <input 
               type="password" 
               class="form-control" 
               id="password" 
               name="password" 
-              placeholder="Enter your password" 
+              placeholder="<%= __('Enter your password') %>" 
               required
             />
           </div>
 
           <div class="d-grid mb-3">
-            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+            <button type="submit" class="btn btn-primary btn-lg"><%= __('Login') %></button>
           </div>
 
           <div class="text-center small">
-            <span>Don’t have an account?</span>
-            <a href="/register" class="fw-semibold text-decoration-none">Register</a>
+            <span><%= __("Don't have an account?") %></span>
+            <a href="/register" class="fw-semibold text-decoration-none"><%= __('Register') %></a>
           </div>
         </form>
       </div>
