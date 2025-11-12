@@ -106,9 +106,10 @@ app.get('/', (req, res) => {
 // ==========================
 // 404 Handler
 // ==========================
-app.all('*', (req, res) => {
+app.use((req, res) => {
   res.status(404).render('error', { message: 'Page Not Found' });
 });
+
 
 // ==========================
 // Start Server

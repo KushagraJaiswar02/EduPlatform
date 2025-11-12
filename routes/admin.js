@@ -6,10 +6,10 @@ const { isLoggedIn, isAdmin } = require('../middleware/auth');
 // Admin dashboard
 router.get('/dashboard', isLoggedIn, isAdmin, adminController.getDashboard);
 
-// Approve lesson
+// Approve lessons uploaded by teachers
 router.post('/lesson/:id/approve', isLoggedIn, isAdmin, adminController.approveLesson);
 
-// Manage users
+// Manage users (view all)
 router.get('/users', isLoggedIn, isAdmin, adminController.manageUsers);
 
 module.exports = router;

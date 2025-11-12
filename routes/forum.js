@@ -3,13 +3,13 @@ const router = express.Router();
 const forumController = require('../controllers/forumController');
 const { isLoggedIn } = require('../middleware/auth');
 
-// View forum
+// View all questions in current student's class
 router.get('/', isLoggedIn, forumController.getForum);
 
-// Ask question
+// Post a new question
 router.post('/ask', isLoggedIn, forumController.postQuestion);
 
-// Answer question
+// Post an answer to a question
 router.post('/:id/answer', isLoggedIn, forumController.postAnswer);
 
 module.exports = router;

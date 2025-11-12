@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const studentController = require('../controllers/studentController');
-const { isLoggedIn } = require('../middleware/auth');
+const { isLoggedIn, isStudent } = require('../middleware/auth');
 
-// Dashboard
-router.get('/dashboard', isLoggedIn, studentController.getDashboard);
+// Student Dashboard
+router.get('/dashboard', isLoggedIn, isStudent, studentController.getDashboard);
 
-// Lessons
-router.get('/lesson/:id', isLoggedIn, studentController.getLesson);
+// View specific lesson
+router.get('/lesson/:id', isLoggedIn, isStudent, studentController.getLesson);
 
-// Quizzes
-router.get('/quiz/:lessonId', isLoggedIn, studentController.getQuiz);
-router.post('/quiz/:quizId/submit', isLoggedIn, studentController.submitQuiz);
+// Take a quiz for a lesson
+router.get('/quiz/:lessonId', isLoggedIn, isStudent, studentController.getQuiz);
+
+// Submit quiz answers
+router.post('/quiz/:quizId/submit', isLoggedIn, isStudent, studentController.submitQuiz);
 
 module.exports = router;
