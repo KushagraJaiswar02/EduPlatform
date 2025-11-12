@@ -1,8 +1,11 @@
-// app.js
+// ==========================
+// EduBridge Kids - Main App
+// ==========================
+
 require('dotenv').config();
 const express = require('express');
-const path = require('path');
 const mongoose = require('mongoose');
+const path = require('path');
 const ejsMate = require('ejs-mate');
 const session = require('express-session');
 const flash = require('connect-flash');
@@ -10,13 +13,28 @@ const methodOverride = require('method-override');
 const compression = require('compression');
 const i18n = require('i18n');
 
+// Route imports
+const authRoutes = require('./routes/authRoutes');
+const studentRoutes = require('./routes/studentRoutes');
+const teacherRoutes = require('./routes/teacherRoutes');
+const forumRoutes = require('./routes/forumRoutes');
+
+// Initialize app
 const app = express();
 
-// ====== CONFIG ======
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/edubridgeKids')
-  .then(() => console.log('✅ MongoDB Connected'))
-  .catch(err => console.error('❌ Mongo Error:', err));
+// ==========================
+// MongoDB Atlas Connection
+// ==========================
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log('✅ MongoDB Atlas Connected'))
+  .catch(err => console.error('❌ Mongo Connection Error:', err));
 
+// ==========================
+// App Configurations
+// ==========================
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -27,7 +45,9 @@ app.use(methodOverride('_method'));
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ====== i18n Setup ======
+// ==========================
+// i18n Setup (Multilingual)
+// ==========================
 i18n.configure({
   locales: ['en', 'hi'],
   directory: path.join(__dirname, '/locales'),
@@ -36,17 +56,24 @@ i18n.configure({
 });
 app.use(i18n.init);
 
-// ====== Session & Flash ======
+// ==========================
+// Session + Flash Config
+// ==========================
 const sessionConfig = {
   secret: process.env.SESSION_SECRET || 'supersecret',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
+  cookie: {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 // 1 day
+  }
 };
 app.use(session(sessionConfig));
 app.use(flash());
 
-// ====== Global Middleware ======
+// ==========================
+// Global Middleware
+// ==========================
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.error = req.flash('error');
@@ -54,27 +81,35 @@ app.use((req, res, next) => {
   next();
 });
 
-// ====== ROUTES ======
-const authRoutes = require('./routes/authRoutes');
-const studentRoutes = require('./routes/studentRoutes');
-const teacherRoutes = require('./routes/teacherRoutes');
-const forumRoutes = require('./routes/forumRoutes');
-
+// ==========================
+// Routes
+// ==========================
 app.use('/', authRoutes);
 app.use('/student', studentRoutes);
 app.use('/teacher', teacherRoutes);
 app.use('/forum', forumRoutes);
 
-// Offline fallback
+// Offline fallback route
 app.get('/offline', (req, res) => {
   res.render('offline');
 });
 
-// ====== ROOT ======
+// Home Route
 app.get('/', (req, res) => {
   res.render('home');
 });
 
-// ====== SERVER ======
+// ==========================
+// 404 Handler
+// ==========================
+app.all('*', (req, res) => {
+  res.status(404).render('error', { message: 'Page Not Found' });
+});
+
+// ==========================
+// Start Server
+// ==========================
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 EduBridge Kids running on http://localhost:${PORT}`);
+});
