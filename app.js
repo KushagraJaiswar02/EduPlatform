@@ -14,11 +14,11 @@ const compression = require('compression');
 const i18n = require('i18n');
 
 // ROUTES
-const authRoutes = require('./routes/authRoutes');
-const studentRoutes = require('./routes/studentRoutes');
-const teacherRoutes = require('./routes/teacherRoutes');
-const forumRoutes = require('./routes/forumRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const authRoutes = require('./routes/auth');
+const studentRoutes = require('./routes/student');
+const teacherRoutes = require('./routes/teacher');
+const forumRoutes = require('./routes/forum');
+const adminRoutes = require('./routes/admin');
 
 // Initialize app
 const app = express();
