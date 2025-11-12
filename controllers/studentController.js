@@ -20,10 +20,10 @@ exports.getDashboard = async (req, res) => {
 
 
 
-exports.getDashboard = async (req, res) => {
-  const userClass = await Class.findById(req.user.classRef).populate('lessons');
-  res.render('student/dashboard', { user: req.user, userClass });
-};
+// exports.getDashboard = async (req, res) => {
+//   const userClass = await Class.findById(req.user.classRef).populate('lessons');
+//   res.render('student/dashboard', { user: req.user, userClass });
+// };
 
 exports.getLesson = async (req, res) => {
   const lesson = await Lesson.findById(req.params.id);
