@@ -96,7 +96,7 @@ app.get('/offline', (req, res) => {
 
 // Home Route
 app.get('/', (req, res) => {
-  res.render('home');
+  return res.render('home');
 });
 
 // ==========================

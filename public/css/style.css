@@ -1,0 +1,154 @@
+/* ================================
+   EduBridge Kids - Minimal Theme
+   ================================ */
+
+/* --- Global --- */
+body {
+  background-color: #f8fafc;
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  color: #212529;
+}
+
+h1, h2, h3, h4, h5 {
+  color: #1e293b;
+}
+
+/* --- Navbar --- */
+.navbar {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.navbar-brand {
+  font-weight: 600;
+  color: #2563eb !important;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navbar-brand img {
+  width: 28px;
+  height: 28px;
+}
+
+.nav-link {
+  color: #475569 !important;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  color: #2563eb !important;
+}
+
+/* Language and quick buttons */
+.navbar .btn-sm {
+  border-radius: 20px;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+}
+
+/* --- Hero Section --- */
+.hero {
+  text-align: center;
+  margin-top: 80px;
+  margin-bottom: 60px;
+}
+
+.hero h1 {
+  font-size: 2.3rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  font-size: 1.1rem;
+  color: #64748b;
+  margin-bottom: 28px;
+}
+
+.hero .btn {
+  border-radius: 30px;
+  padding: 10px 26px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.hero .btn-primary {
+  background-color: #2563eb;
+  border: none;
+}
+
+.hero .btn-success {
+  background-color: #16a34a;
+  border: none;
+}
+
+.hero .btn:hover {
+  opacity: 0.9;
+}
+
+/* --- Features Section --- */
+.features {
+  margin-top: 40px;
+  margin-bottom: 60px;
+}
+
+.features .card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.features .card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.features .card-body {
+  padding: 22px 20px;
+}
+
+.features .card-title {
+  font-weight: 600;
+  color: #2563eb;
+  font-size: 1.05rem;
+  margin-bottom: 8px;
+}
+
+.features .card-text {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* --- About Section --- */
+.about {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 80px auto;
+}
+
+.about h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.about p {
+  font-size: 1rem;
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* --- Footer --- */
+footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #64748b;
+  padding: 25px 0;
+  border-top: 1px solid #e2e8f0;
+  background-color: #fff;
+}
