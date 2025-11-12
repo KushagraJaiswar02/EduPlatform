@@ -14,10 +14,10 @@ const compression = require('compression');
 const i18n = require('i18n');
 
 // Route imports
-const authRoutes = require('./routes/authRoutes');
-const studentRoutes = require('./routes/studentRoutes');
-const teacherRoutes = require('./routes/teacherRoutes');
-const forumRoutes = require('./routes/forumRoutes');
+const authRoutes = require('./routes/auth');
+const studentRoutes = require('./routes/student');
+const teacherRoutes = require('./routes/teacher');
+const forumRoutes = require('./routes/forum');
 
 // Initialize app
 const app = express();
@@ -102,7 +102,7 @@ app.get('/', (req, res) => {
 // ==========================
 // 404 Handler
 // ==========================
-app.all('*', (req, res) => {
+app.all(/.*/, (req, res) => {
   res.status(404).render('error', { message: 'Page Not Found' });
 });
 
