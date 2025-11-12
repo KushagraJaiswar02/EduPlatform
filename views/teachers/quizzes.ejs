@@ -1,0 +1,32 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h3 class="fw-bold mb-4">📋 My Quizzes</h3>
+
+  <% if (quizzes.length === 0) { %>
+    <p class="text-muted">No quizzes created yet.</p>
+  <% } else { %>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Class</th>
+          <th>Lesson</th>
+          <th>Subject</th>
+          <th>Questions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% quizzes.forEach(q => { %>
+          <tr>
+            <td>Class <%= q.classRef.classNumber %></td>
+            <td><%= q.lessonId ? q.lessonId.title : 'Unknown' %></td>
+            <td><%= q.lessonId ? q.lessonId.subject : '-' %></td>
+            <td><%= q.questions.length %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

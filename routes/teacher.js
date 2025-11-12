@@ -6,6 +6,10 @@ const { isLoggedIn, isTeacher } = require('../middleware/auth');
 // Teacher Dashboard
 router.get('/dashboard', isLoggedIn, isTeacher, teacherController.getDashboard);
 
+// View all quizzes created by teacher
+router.get('/quizzes', isLoggedIn, isTeacher, teacherController.getAllQuizzes);
+
+
 // Add new lesson
 router.post('/add-lesson', isLoggedIn, isTeacher, teacherController.addLesson);
 

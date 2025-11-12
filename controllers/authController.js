@@ -2,7 +2,10 @@ const User = require('../models/User');
 const Class = require('../models/Class');
 const bcrypt = require('bcryptjs');
 
-exports.getRegister = (req, res) => res.render('auth/register');
+exports.getRegister = async (req, res) => {
+  const classes = await Class.find().sort({ classNumber: 1 });
+  res.render('auth/register', { classes });
+};
 exports.getLogin = (req, res) => res.render('auth/login');
 
 exports.registerUser = async (req, res) => {

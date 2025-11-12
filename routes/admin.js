@@ -16,4 +16,9 @@ router.post('/lesson/:id/approve', isLoggedIn, isAdmin, adminController.approveL
 // Manage users (view all)
 router.get('/users', isLoggedIn, isAdmin, adminController.manageUsers);
 
+router.post('/add-subject', isLoggedIn, isAdmin, adminController.addSubjectToClass);
+
+router.post('/reassign-teacher', isLoggedIn, isAdmin, adminController.reassignTeacher);
+
+
 module.exports = router;

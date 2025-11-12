@@ -1,0 +1,26 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h2 class="fw-bold mb-4 text-center">📚 Lessons</h2>
+
+  <% if (lessons.length === 0) { %>
+    <p class="text-muted text-center">No lessons available for your class.</p>
+  <% } else { %>
+    <div class="row g-3">
+      <% lessons.forEach(lesson => { %>
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title"><%= lesson.title %></h5>
+              <p class="text-muted small">Subject: <%= lesson.subject %></p>
+              <p class="card-text"><%= lesson.content.substring(0, 80) %>...</p>
+              <a href="/student/lesson/<%= lesson._id %>" class="btn btn-primary btn-sm">View Lesson</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

@@ -85,3 +85,59 @@ exports.addClass = async (req, res) => {
     res.redirect('/admin/classes');
   }
 };
+
+exports.addSubjectToClass = async (req, res) => {
+  try {
+    const { classId, subjectName, subjectTeacher } = req.body;
+    if (!classId || !subjectName || !subjectTeacher) {
+      req.flash('error', 'All fields are required.');
+      return res.redirect('/admin/classes');
+    }
+
+    const cls = await Class.findById(classId);
+    if (!cls) {
+      req.flash('error', 'Class not found.');
+      return res.redirect('/admin/classes');
+    }
+
+    // Check if subject already exists
+    const duplicate = cls.subjects.find(
+      s => s.name.toLowerCase() === subjectName.toLowerCase()
+    );
+    if (duplicate) {
+      req.flash('error', 'This subject already exists in the class.');
+      return res.redirect('/admin/classes');
+    }
+
+    cls.subjects.push({ name: subjectName, teacher: subjectTeacher });
+    await cls.save();
+
+    req.flash('success', 'Subject added successfully!');
+    res.redirect('/admin/classes');
+  } catch (err) {
+    console.error(err);
+    req.flash('error', 'Error adding subject.');
+    res.redirect('/admin/classes');
+  }
+};
+
+exports.reassignTeacher = async (req, res) => {
+  const { oldTeacherId, newTeacherId, fromClassId, subjectName } = req.body;
+
+  // Remove old teacher from the old class
+  await Class.updateOne(
+    { _id: fromClassId, "subjects.name": subjectName },
+    { $unset: { "subjects.$.teacher": "" } }
+  );
+
+  // Optionally assign a new teacher
+  if (newTeacherId) {
+    await Class.updateOne(
+      { _id: fromClassId, "subjects.name": subjectName },
+      { $set: { "subjects.$.teacher": newTeacherId } }
+    );
+  }
+
+  req.flash('success', 'Teacher reassigned successfully.');
+  res.redirect('/admin/classes');
+};

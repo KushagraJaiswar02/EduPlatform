@@ -1,28 +1,38 @@
 const express = require('express');
 const router = express.Router();
-
 const studentController = require('../controllers/studentController');
-const { isLoggedIn, isStudent } = require('../middleware/auth'); // isStudent middleware
+const { isLoggedIn, isStudent } = require('../middleware/auth');
 
-// ... baaki imports
-
-// Student Dashboard Route (Ismein wohi function call hogi jo upar update ki hai)
+// ==========================
+// STUDENT DASHBOARD
+// ==========================
 router.get('/dashboard', isLoggedIn, isStudent, studentController.getDashboard);
 
-// ... baaki existing student routes
-
-module.exports = router;
-
-// Student Dashboard
-router.get('/dashboard', isLoggedIn, isStudent, studentController.getDashboard);
-
-// View specific lesson
+// ==========================
+// LESSONS
+// ==========================
+router.get('/lessons', isLoggedIn, isStudent, studentController.getAllLessons);
 router.get('/lesson/:id', isLoggedIn, isStudent, studentController.getLesson);
 
-// Take a quiz for a lesson
+// ==========================
+// QUIZZES
+// ==========================
+// View all quizzes for student’s class
+router.get('/quizzes', isLoggedIn, isStudent, studentController.getAllQuizzes);
+
+// Take quiz for a lesson
 router.get('/quiz/:lessonId', isLoggedIn, isStudent, studentController.getQuiz);
 
 // Submit quiz answers
 router.post('/quiz/:quizId/submit', isLoggedIn, isStudent, studentController.submitQuiz);
+
+// ==========================
+// RESULTS
+// ==========================
+// View all quiz results for the student
+router.get('/results', isLoggedIn, isStudent, studentController.getAllResults);
+
+// View a single quiz result
+router.get('/results/:id', isLoggedIn, isStudent, studentController.getResultById);
 
 module.exports = router;

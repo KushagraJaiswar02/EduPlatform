@@ -1,0 +1,44 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+  <h3 class="fw-bold mb-4 text-center">📊 Your Quiz Results</h3>
+
+  <% if (results.length === 0) { %>
+    <p class="text-muted text-center">No results yet. Take a quiz to see your scores!</p>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Lesson</th>
+            <th scope="col">Subject</th>
+            <th scope="col">Score</th>
+            <th scope="col">Performance</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% results.forEach(r => { %>
+            <tr>
+              <td><%= r.quizId.lessonId ? r.quizId.lessonId.title : '—' %></td>
+              <td><%= r.quizId.lessonId ? r.quizId.lessonId.subject : '—' %></td>
+              <td><%= r.score %> / <%= r.total %></td>
+              <td>
+                <% if (r.score / r.total < 0.5) { %>
+                  <span class="badge bg-danger">Needs Practice</span>
+                <% } else if (r.score / r.total < 0.8) { %>
+                  <span class="badge bg-warning text-dark">Good</span>
+                <% } else { %>
+                  <span class="badge bg-success">Excellent</span>
+                <% } %>
+              </td>
+              <td><%= new Date(r.createdAt).toLocaleDateString() %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

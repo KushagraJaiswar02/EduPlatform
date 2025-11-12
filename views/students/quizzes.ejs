@@ -1,0 +1,23 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h3 class="fw-bold mb-4">🧠 Available Quizzes</h3>
+
+  <% if (quizzes.length === 0) { %>
+    <p class="text-muted">No quizzes available for your class yet.</p>
+  <% } else { %>
+    <div class="list-group">
+      <% quizzes.forEach(q => { %>
+        <a href="/student/quiz/<%= q.lessonId._id %>" class="list-group-item list-group-item-action">
+          <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1"><%= q.lessonId.title %></h5>
+            <small>Questions: <%= q.questions.length %></small>
+          </div>
+          <p class="mb-1 text-muted"><%= q.lessonId.subject %></p>
+        </a>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

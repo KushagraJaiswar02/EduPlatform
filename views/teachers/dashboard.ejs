@@ -1,127 +1,82 @@
 <%- include('../partials/header') %>
 
 <div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col">
-            <h1 class="text-success">👋 Welcome, <%= user.name %>!</h1>
-            <p class="lead">Yahan se aap lessons, quizzes, aur results manage kar sakte hain.</p>
-        </div>
-    </div>
+  <h2 class="fw-bold mb-4">Teacher Dashboard</h2>
 
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        
-        <div class="col">
-            <div class="card h-100 shadow-sm border-primary">
-                <div class="card-body">
-                    <h5 class="card-title text-primary">📚 Add New Lesson</h5>
-                    <p class="card-text">Class ke liye naya lesson, video, ya text material add karein.</p>
-                    <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#addLessonModal">
-                        Add Lesson
-                    </button>
-                </div>
-            </div>
-        </div>
-         
-        <div class="col">
-            <div class="card h-100 shadow-sm border-info">
-                <div class="card-body">
-                    <h5 class="card-title text-info">📊 View Results</h5>
-                    <p class="card-text">Students ke quiz results aur performance dekhein.</p>
-                    <a href="/teacher/results" class="btn btn-outline-info mt-2">View All Results</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col">
-            <div class="card h-100 shadow-sm border-warning">
-                <div class="card-body">
-                    <h5 class="card-title text-warning">❓ Doubt Forum</h5>
-                    <p class="card-text">Student ke doubts dekhein aur unka jawab dein.</p>
-                    <a href="/forum" class="btn btn-outline-warning mt-2">Go to Forum</a>
-                </div>
-            </div>
-        </div>
+  <!-- Flash messages -->
+  <% if (success && success.length) { %>
+    <div class="alert alert-success"><%= success %></div>
+  <% } %>
 
-    </div>
-    
-    <hr class="my-5">
-
-    <div class="row">
-        <div class="col">
-            <h2>Classes & Lessons</h2>
-            <% if (classes && classes.length > 0) { %>
-                <% classes.forEach(cls => { %>
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header bg-light py-3">
-                            <h5 class="mb-0">Class <%= cls.classNumber %></h5>
-                        </div>
-                        <ul class="list-group list-group-flush">
-                            <% if (cls.lessons && cls.lessons.length > 0) { %>
-                                <% cls.lessons.forEach(lesson => { %>
-                                    <li class="list-group-item d-flex flex-wrap justify-content-between align-items-center">
-                                        <div>
-                                            <strong><%= lesson.title %></strong> (<%= lesson.subject %>)
-                                            <p class="small text-muted mb-0"><%= lesson.content.substring(0, 70) %>...</p>
-                                        </div>
-                                        <form action="/teacher/add-quiz" method="POST" class="mt-2 mt-md-0 ms-md-2">
-                                            <input type="hidden" name="lessonId" value="<%= lesson._id %>">
-                                            <button type_submit" class="btn btn-sm btn-outline-secondary">Add Quiz</button>
-                                        </form>
-                                    </li>
-                                <% }); %>
-                            <% } else { %>
-                                <li class="list-group-item">
-                                    <p class="card-text text-muted">Is class mein koi lessons nahi hain.</p>
-                                </li>
-                            <% } %>
-                        </ul>
-                    </div>
-                <% }); %>
-            <% } else { %>
-                <p>Abhi tak koi classes nahi banayi gayi hain.</p>
-            <% } %>
+  <!-- Add Lesson Form -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title">📘 Add New Lesson</h5>
+      <form action="/teacher/add-lesson" method="POST">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Class</label>
+            <select name="classNumber" class="form-select" required>
+              <% classes.forEach(cls => { %>
+                <option value="<%= cls.classNumber %>">Class <%= cls.classNumber %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Subject</label>
+            <input type="text" name="subject" class="form-control" placeholder="Science" required>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Lesson Type</label>
+            <select name="lessonType" class="form-select">
+              <option value="core">Core</option>
+              <option value="revision"></option>
+              <option value="practice">practice</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Title</label>
+            <input type="text" name="title" class="form-control" placeholder="The Solar System" required>
+          </div>
+          <div class="col-12">
+            <label class="form-label">Content</label>
+            <textarea name="content" class="form-control" rows="4" placeholder="Lesson details here..." required></textarea>
+          </div>
         </div>
+        <button type="submit" class="btn btn-primary mt-3">Add Lesson</button>
+      </form>
     </div>
+  </div>
+
+  <!-- Add Quiz Form -->
+<!-- ================== Add Quiz Form ================== -->
+<div class="card mb-4 shadow-sm">
+  <div class="card-body">
+    <h5 class="card-title">📝 Create Quiz</h5>
+    <form action="/teacher/add-quiz" method="POST" id="quizForm">
+      <div class="mb-3">
+        <label class="form-label">Select Lesson</label>
+        <select name="lessonId" class="form-select" required>
+          <option value="">-- Select Lesson --</option>
+          <% lessons.forEach(lesson => { %>
+            <option value="<%= lesson._id %>">
+              Class <%= lesson.classRef.classNumber %> - <%= lesson.title %> (<%= lesson.subject %>)
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- Questions will be dynamically added here -->
+      <div id="questions-container"></div>
+
+      <button type="button" class="btn btn-outline-primary btn-sm" id="addQuestionBtn">+ Add Question</button>
+      <button type="submit" class="btn btn-success mt-3">Create Quiz</button>
+    </form>
+  </div>
+</div>
+
 </div>
 
 
-<div class="modal fade" id="addLessonModal" tabindex="-1" aria-labelledby="addLessonModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form action="/teacher/add-lesson" method="POST">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addLessonModalLabel">Add New Lesson</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="classNumber" class="form-label">Class Number</label>
-                        <input type="number" class="form-control" id="classNumber" name="classNumber" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="subject" class="form-label">Subject</label>
-                        <input type="text" class="form-control" id="subject" name="subject" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Lesson Title</label>
-                        <input type="text" class="form-control" id="title" name="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="content" class="form-label">Content</label>
-                        <textarea class="form-control" id="content" name="content" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="lessonType" class="form-label">Lesson Type (e.g., video, text)</label>
-                        <input type="text" class="form-control" id="lessonType" name="lessonType" value="text">
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Add Lesson</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 <%- include('../partials/footer') %>

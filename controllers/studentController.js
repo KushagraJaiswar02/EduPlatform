@@ -1,64 +1,98 @@
 const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
 const Result = require('../models/Result');
-const Class = require('../models/Class');
 
-const Forum = require('../models/Forum'); 
-// Assuming User, Class models are also imported or handled by middleware
-
+// ==========================
+// DASHBOARD
+// ==========================
 exports.getDashboard = async (req, res) => {
-  // Assuming isLoggedIn middleware has populated req.user.
-  // Aur agar aap class ka naam dikhana chahte hain, toh aapko User.classRef ko populate karna hoga
-  // Agar aapka auth middleware req.user ko sirf ID deta hai, toh aapko user ko yahan fetch/populate karna hoga.
-    const user = await req.user.populate('classRef');
-  
-    res.render('student/dashboard', { 
-        pageTitle: 'Student Dashboard',
-        currentUser: user // 'currentUser' variable ko view mein pass kar rahe hain
-    });
+  const lessons = await Lesson.find({ classRef: req.user.classRef }).populate('classRef', 'classNumber');
+  const quizzes = await Quiz.find({ classRef: req.user.classRef });
+  res.render('students/dashboard', { user: req.user, lessons, quizzes });
 };
 
-
-
-// exports.getDashboard = async (req, res) => {
-//   const userClass = await Class.findById(req.user.classRef).populate('lessons');
-//   res.render('student/dashboard', { user: req.user, userClass });
-// };
+// ==========================
+// LESSONS
+// ==========================
+exports.getAllLessons = async (req, res) => {
+  const lessons = await Lesson.find({ classRef: req.user.classRef });
+  res.render('students/lessons', { user: req.user, lessons });
+};
 
 exports.getLesson = async (req, res) => {
-  const lesson = await Lesson.findById(req.params.id);
-  res.render('student/lesson', { lesson });
+  const lesson = await Lesson.findById(req.params.id).populate('uploadedBy', 'name');
+  res.render('students/lesson', { user: req.user, lesson });
+};
+
+// ==========================
+// QUIZZES
+// ==========================
+exports.getAllQuizzes = async (req, res) => {
+  const quizzes = await Quiz.find({ classRef: req.user.classRef })
+    .populate('lessonId', 'title subject');
+  res.render('students/quizzes', { user: req.user, quizzes });
 };
 
 exports.getQuiz = async (req, res) => {
-  const quiz = await Quiz.findOne({ lessonId: req.params.lessonId });
-  res.render('student/quiz', { quiz });
+  const quiz = await Quiz.findOne({ lessonId: req.params.lessonId }).populate('lessonId', 'title');
+  if (!quiz) {
+    req.flash('error', 'No quiz found for this lesson.');
+    return res.redirect('/student/quizzes');
+  }
+  console.log(quiz)
+  res.render('students/quiz', { user: req.user, quiz });
 };
 
 exports.submitQuiz = async (req, res) => {
-  const { answers } = req.body;
   const quiz = await Quiz.findById(req.params.quizId);
   let score = 0;
 
   quiz.questions.forEach((q, i) => {
-    if (answers[i] && answers[i] === q.answer) score++;
+    if (req.body[`q${i}`] === q.answer) score++;
   });
 
-  // Simple AI logic
-  let recommendation = 'Great job!';
-  if (score < quiz.questions.length * 0.4)
-    recommendation = 'Revise this topic.';
-  else if (score < quiz.questions.length * 0.7)
-    recommendation = 'Good effort, but more practice needed.';
-
-  await Result.create({
+  const result = await Result.create({
     userId: req.user._id,
     quizId: quiz._id,
-    classRef: quiz.classRef,
     score,
-    total: quiz.questions.length,
-    recommendation
+    total: quiz.questions.length
   });
 
-  res.render('student/result', { score, total: quiz.questions.length, recommendation });
+  req.flash('success', 'Quiz submitted successfully!');
+  res.redirect(`/student/results/${result._id}`);
+};
+
+// ==========================
+// RESULTS
+// ==========================
+exports.getAllResults = async (req, res) => {
+  try {
+    const results = await Result.find({ userId: req.user._id })
+      .populate({
+        path: 'quizId',
+        populate: { path: 'lessonId', select: 'title subject' }
+      })
+      .sort({ createdAt: -1 });
+
+    res.render('students/results', { user: req.user, results });
+  } catch (err) {
+    console.error(err);
+    res.render('error', { message: 'Failed to load results' });
+  }
+};
+
+
+exports.getResultById = async (req, res) => {
+  const result = await Result.findById(req.params.id)
+    .populate({
+      path: 'quizId',
+      populate: { path: 'lessonId', select: 'title subject' }
+    });
+
+  if (!result) {
+    req.flash('error', 'Result not found.');
+    return res.redirect('/student/results');
+  }
+
+  res.render('students/result', { user: req.user, result });
 };

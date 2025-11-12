@@ -2,46 +2,8 @@
 
 <div class="container mt-4">
     <div class="row">
-        <div class="col-md-5">
-            <div class="card shadow-sm border-primary">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">🏫 Add New Class</h5>
-                </div>
-                <div class="card-body">
-                    <form action="/admin/add-class" method="POST">
-                        <div class="mb-3">
-                            <label for="classNumber" class="form-label">Class Number</label>
-                            <input type="number" class="form-control" id="classNumber" name="classNumber" min="1" max="8" required>
-                        </div>
-                        
-                        <hr>
-                        <h6 class="text-muted">Subjects & Teachers</h6>
-                        
-                        <div id="subjects-container">
-                            <div class="row g-2 mb-2 subject-row">
-                                <div class="col-6">
-                                    <input type="text" name="subjectName" class="form-control" placeholder="Subject Name" required>
-                                </div>
-                                <div class="col-6">
-                                    <select name="subjectTeacher" class="form-select" required>
-                                        <option value="">Select Teacher</option>
-                                        <% teachers.forEach(teacher => { %>
-                                            <option value="<%= teacher._id %>"><%= teacher.name %></option>
-                                        <% }); %>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
 
-                        <button type="button" id="add-subject-btn" class="btn btn-sm btn-outline-secondary mt-2">+ Add Subject</button>
-                        
-                        <hr>
-                        <button type="submit" class="btn btn-primary w-100">Save Class</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
+        
         <div class="col-md-7">
             <h2>Existing Classes</h2>
             <% if (classes && classes.length > 0) { %>
@@ -53,17 +15,65 @@
                         <ul class="list-group list-group-flush">
                             <% if (cls.subjects && cls.subjects.length > 0) { %>
                                 <% cls.subjects.forEach(subject => { %>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <strong><%= subject.name %></strong>
                                         <span class="badge bg-info rounded-pill">
-                                            <%= subject.teacher ? subject.teacher.name : 'N/A' %>
+                                        <%= subject.teacher ? subject.teacher.name : 'Unassigned' %>
                                         </span>
+                                    </div>
+
+                                    <!-- Reassign form -->
+                                    <form action="/admin/reassign-teacher" method="POST" class="mt-2">
+                                        <input type="hidden" name="classId" value="<%= cls._id %>">
+                                        <input type="hidden" name="subjectName" value="<%= subject.name %>">
+                                        <div class="row g-2 align-items-center">
+                                        <div class="col-md-8">
+                                            <select name="newTeacherId" class="form-select form-select-sm" required>
+                                            <option value="">Select new teacher</option>
+                                            <% teachers.forEach(teacher => { %>
+                                                <option value="<%= teacher._id %>" 
+                                                <%= subject.teacher && teacher._id.toString() === subject.teacher._id.toString() ? 'selected' : '' %>>
+                                                <%= teacher.name %>
+                                                </option>
+                                            <% }) %>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <button type="submit" class="btn btn-sm btn-outline-primary w-100">
+                                            Reassign
+                                            </button>
+                                        </div>
+                                        </div>
+                                    </form>
                                     </li>
+
                                 <% }); %>
                             <% } else { %>
                                 <li class="list-group-item text-muted">No subjects assigned.</li>
                             <% } %>
+                            
                         </ul>
+                        <form action="/admin/add-subject" method="POST" class="p-3 border-top bg-light">
+                        <input type="hidden" name="classId" value="<%= cls._id %>">
+                        <div class="row g-2">
+                            <div class="col-md-5">
+                            <input type="text" name="subjectName" class="form-control" placeholder="New Subject Name" required>
+                            </div>
+                            <div class="col-md-5">
+                            <select name="subjectTeacher" class="form-select" required>
+                                <option value="">Select Teacher</option>
+                                <% teachers.forEach(teacher => { %>
+                                <option value="<%= teacher._id %>"><%= teacher.name %></option>
+                                <% }) %>
+                            </select>
+                            </div>
+                            <div class="col-md-2">
+                            <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add</button>
+                            </div>
+                        </div>
+                        </form>
+
                     </div>
                 <% }); %>
             <% } else { %>
