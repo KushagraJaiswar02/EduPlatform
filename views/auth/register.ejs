@@ -1,0 +1,64 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5" style="max-width: 500px;">
+  <div class="card shadow-lg p-4">
+    <h3 class="text-center mb-3">Register</h3>
+
+    <% if (error && error.length) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+    <% if (success && success.length) { %>
+      <div class="alert alert-success"><%= success %></div>
+    <% } %>
+
+    <form action="/register" method="POST">
+      <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select name="role" id="role" class="form-select" required>
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+      </div>
+
+      <div class="mb-3" id="classSelect">
+        <label class="form-label">Class (only for Students)</label>
+        <select name="classNumber" class="form-select">
+          <% for (let i = 1; i <= 8; i++) { %>
+            <option value="<%= i %>">Class <%= i %></option>
+          <% } %>
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-success w-100">Register</button>
+    </form>
+
+    <p class="text-center mt-3">
+      Already have an account? <a href="/login">Login</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  const roleSelect = document.getElementById('role');
+  const classSelect = document.getElementById('classSelect');
+  roleSelect.addEventListener('change', () => {
+    classSelect.style.display = roleSelect.value === 'teacher' ? 'none' : 'block';
+  });
+</script>
+
+<%- include('../partials/footer') %>
