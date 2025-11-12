@@ -5,7 +5,7 @@ const Class = require('../models/Class');
 
 exports.getDashboard = async (req, res) => {
   const classes = await Class.find().populate('lessons');
-  res.render('teacher/dashboard', { user: req.user, classes });
+  res.render('teachers/dashboard', { user: req.user, classes });
 };
 
 exports.addLesson = async (req, res) => {
