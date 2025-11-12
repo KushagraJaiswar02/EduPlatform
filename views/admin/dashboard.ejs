@@ -1,0 +1,49 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="text-success">👋 Welcome, Admin <%= user.name %>!</h1>
+            <p class="lead">Yahan se aap poore platform ko manage kar sakte hain.</p>
+        </div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        
+        <div class="col">
+            <div class="card h-100 shadow-sm border-primary">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">👥 Manage Users</h5>
+                    <p class="card-text">Sabhi students aur teachers ke accounts dekhein aur manage karein.</p>
+                    <a href="/admin/users" class="btn btn-outline-primary mt-2">View Users</a>
+                </div>
+            </div>
+        </div>
+         
+        <div class="col">
+            <div class="card h-100 shadow-sm border-info">
+                <div class="card-body">
+                    <h5 class="card-title text-info">🏫 Manage Classes</h5>
+                    <p class="card-text">Nayi classes banayein aur maujooda classes ko manage karein.</p>
+                    <a href="/admin/classes" class="btn btn-outline-info mt-2">View Classes</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col">
+            <div class="card h-100 shadow-sm border-warning">
+                <div class="card-body">
+                    <h5 class="card-title text-warning">✅ Approve Lessons</h5>
+                    <p class="card-text">Teachers dwara add kiye gaye naye lessons ko review aur approve karein.</p>
+                    <a href="/admin/approve-lessons" class="btn btn-outline-warning mt-2">Review Lessons</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <hr class="my-5">
+
+</div>
+
+<%- include('../partials/footer') %>

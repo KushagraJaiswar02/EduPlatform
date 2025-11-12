@@ -11,7 +11,6 @@ const userSchema = new mongoose.Schema({
     default: 'student'
   },
 
-  // Instead of classNumber, reference actual Class model
   classRef: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Class'
@@ -23,7 +22,7 @@ const userSchema = new mongoose.Schema({
     lastActive: { type: Date, default: Date.now }
   },
 
-  subjectsHandled: [String],
+  // 'subjectsHandled' yahan se hata diya gaya hai.
   isActive: { type: Boolean, default: true }
 
 }, { timestamps: true });

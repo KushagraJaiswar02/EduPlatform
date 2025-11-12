@@ -6,11 +6,7 @@ const quizSchema = new mongoose.Schema({
     ref: 'Lesson',
     required: true
   },
-  classRef: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Class',
-    required: true
-  },
+  // 'classRef' yahan se hata diya gaya hai (redundant tha).
   questions: [
     {
       question: String,

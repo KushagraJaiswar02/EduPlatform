@@ -3,7 +3,9 @@ const User = require('../models/User');
 
 exports.getDashboard = async (req, res) => {
   const unapprovedLessons = await Lesson.find({ approvedBy: { $exists: false } }).populate('uploadedBy');
-  res.render('admin/dashboard', { unapprovedLessons });
+  const user = await req.user.populate('classRef');
+
+  res.render('admin/dashboard', { unapprovedLessons, user: user });
 };
 
 exports.approveLesson = async (req, res) => {

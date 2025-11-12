@@ -8,6 +8,8 @@ const classSchema = new mongoose.Schema({
     min: 1,
     max: 8
   },
+  // Yah structure theek hai kyonki ek class mein kayi subjects ho sakte hain
+  // aur har subject ka ek specific teacher ho sakta hai.
   subjects: [
     {
       name: String,
@@ -16,19 +18,9 @@ const classSchema = new mongoose.Schema({
         ref: 'User' // teacher handling that subject
       }
     }
-  ],
-  students: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
-  lessons: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Lesson'
-    }
   ]
+  // 'students' array yahan se hata diya gaya hai.
+  // 'lessons' array yahan se hata diya gaya hai.
 }, { timestamps: true });
 
 module.exports = mongoose.model('Class', classSchema);
