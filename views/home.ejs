@@ -1,2 +1,28 @@
-<h1>Welcome to EduBridge Kids</h1>
-<a href="/student/dashboard">Go to Student Dashboard</a>
+<%- include('partials/header') %>
+<div class="hero">
+  <h1>Welcome to EduBridge Kids!</h1>
+  <p>Learn anytime, anywhere — even without the internet.</p>
+  <a href="/student/dashboard" class="btn btn-primary me-2">I am a Student</a>
+  <a href="/teacher/dashboard" class="btn btn-success">I am a Teacher</a>
+</div>
+
+<div class="container features">
+  <div class="row g-3">
+    <div class="col-md-3 col-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">📚 Offline Learning</h5>
+          <p class="card-text">Access lessons and quizzes even without internet.</p>
+        </div>
+      </div>
+    </div>
+    <!-- repeat other features -->
+  </div>
+</div>
+
+<div class="about">
+  <h2>What is EduBridge Kids?</h2>
+  <p>EduBridge Kids helps students up to class 8 learn easily using offline-ready lessons, quizzes, and community discussions.</p>
+</div>
+
+<%- include('partials/footer') %>

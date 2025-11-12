@@ -98,7 +98,10 @@ app.use('/admin', adminRoutes);
 // ==========================
 app.get('/offline', (req, res) => res.render('offline'));
 
-app.get('/', (req, res) => res.render('home'));
+// Home Route
+app.get('/', (req, res) => {
+  res.render('home');
+});
 
 // ==========================
 // 404 Handler
