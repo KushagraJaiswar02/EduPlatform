@@ -1,0 +1,33 @@
+{
+  "name": "eduplatform",
+  "version": "1.0.0",
+  "description": "��#\u0000 \u0000E\u0000d\u0000u\u0000P\u0000l\u0000a\u0000t\u0000f\u0000o\u0000r\u0000m\u0000\r\u0000 \u0000",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KushagraJaiswar02/EduPlatform.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KushagraJaiswar02/EduPlatform/issues"
+  },
+  "homepage": "https://github.com/KushagraJaiswar02/EduPlatform#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^17.2.3",
+    "ejs": "^3.1.10",
+    "ejs-mate": "^4.0.0",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "i18n": "^0.15.3",
+    "method-override": "^3.0.0",
+    "mongoose": "^8.19.3"
+  }
+}
