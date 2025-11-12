@@ -1,5 +1,11 @@
 const Forum = require('../models/Forum');
 
+
+exports.getNewQuestionForm = (req, res) => {
+  
+  res.render('forum/doubt', { pageTitle: 'Post a New Doubt' }); 
+};
+
 exports.getForum = async (req, res) => {
   const forum = await Forum.find({ classRef: req.user.classRef })
     .populate('askedBy')
@@ -8,12 +14,14 @@ exports.getForum = async (req, res) => {
 };
 
 exports.postQuestion = async (req, res) => {
+ 
   await Forum.create({
     classRef: req.user.classRef,
     subject: req.body.subject,
     question: req.body.question,
     askedBy: req.user._id
   });
+  // Successful post ke baad, user ko forum main page par redirect kar dega
   res.redirect('/forum');
 };
 
@@ -24,5 +32,6 @@ exports.postAnswer = async (req, res) => {
     answeredBy: req.user._id
   });
   await forumPost.save();
+  
   res.redirect('/forum');
 };

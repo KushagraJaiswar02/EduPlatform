@@ -3,6 +3,23 @@ const Quiz = require('../models/Quiz');
 const Result = require('../models/Result');
 const Class = require('../models/Class');
 
+const Forum = require('../models/Forum'); 
+// Assuming User, Class models are also imported or handled by middleware
+
+exports.getDashboard = async (req, res) => {
+  // Assuming isLoggedIn middleware has populated req.user.
+  // Aur agar aap class ka naam dikhana chahte hain, toh aapko User.classRef ko populate karna hoga
+  // Agar aapka auth middleware req.user ko sirf ID deta hai, toh aapko user ko yahan fetch/populate karna hoga.
+    const user = await req.user.populate('classRef');
+  
+    res.render('student/dashboard', { 
+        pageTitle: 'Student Dashboard',
+        currentUser: user // 'currentUser' variable ko view mein pass kar rahe hain
+    });
+};
+
+
+
 exports.getDashboard = async (req, res) => {
   const userClass = await Class.findById(req.user.classRef).populate('lessons');
   res.render('student/dashboard', { user: req.user, userClass });

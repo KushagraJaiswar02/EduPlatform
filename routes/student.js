@@ -1,7 +1,17 @@
 const express = require('express');
 const router = express.Router();
+
 const studentController = require('../controllers/studentController');
-const { isLoggedIn, isStudent } = require('../middleware/auth');
+const { isLoggedIn, isStudent } = require('../middleware/auth'); // isStudent middleware
+
+// ... baaki imports
+
+// Student Dashboard Route (Ismein wohi function call hogi jo upar update ki hai)
+router.get('/dashboard', isLoggedIn, isStudent, studentController.getDashboard);
+
+// ... baaki existing student routes
+
+module.exports = router;
 
 // Student Dashboard
 router.get('/dashboard', isLoggedIn, isStudent, studentController.getDashboard);
