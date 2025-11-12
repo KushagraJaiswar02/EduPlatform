@@ -4,7 +4,7 @@ const Result = require('../models/Result');
 const Class = require('../models/Class');
 
 exports.getDashboard = async (req, res) => {
-  const classes = await Class.find().populate('lessons');
+  const classes = await Class.find();
   res.render('teachers/dashboard', { user: req.user, classes });
 };
 

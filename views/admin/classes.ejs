@@ -1,0 +1,117 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card shadow-sm border-primary">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">🏫 Add New Class</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/admin/add-class" method="POST">
+                        <div class="mb-3">
+                            <label for="classNumber" class="form-label">Class Number</label>
+                            <input type="number" class="form-control" id="classNumber" name="classNumber" min="1" max="8" required>
+                        </div>
+                        
+                        <hr>
+                        <h6 class="text-muted">Subjects & Teachers</h6>
+                        
+                        <div id="subjects-container">
+                            <div class="row g-2 mb-2 subject-row">
+                                <div class="col-6">
+                                    <input type="text" name="subjectName" class="form-control" placeholder="Subject Name" required>
+                                </div>
+                                <div class="col-6">
+                                    <select name="subjectTeacher" class="form-select" required>
+                                        <option value="">Select Teacher</option>
+                                        <% teachers.forEach(teacher => { %>
+                                            <option value="<%= teacher._id %>"><%= teacher.name %></option>
+                                        <% }); %>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="button" id="add-subject-btn" class="btn btn-sm btn-outline-secondary mt-2">+ Add Subject</button>
+                        
+                        <hr>
+                        <button type="submit" class="btn btn-primary w-100">Save Class</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <h2>Existing Classes</h2>
+            <% if (classes && classes.length > 0) { %>
+                <% classes.forEach(cls => { %>
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-header bg-light py-3">
+                            <h5 class="mb-0">Class <%= cls.classNumber %></h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <% if (cls.subjects && cls.subjects.length > 0) { %>
+                                <% cls.subjects.forEach(subject => { %>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <strong><%= subject.name %></strong>
+                                        <span class="badge bg-info rounded-pill">
+                                            <%= subject.teacher ? subject.teacher.name : 'N/A' %>
+                                        </span>
+                                    </li>
+                                <% }); %>
+                            <% } else { %>
+                                <li class="list-group-item text-muted">No subjects assigned.</li>
+                            <% } %>
+                        </ul>
+                    </div>
+                <% }); %>
+            <% } else { %>
+                <p>No classes found.</p>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('add-subject-btn').addEventListener('click', function() {
+        const container = document.getElementById('subjects-container');
+        const firstRow = container.querySelector('.subject-row');
+        
+        // Pehle row ko clone karein
+        const newRow = firstRow.cloneNode(true);
+        
+        // Inputs ko reset karein
+        newRow.querySelector('input[name="subjectName"]').value = '';
+        newRow.querySelector('select[name="subjectTeacher"]').selectedIndex = 0;
+        
+        // Ek 'Remove' button add karein
+        const removeBtnCol = document.createElement('div');
+        removeBtnCol.className = 'col-12 text-end';
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-sm btn-outline-danger mb-2';
+        removeBtn.innerText = 'Remove';
+        removeBtn.onclick = function() {
+            container.removeChild(newRow);
+        };
+        
+        // Row ko naye structure mein daalein (inputs upar, button neeche)
+        const rowContent = newRow.innerHTML;
+        newRow.innerHTML = ''; // Clear current content
+        newRow.classList.remove('row', 'g-2', 'mb-2'); // Remove old classes
+        newRow.className = 'subject-row-item border-top pt-2 mt-2'; // Add new container class
+        
+        const inputsDiv = document.createElement('div');
+        inputsDiv.className = 'row g-2 mb-2';
+        inputsDiv.innerHTML = rowContent;
+        
+        removeBtnCol.appendChild(removeBtn);
+        newRow.appendChild(inputsDiv);
+        newRow.appendChild(removeBtnCol);
+
+        container.appendChild(newRow);
+    });
+</script>
+
+<%- include('../partials/footer') %>

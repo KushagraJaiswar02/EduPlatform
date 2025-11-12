@@ -6,6 +6,10 @@ const { isLoggedIn, isAdmin } = require('../middleware/auth');
 // Admin dashboard
 router.get('/dashboard', isLoggedIn, isAdmin, adminController.getDashboard);
 
+router.get('/classes', isLoggedIn, isAdmin, adminController.getClasses);
+
+router.post('/add-class', isLoggedIn, isAdmin, adminController.addClass);
+
 // Approve lessons uploaded by teachers
 router.post('/lesson/:id/approve', isLoggedIn, isAdmin, adminController.approveLesson);
 
