@@ -1,22 +1,22 @@
 const express = require('express');
 const router = express.Router();
+
 const teacherController = require('../controllers/teacherController');
 const { isLoggedIn, isTeacher } = require('../middleware/auth');
 
-// Teacher Dashboard
+// Dashboard
 router.get('/dashboard', isLoggedIn, isTeacher, teacherController.getDashboard);
 
-// View all quizzes created by teacher
-router.get('/quizzes', isLoggedIn, isTeacher, teacherController.getAllQuizzes);
-
-
-// Add new lesson
+// Create lesson
 router.post('/add-lesson', isLoggedIn, isTeacher, teacherController.addLesson);
 
-// Add quiz for lesson
+// Create quiz
 router.post('/add-quiz', isLoggedIn, isTeacher, teacherController.addQuiz);
 
-// View results for quizzes
+// View all quizzes
+router.get('/quizzes', isLoggedIn, isTeacher, teacherController.getAllQuizzes);
+
+// View quiz results
 router.get('/results', isLoggedIn, isTeacher, teacherController.viewResults);
 
 module.exports = router;

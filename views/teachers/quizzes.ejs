@@ -1,12 +1,13 @@
 <%- include('../partials/header') %>
 
 <div class="container mt-4">
-  <h3 class="fw-bold mb-4">📋 My Quizzes</h3>
+  <h3 class="fw-bold mb-4">📝 My Quizzes</h3>
 
-  <% if (quizzes.length === 0) { %>
-    <p class="text-muted">No quizzes created yet.</p>
+  <% if (!quizzes || quizzes.length === 0) { %>
+    <p class="text-muted">You haven’t created any quizzes yet.</p>
   <% } else { %>
-    <table class="table table-striped">
+
+    <table class="table table-bordered table-striped">
       <thead>
         <tr>
           <th>Class</th>
@@ -15,17 +16,37 @@
           <th>Questions</th>
         </tr>
       </thead>
+
       <tbody>
         <% quizzes.forEach(q => { %>
           <tr>
-            <td>Class <%= q.classRef.classNumber %></td>
-            <td><%= q.lessonId ? q.lessonId.title : 'Unknown' %></td>
+
+            <!-- CORRECT CLASS DISPLAY -->
+            <td>
+              Class 
+              <%= 
+                q.lessonId 
+                && q.lessonId.classRef 
+                && q.lessonId.classRef.classNumber 
+                  ? q.lessonId.classRef.classNumber 
+                  : "N/A" 
+              %>
+            </td>
+
+            <!-- LESSON -->
+            <td><%= q.lessonId ? q.lessonId.title : 'Unknown Lesson' %></td>
+
+            <!-- SUBJECT -->
             <td><%= q.lessonId ? q.lessonId.subject : '-' %></td>
-            <td><%= q.questions.length %></td>
+
+            <!-- QUESTION COUNT -->
+            <td><%= q.questions ? q.questions.length : 0 %></td>
+
           </tr>
         <% }) %>
       </tbody>
     </table>
+
   <% } %>
 </div>
 

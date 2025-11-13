@@ -4,24 +4,57 @@
   <div class="row">
     <div class="col-md-8 offset-md-2">
 
-      <h3><%= __('Community Forum') %></h3>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold"><%= __('Community Forum') %></h3>
+
+        <!-- CLASS FILTER -->
+        <form method="GET" action="/forum">
+          <select name="class" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="">All Classes</option>
+
+            <% classes.forEach(cls => { %>
+              <option value="<%= cls._id %>"
+                <%= selectedClass == cls._id ? "selected" : "" %>>
+                Class <%= cls.classNumber %>
+              </option>
+            <% }) %>
+          </select>
+        </form>
+      </div>
 
       <% if (forum && forum.length > 0) { %>
         <% forum.slice().reverse().forEach(post => { %>
+
           <article class="forum-card mb-3">
+
+            <!-- HEADER -->
             <div class="forum-header">
-              <div class="avatar"><%= post.askedBy && post.askedBy.name ? post.askedBy.name.split(' ').map(n=>n[0]).slice(0,2).join('') : 'U' %></div>
+              <div class="avatar">
+                <%= post.askedBy && post.askedBy.name 
+                      ? post.askedBy.name.split(" ").map(n=>n[0]).join("") 
+                      : 'U' 
+                %>
+              </div>
+
               <div class="forum-meta">
                 <p class="forum-title"><%= post.subject %></p>
+
                 <div class="forum-submeta">
-                  <span><%= post.askedBy ? post.askedBy.name : 'Deleted user' %></span>
+                  <span><%= post.askedBy ? post.askedBy.name : "Unknown User" %></span>
                   &middot;
-                  <small class="text-muted"><%= new Date(post.createdAt).toLocaleString() %></small>
-                  <% if (post.classRef && post.classRef.classNumber) { %>
+
+                  <small class="text-muted">
+                    <%= new Date(post.createdAt).toLocaleString() %>
+                  </small>
+
+                  <% if (post.classRef) { %>
                     &middot;
-                    <small class="ms-2 text-muted">Class <strong><%= post.classRef.classNumber %></strong></small>
+                    <small class="ms-2 text-muted">
+                      Class <strong><%= post.classRef.classNumber %></strong>
+                    </small>
                   <% } %>
                 </div>
+
                 <% if (post.tags && post.tags.length) { %>
                   <div class="mt-2">
                     <% post.tags.forEach(tag => { %>
@@ -32,38 +65,63 @@
               </div>
             </div>
 
+            <!-- BODY -->
             <div class="forum-body">
               <p><%= post.question %></p>
             </div>
 
+            <!-- ANSWERS -->
             <div class="answers-wrap">
               <h6 class="mb-2"><%= __('Answers') %></h6>
-              <% if (post.answers && post.answers.length > 0) { %>
+
+              <% if (post.answers && post.answers.length) { %>
+
                 <% post.answers.forEach(answer => { %>
                   <div class="answer">
-                    <div class="avatar"><%= answer.answeredBy && answer.answeredBy.name ? answer.answeredBy.name.split(' ').map(n=>n[0]).slice(0,2).join('') : 'U' %></div>
+                    <div class="avatar">
+                      <%= answer.answeredBy && answer.answeredBy.name 
+                            ? answer.answeredBy.name.split(" ").map(n=>n[0]).join("") 
+                            : "U" 
+                      %>
+                    </div>
+
                     <div>
                       <p class="mb-1"><%= answer.text %></p>
-                      <small class="text-muted">— <strong><%= answer.answeredBy ? answer.answeredBy.name : __('User deleted') %></strong>
-                      <span class="ms-2">(<%= new Date(answer.createdAt).toLocaleString() %>)</span></small>
+
+                      <small class="text-muted">
+                        — <strong><%= answer.answeredBy ? answer.answeredBy.name : "Deleted User" %></strong>
+                        <span class="ms-2">
+                          (<%= new Date(answer.createdAt).toLocaleString() %>)
+                        </span>
+                      </small>
                     </div>
                   </div>
                 <% }) %>
+
               <% } else { %>
-                <p class="text-muted"><small><%= __('No answers yet.') %> <%= __('Be the first to reply!') %></small></p>
+                <p class="text-muted">
+                  <small>No answers yet — be the first to reply!</small>
+                </p>
               <% } %>
 
+              <!-- REPLY FORM -->
               <div class="reply-box">
                 <form action="/forum/<%= post._id %>/answer" method="POST" class="d-flex gap-2">
-                  <input type="text" class="form-control form-control-sm" name="text" placeholder="<%= __('Write your answer...') %>" required>
-                  <button class="btn btn-primary reply-btn" type="submit"><%= __('Reply') %></button>
+                  <input type="text" class="form-control form-control-sm" name="text" placeholder="Write your answer..." required>
+                  <button class="btn btn-primary reply-btn" type="submit">Reply</button>
                 </form>
               </div>
+
             </div>
+
           </article>
+
         <% }) %>
+
       <% } else { %>
-        <p><%= __('No questions have been asked in this forum yet.') %></p>
+
+        <p class="text-muted">No questions found for the selected class.</p>
+
       <% } %>
 
     </div>

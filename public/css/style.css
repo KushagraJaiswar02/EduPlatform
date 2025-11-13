@@ -20,52 +20,46 @@ body {
   background-color: #f8fafc;
 }
 
-/* HERO SECTION */
+/* ============================
+   Home Page — Clean Styling
+   ============================ */
+
+/* ===== HERO ===== */
 .hero-section {
-  background: linear-gradient(120deg, #2563eb 0%, #3b82f6 100%);
+  background: linear-gradient(120deg, #2563eb, #3b82f6);
   color: #fff;
   padding: 5rem 0;
-}
-.hero-section .btn-light {
-  color: #2563eb;
-  border: none;
-  font-weight: 600;
-}
-.hero-section .btn-outline-light:hover {
-  background-color: #fff;
-  color: #2563eb;
-}
-.hero-section .hero-img {
-  max-height: 340px;
-  animation: float 4s ease-in-out infinite;
-}
-@keyframes float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0); }
+  text-align: center;
+  border-radius: 0 0 20px 20px;
 }
 
-.hero-section {
-  background: linear-gradient(120deg, #2563eb 0%, #3b82f6 100%);
-  color: #fff;
-  padding: 5rem 0;
+.hero-section h1 {
+  font-weight: 700;
 }
 
-/* Make buttons stack properly on smaller screens */
+.hero-section p {
+  max-width: 650px;
+  margin: auto;
+  opacity: 0.95;
+}
+
+/* Buttons always visible & clean */
 .hero-section .btn {
   min-width: 180px;
-  border-radius: 0.5rem;
+  border-radius: 10px;
+  font-weight: 600;
 }
 
-@media (max-width: 992px) {
-  .hero-section .col-lg-7 {
-    text-align: center;
-  }
-  .hero-section .hero-img {
-    margin-top: 2rem;
-  }
+.hero-section .btn-light {
+  color: #2563eb;
 }
 
+.hero-section .btn-outline-light:hover {
+  background: #fff;
+  color: #2563eb;
+}
+
+/* Responsive fix: stack buttons */
 @media (max-width: 576px) {
   .hero-section .btn {
     width: 100%;
@@ -73,30 +67,64 @@ body {
 }
 
 
-/* FEATURES */
+/* ===== FEATURES ===== */
 .features-section {
-  background-color: #f9fafb;
+  background: #f1f5f9;
 }
+
 .feature-card {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 14px;
+  padding-top: 18px;
+  transition: 0.2s ease-in-out;
 }
+
+.feature-card h1 {
+  font-size: 2.5rem;
+}
+
 .feature-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+  transform: translateY(-6px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
 }
 
-/* HOW IT WORKS */
+
+/* ===== HOW IT WORKS ===== */
 .step-card {
-  transition: transform 0.2s ease;
-}
-.step-card:hover {
-  transform: translateY(-3px);
+  border-radius: 14px;
+  padding: 20px;
+  transition: 0.2s ease;
 }
 
-/* ABOUT */
-section.bg-light {
-  background-color: #f8fafc !important;
+.step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
 }
+
+.step-card h4 {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+
+/* ===== ABOUT ===== */
+.about-section {
+  background: #f8fafc;
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.about-section p {
+  max-width: 700px;
+  margin: auto;
+  opacity: 0.9;
+}
+
+.about-section .btn {
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  border-radius: 10px;
+}
+
 
 /* FOOTER (in footer.ejs) */
 footer {

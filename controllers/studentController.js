@@ -1,69 +1,213 @@
 const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
 const Result = require('../models/Result');
+const Class = require('../models/Class');
 
 // ==========================
-// DASHBOARD
+// STUDENT DASHBOARD
 // ==========================
 exports.getDashboard = async (req, res) => {
-  const lessons = await Lesson.find({ classRef: req.user.classRef }).populate('classRef', 'classNumber');
-  const quizzes = await Quiz.find({ classRef: req.user.classRef });
-  res.render('students/dashboard', { user: req.user, lessons, quizzes });
+  try {
+    const classId = req.user.classRef;
+
+    // Only show lessons/quizzes of the student's assigned class
+    const lessons = await Lesson.find({ classRef: classId })
+      .populate('classRef', 'classNumber');
+
+    const quizzes = await Quiz.find({})
+      .populate({
+        path: 'lessonId',
+        match: { classRef: classId },
+        select: 'title classRef'
+      });
+
+    // filter null matched lessons
+    const filteredQuizzes = quizzes.filter(q => q.lessonId);
+
+    res.render('students/dashboard', {
+      user: req.user,
+      lessons,
+      quizzes: filteredQuizzes
+    });
+
+  } catch (err) {
+    console.error("Dashboard error:", err);
+    res.render('students/dashboard', { user: req.user, lessons: [], quizzes: [] });
+  }
 };
 
+
 // ==========================
-// LESSONS
+// LESSON LIST + FILTER
 // ==========================
 exports.getAllLessons = async (req, res) => {
-  const lessons = await Lesson.find({ classRef: req.user.classRef });
-  res.render('students/lessons', { user: req.user, lessons });
+  try {
+    const selectedClass = req.query.class || null;
+
+    const classes = await Class.find({}, "classNumber");
+
+    const query = selectedClass
+      ? { classRef: selectedClass }
+      : {}; // show ALL classes if filter not selected
+
+    const lessons = await Lesson.find(query)
+      .populate("classRef", "classNumber");
+
+    res.render("students/lessons", {
+      user: req.user,
+      lessons,
+      classes,
+      selectedClass
+    });
+
+  } catch (err) {
+    console.error("Lesson loading error:", err);
+    res.render("students/lessons", {
+      user: req.user,
+      lessons: [],
+      classes: [],
+      selectedClass: null
+    });
+  }
 };
 
-exports.getLesson = async (req, res) => {
-  const lesson = await Lesson.findById(req.params.id).populate('uploadedBy', 'name');
-  res.render('students/lesson', { user: req.user, lesson });
-};
 
 // ==========================
-// QUIZZES
+// SINGLE LESSON
+// ==========================
+// controllers/studentController.js (replace getLesson)
+exports.getLesson = async (req, res) => {
+  try {
+    const lessonId = req.params.id;
+
+    if (!lessonId) {
+      req.flash('error', 'Invalid lesson id.');
+      return res.redirect('/student/lessons');
+    }
+
+    const lesson = await Lesson.findById(lessonId)
+      .populate('uploadedBy', 'name email')
+      .populate('classRef', 'classNumber');
+
+    if (!lesson) {
+      req.flash('error', 'Lesson not found.');
+      return res.redirect('/student/lessons');
+    }
+
+    // optional debug: uncomment while testing
+    // console.log('Loaded lesson:', lesson);
+
+    return res.render('students/lesson', { user: req.user, lesson });
+  } catch (err) {
+    console.error('getLesson error:', err);
+    req.flash('error', 'Could not load lesson.');
+    return res.redirect('/student/lessons');
+  }
+};
+
+
+// ==========================
+// QUIZ LIST + FILTER
 // ==========================
 exports.getAllQuizzes = async (req, res) => {
-  const quizzes = await Quiz.find({ classRef: req.user.classRef })
-    .populate('lessonId', 'title subject');
-  res.render('students/quizzes', { user: req.user, quizzes });
-};
+  try {
+    const selectedClass = req.query.class || null;
 
-exports.getQuiz = async (req, res) => {
-  const quiz = await Quiz.findOne({ lessonId: req.params.lessonId }).populate('lessonId', 'title');
-  if (!quiz) {
-    req.flash('error', 'No quiz found for this lesson.');
-    return res.redirect('/student/quizzes');
+    const classes = await Class.find({}, "classNumber");
+
+    // Step 1: Get lessons by class filter
+    const lessonQuery = selectedClass
+      ? { classRef: selectedClass }
+      : {};
+
+    const lessons = await Lesson.find(lessonQuery).select("_id classRef title subject");
+
+    const lessonIds = lessons.map(l => l._id);
+
+    // Step 2: Get quizzes for those lessons
+    const quizzes = await Quiz.find({ lessonId: { $in: lessonIds } })
+      .populate("lessonId", "title subject classRef")
+      .populate({
+        path: "lessonId",
+        populate: { path: "classRef", select: "classNumber" }
+      });
+
+    res.render("students/quizzes", {
+      user: req.user,
+      quizzes,
+      classes,
+      selectedClass
+    });
+
+  } catch (err) {
+    console.error("Quiz list error:", err);
+    res.render("students/quizzes", {
+      user: req.user,
+      quizzes: [],
+      classes: [],
+      selectedClass: null
+    });
   }
-  console.log(quiz)
-  res.render('students/quiz', { user: req.user, quiz });
 };
 
-exports.submitQuiz = async (req, res) => {
-  const quiz = await Quiz.findById(req.params.quizId);
-  let score = 0;
-
-  quiz.questions.forEach((q, i) => {
-    if (req.body[`q${i}`] === q.answer) score++;
-  });
-
-  const result = await Result.create({
-    userId: req.user._id,
-    quizId: quiz._id,
-    score,
-    total: quiz.questions.length
-  });
-
-  req.flash('success', 'Quiz submitted successfully!');
-  res.redirect(`/student/results/${result._id}`);
-};
 
 // ==========================
-// RESULTS
+// GET SINGLE QUIZ (BY LESSON)
+// ==========================
+exports.getQuiz = async (req, res) => {
+  try {
+    const quiz = await Quiz.findOne({ lessonId: req.params.lessonId })
+      .populate("lessonId", "title subject");
+
+    if (!quiz) {
+      req.flash("error", "No quiz found for this lesson.");
+      return res.redirect("/student/quizzes");
+    }
+
+    res.render("students/quiz", {
+      user: req.user,
+      quiz
+    });
+
+  } catch (err) {
+    console.error("Quiz error:", err);
+    res.redirect("/student/quizzes");
+  }
+};
+
+
+// ==========================
+// SUBMIT QUIZ
+// ==========================
+exports.submitQuiz = async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.quizId);
+
+    let score = 0;
+
+    quiz.questions.forEach((q, i) => {
+      if (req.body[`q${i}`] === q.answer) score++;
+    });
+
+    const result = await Result.create({
+      userId: req.user._id,
+      quizId: quiz._id,
+      score,
+      total: quiz.questions.length
+    });
+
+    req.flash("success", "Quiz submitted successfully!");
+    res.redirect(`/student/results/${result._id}`);
+
+  } catch (err) {
+    console.error("Submit quiz error:", err);
+    res.redirect("/student/quizzes");
+  }
+};
+
+
+// ==========================
+// RESULTS LIST
 // ==========================
 exports.getAllResults = async (req, res) => {
   try {
@@ -75,6 +219,7 @@ exports.getAllResults = async (req, res) => {
       .sort({ createdAt: -1 });
 
     res.render('students/results', { user: req.user, results });
+
   } catch (err) {
     console.error(err);
     res.render('error', { message: 'Failed to load results' });
@@ -82,17 +227,29 @@ exports.getAllResults = async (req, res) => {
 };
 
 
+// ==========================
+// SINGLE RESULT PAGE
+// ==========================
 exports.getResultById = async (req, res) => {
-  const result = await Result.findById(req.params.id)
-    .populate({
-      path: 'quizId',
-      populate: { path: 'lessonId', select: 'title subject' }
+  try {
+    const result = await Result.findById(req.params.id)
+      .populate({
+        path: 'quizId',
+        populate: { path: 'lessonId', select: 'title subject' }
+      });
+
+    if (!result) {
+      req.flash('error', 'Result not found.');
+      return res.redirect('/student/results');
+    }
+
+    res.render('students/result', {
+      user: req.user,
+      result
     });
 
-  if (!result) {
-    req.flash('error', 'Result not found.');
-    return res.redirect('/student/results');
+  } catch (err) {
+    console.error(err);
+    res.redirect("/student/results");
   }
-
-  res.render('students/result', { user: req.user, result });
 };

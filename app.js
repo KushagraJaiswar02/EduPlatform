@@ -11,6 +11,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
 const i18n = require('i18n');
 
 // ROUTES
@@ -40,11 +41,14 @@ app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));i18n.co
 app.use(express.json());
 app.use(methodOverride('_method'));
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use(cookieParser());
 
 // ==========================
 // i18n Setup (Multilingual Support)

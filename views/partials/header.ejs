@@ -25,38 +25,61 @@
       EduBridge Kids
     </a>
 
+    <!-- Toggler for mobile -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
       aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="mainNav">
-      <!-- Left side -->
+      <!-- Left Side -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
         <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
       </ul>
 
-      <!-- Right side -->
+      <!-- Right Side -->
       <ul class="navbar-nav ms-auto align-items-center">
+
         <!-- Language toggle -->
-        <li class="nav-item me-3">
-          <a href="/setLang/en" class="btn btn-sm <%= currentLocale === 'en' ? 'btn-primary' : 'btn-outline-secondary' %> me-1">EN</a>
-          <a href="/setLang/hi" class="btn btn-sm <%= currentLocale === 'hi' ? 'btn-primary' : 'btn-outline-secondary' %>">HI</a>
+        <li class="nav-item me-3 d-flex">
+          <a href="/setLang/en" 
+             class="btn btn-sm <%= currentLocale === 'en' ? 'btn-primary' : 'btn-outline-secondary' %> me-1">
+            EN
+          </a>
+          <a href="/setLang/hi" 
+             class="btn btn-sm <%= currentLocale === 'hi' ? 'btn-primary' : 'btn-outline-secondary' %>">
+            HI
+          </a>
         </li>
 
         <% if (typeof role !== 'undefined' && role) { %>
+          <!-- LOGGED IN VIEW -->
           <% if (role === 'student') { %>
-            <li class="nav-item"><a href="/student/dashboard" class="btn btn-sm btn-primary me-2">Dashboard</a></li>
+            <li class="nav-item">
+              <a href="/student/dashboard" class="btn btn-sm btn-primary me-2">Student Dashboard</a>
+            </li>
           <% } else if (role === 'teacher') { %>
-            <li class="nav-item"><a href="/teacher/dashboard" class="btn btn-sm btn-success me-2">Dashboard</a></li>
+            <li class="nav-item">
+              <a href="/teacher/dashboard" class="btn btn-sm btn-success me-2">Teacher Dashboard</a>
+            </li>
           <% } else if (role === 'admin') { %>
-            <li class="nav-item"><a href="/admin/dashboard" class="btn btn-sm btn-dark me-2">Admin</a></li>
+            <li class="nav-item">
+              <a href="/admin/dashboard" class="btn btn-sm btn-dark me-2">Admin Panel</a>
+            </li>
           <% } %>
-          <li class="nav-item"><a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a></li>
+          <li class="nav-item">
+            <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
+          </li>
+
         <% } else { %>
-          <li class="nav-item"><a href="/login" class="btn btn-sm btn-outline-primary me-2">Login</a></li>
-          <li class="nav-item"><a href="/register" class="btn btn-sm btn-primary">Register</a></li>
+          <!-- LOGGED OUT VIEW -->
+          <li class="nav-item">
+            <a href="/login" class="btn btn-sm btn-outline-primary me-2">Login</a>
+          </li>
+          <li class="nav-item">
+            <a href="/register" class="btn btn-sm btn-primary">Register</a>
+          </li>
         <% } %>
       </ul>
     </div>
