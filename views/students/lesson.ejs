@@ -1,6 +1,5 @@
 <%- include('../partials/header') %>
 
-<<<<<<< HEAD
 <div class="container mt-4">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb bg-transparent px-0">
@@ -35,17 +34,25 @@
           <h5 class="mb-3">Resources</h5>
           <ul class="list-group list-group-flush">
             <% lesson.resources.forEach(function(res){ %>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <div>
-                  <strong><%= res.title || (res.url ? res.url.split('/').pop() : 'Resource') %></strong>
-                  <% if (res.description) { %>
-                    <div class="text-muted small"><%= res.description %></div>
+              <% if (typeof res === 'string') { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <a href="<%= res %>" target="_blank" rel="noopener noreferrer"><%= res %></a>
+                  </div>
+                </li>
+              <% } else { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong><%= res.title || (res.url ? res.url.split('/').pop() : 'Resource') %></strong>
+                    <% if (res.description) { %>
+                      <div class="text-muted small"><%= res.description %></div>
+                    <% } %>
+                  </div>
+                  <% if (res.url) { %>
+                    <a href="<%= res.url %>" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">Open</a>
                   <% } %>
-                </div>
-                <% if (res.url) { %>
-                  <a href="<%= res.url %>" target="_blank" class="btn btn-sm btn-outline-secondary">Open</a>
-                <% } %>
-              </li>
+                </li>
+              <% } %>
             <% }) %>
           </ul>
         </div>
@@ -73,7 +80,7 @@
 
           <p class="small text-muted mb-1">Progress</p>
           <div class="progress mb-3" style="height:10px;">
-            <div class="progress-bar" role="progressbar" style="width: <%= (typeof lessonProgress !== 'undefined' ? lessonProgress : 0) + '%' %>" aria-valuenow="<%= typeof lessonProgress !== 'undefined' ? lessonProgress : 0 %>" aria-valuemin="0" aria-valuemax="100"><%= (typeof lessonProgress !== 'undefined' ? lessonProgress : 0) + '%' %></div>
+            <div class="progress-bar" role="progressbar" data-progress="<%= typeof lessonProgress !== 'undefined' ? lessonProgress : 0 %>" aria-valuenow="<%= typeof lessonProgress !== 'undefined' ? lessonProgress : 0 %>" aria-valuemin="0" aria-valuemax="100"></div>
           </div>
 
           <% if (typeof quiz !== 'undefined' && quiz) { %>
@@ -123,63 +130,15 @@
   })();
 </script>
 
-=======
-<div class="container my-4">
+<script>
+  // set progress bar widths from data-progress to avoid EJS/% parsing in inline style
+  document.addEventListener('DOMContentLoaded', function(){
+    document.querySelectorAll('.progress-bar[data-progress]').forEach(function(el){
+      var p = parseInt(el.getAttribute('data-progress')) || 0;
+      el.style.width = p + '%';
+      el.textContent = p + '%';
+    });
+  });
+</script>
 
-  <% if (!lesson) { %>
-    <div class="alert alert-danger text-center">
-      Lesson not found or unavailable.
-    </div>
-  <% } else { %>
-
-    <!-- LESSON CARD -->
-    <div class="card shadow-sm">
-      <div class="card-body">
-
-        <!-- TITLE -->
-        <h2 class="fw-bold mb-2"><%= lesson.title %></h2>
-
-        <!-- META INFO -->
-        <p class="text-muted small mb-3">
-          <strong>Subject:</strong> <%= lesson.subject %> &middot;
-          <strong>Class:</strong> <%= lesson.classRef ? lesson.classRef.classNumber : 'N/A' %> &middot;
-          <strong>Type:</strong> <%= lesson.lessonType %> &middot;
-          <strong>Difficulty:</strong> <%= lesson.difficultyLevel %> <br>
-          <strong>Uploaded:</strong> <%= new Date(lesson.createdAt).toLocaleString() %>
-
-          <% if (lesson.uploadedBy) { %>
-            &middot; <strong>By:</strong> <%= lesson.uploadedBy.name %>
-          <% } %>
-        </p>
-
-        <hr>
-
-        <!-- CONTENT -->
-        <div class="mt-3" style="white-space: pre-wrap;">
-          <%= lesson.content %>
-        </div>
-
-        <!-- RESOURCES -->
-        <% if (lesson.resources && lesson.resources.length > 0) { %>
-          <hr>
-          <h5 class="fw-semibold mt-3">📎 Resources</h5>
-          <ul>
-            <% lesson.resources.forEach(r => { %>
-              <li><a href="<%= r %>" target="_blank"><%= r %></a></li>
-            <% }) %>
-          </ul>
-        <% } %>
-
-      </div>
-    </div>
-
-    <div class="mt-3">
-      <a href="/student/lessons" class="btn btn-outline-secondary btn-sm">← Back to Lessons</a>
-    </div>
-
-  <% } %>
-
-</div>
-
->>>>>>> 35a1089a3f87b207ce47716810c5854114ca114c
 <%- include('../partials/footer') %>

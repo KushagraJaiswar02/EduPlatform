@@ -25,14 +25,41 @@ const adminRoutes = require('./routes/admin');
 const app = express();
 
 // ==========================
-// Database Connection
+// Database Connection (try primary then fallback)
 // ==========================
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-  .then(() => console.log('✅ MongoDB Atlas Connected'))
-  .catch(err => console.error('❌ Mongo Connection Error:', err));
+async function connectWithFallback() {
+  const mainUri = process.env.MONGO_URI;
+  const fallbackUri = process.env.LOCAL_MONGO_URI || 'mongodb://127.0.0.1:27017/eduplatform';
+
+  const commonOpts = {
+    // Let the driver use sensible defaults; set a short server selection timeout
+    serverSelectionTimeoutMS: 5000
+  };
+
+  if (mainUri) {
+    try {
+      await mongoose.connect(mainUri, commonOpts);
+      console.log('✅ MongoDB connected to primary URI');
+      return;
+    } catch (err) {
+      console.error('❌ Mongo primary connection failed:', err && err.message ? err.message : err);
+      console.warn('Attempting to connect to local MongoDB fallback...');
+    }
+  } else {
+    console.warn('No MONGO_URI provided in environment; attempting local fallback.');
+  }
+
+  try {
+    await mongoose.connect(fallbackUri, commonOpts);
+    console.log('✅ MongoDB connected to fallback (local) URI');
+  } catch (err) {
+    console.error('❌ Mongo fallback connection failed:', err && err.message ? err.message : err);
+    console.error('The app will continue to run but database-dependent features will fail until MongoDB is available.');
+  }
+}
+
+// start connection process (non-blocking)
+connectWithFallback();
 
 // ==========================
 // App Configuration
