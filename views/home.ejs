@@ -1,138 +1,153 @@
 <%- include('partials/header') %>
 
-<!-- ===== HERO SECTION ===== -->
-<section class="hero-section text-center text-lg-start bg-gradient text-white">
+<!-- ================= HERO (DYNAMIC) ================= -->
+<section class="py-5 text-center text-lg-start" style="background: linear-gradient(120deg, #2563eb, #3b82f6); color: white;">
   <div class="container py-5">
-    <div class="row align-items-center g-5">
 
-      <!-- LEFT CONTENT -->
-      <div class="col-lg-7 col-md-12">
-        <h1 class="display-5 fw-bold mb-3">
-          Bridging Education for Every Child 🌍
-        </h1>
-        <p class="lead mb-4">
-          Learn anytime, anywhere — even offline. EduBridge Kids helps students up to Class 8 access lessons, quizzes, and discussions with or without the internet.
-        </p>
+    <h1 class="fw-bold display-5 mb-3">EduBridge Kids – Learning That Works Offline</h1>
+    <p class="lead mb-4">
+      Simple, fast and accessible learning for students up to Class 8 — even without internet.
+    </p>
 
-        <!-- FIXED BUTTON GROUP -->
-        <div class="d-flex flex-column flex-sm-row justify-content-center justify-content-lg-start gap-3">
-          <a href="/student/dashboard" class="btn btn-light btn-lg fw-semibold px-4 py-2">
-            I’m a Student
-          </a>
-          <a href="/teacher/dashboard" class="btn btn-outline-light btn-lg fw-semibold px-4 py-2">
-            I’m a Teacher
-          </a>
-        </div>
+    <!-- ========== DYNAMIC BUTTONS ========== -->
+    <% if (!role) { %>
+      <!-- NOT LOGGED IN -->
+      <div class="d-grid gap-3 d-sm-flex justify-content-center">
+        <a href="/student/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">I’m a Student</a>
+        <a href="/teacher/dashboard" class="btn btn-outline-light btn-lg px-4 fw-semibold">I’m a Teacher</a>
       </div>
 
-      <!-- RIGHT IMAGE -->
-      <div class="col-lg-5 col-md-8 mx-auto text-center mt-4 mt-lg-0">
-        <img 
-          src="/images/hero-illustration.png" 
-          alt="EduBridge Kids" 
-          class="img-fluid hero-img rounded-4 shadow-sm"
-          style="max-height: 360px; width: 100%; object-fit: contain;"
-        >
+    <% } else if (role === 'student') { %>
+      <!-- STUDENT LOGGED IN -->
+      <div class="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start">
+        <a href="/student/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">Go to Dashboard</a>
+        <a href="/student/lessons" class="btn btn-outline-light btn-lg px-4 fw-semibold">View Lessons</a>
+        <a href="/student/quizzes" class="btn btn-outline-light btn-lg px-4 fw-semibold">Take Quiz</a>
       </div>
 
-    </div>
+    <% } else if (role === 'teacher') { %>
+      <!-- TEACHER LOGGED IN -->
+      <div class="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start">
+        <a href="/teacher/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">Teacher Dashboard</a>
+        <a href="/teacher/add-lesson" class="btn btn-outline-light btn-lg px-4 fw-semibold">Add Lesson</a>
+        <a href="/teacher/add-quiz" class="btn btn-outline-light btn-lg px-4 fw-semibold">Add Quiz</a>
+      </div>
+
+    <% } else if (role === 'admin') { %>
+      <!-- ADMIN LOGGED IN -->
+      <div class="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start">
+        <a href="/admin/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">Admin Panel</a>
+        <a href="/admin/lessons" class="btn btn-outline-light btn-lg px-4 fw-semibold">Review Lessons</a>
+        <a href="/admin/users" class="btn btn-outline-light btn-lg px-4 fw-semibold">Manage Users</a>
+      </div>
+    <% } %>
+
   </div>
 </section>
 
 
-<!-- ===== FEATURES SECTION ===== -->
-<section class="features-section py-5 bg-light">
+<!-- ================= FEATURES ================= -->
+<section class="py-5 bg-light">
   <div class="container">
+
     <h2 class="text-center fw-bold mb-5">Why EduBridge Kids?</h2>
 
     <div class="row g-4 text-center">
+      
       <div class="col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm feature-card">
+        <div class="card border-0 shadow-sm h-100 feature-card">
           <div class="card-body">
-            <h1 class="mb-3">📚</h1>
-            <h5 class="fw-semibold">Offline Learning</h5>
-            <p class="small text-muted">Access lessons and quizzes even without internet.</p>
+            <h1>📚</h1>
+            <h5 class="fw-bold mt-2">Offline Lessons</h5>
+            <p class="text-muted small">Learn anytime — fully offline after first load.</p>
           </div>
         </div>
       </div>
 
       <div class="col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm feature-card">
+        <div class="card border-0 shadow-sm h-100 feature-card">
           <div class="card-body">
-            <h1 class="mb-3">💬</h1>
-            <h5 class="fw-semibold">Community Forum</h5>
-            <p class="small text-muted">Ask questions and discuss topics with peers and teachers.</p>
+            <h1>🧠</h1>
+            <h5 class="fw-bold mt-2">Smart Feedback</h5>
+            <p class="text-muted small">AI-based suggestions: revise, practice or move ahead.</p>
           </div>
         </div>
       </div>
 
       <div class="col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm feature-card">
+        <div class="card border-0 shadow-sm h-100 feature-card">
           <div class="card-body">
-            <h1 class="mb-3">🧠</h1>
-            <h5 class="fw-semibold">Smart Recommendations</h5>
-            <p class="small text-muted">AI-powered logic suggests revisions or next topics.</p>
+            <h1>💬</h1>
+            <h5 class="fw-bold mt-2">Forum Support</h5>
+            <p class="text-muted small">Ask doubts and learn together with your class.</p>
           </div>
         </div>
       </div>
 
       <div class="col-sm-6 col-lg-3">
-        <div class="card h-100 border-0 shadow-sm feature-card">
+        <div class="card border-0 shadow-sm h-100 feature-card">
           <div class="card-body">
-            <h1 class="mb-3">🌐</h1>
-            <h5 class="fw-semibold">Multilingual Access</h5>
-            <p class="small text-muted">Switch between English and Hindi effortlessly.</p>
+            <h1>🌐</h1>
+            <h5 class="fw-bold mt-2">Multilingual</h5>
+            <p class="text-muted small">English / Hindi support with one tap switch.</p>
           </div>
         </div>
       </div>
+
     </div>
+
   </div>
 </section>
 
-<!-- ===== HOW IT WORKS SECTION ===== -->
-<section class="py-5 bg-white">
+
+<!-- ================= HOW IT WORKS ================= -->
+<section class="py-5">
   <div class="container">
     <h2 class="text-center fw-bold mb-5">How It Works</h2>
 
     <div class="row g-4 text-center">
+
       <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm step-card">
+        <div class="card h-100 shadow-sm border-0 step-card">
           <div class="card-body">
-            <h4 class="fw-semibold mb-3">👩‍🏫 Teachers Upload</h4>
-            <p class="text-muted small">Teachers upload lessons and quizzes through their dashboard. Admins approve for quality.</p>
+            <h4 class="fw-semibold">👩‍🏫 Teachers Upload</h4>
+            <p class="text-muted small">Lessons and quizzes are added by teachers and approved by admins.</p>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm step-card">
+        <div class="card h-100 shadow-sm border-0 step-card">
           <div class="card-body">
-            <h4 class="fw-semibold mb-3">👩‍🎓 Students Learn</h4>
-            <p class="text-muted small">Students learn and take quizzes. Cached lessons work even offline.</p>
+            <h4 class="fw-semibold">👩‍🎓 Students Learn</h4>
+            <p class="text-muted small">Students access lessons online or fully offline after caching.</p>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm step-card">
+        <div class="card h-100 shadow-sm border-0 step-card">
           <div class="card-body">
-            <h4 class="fw-semibold mb-3">🧠 Smart Feedback</h4>
-            <p class="text-muted small">AI rules recommend what to revise or practice next.</p>
+            <h4 class="fw-semibold">🧠 AI Suggests</h4>
+            <p class="text-muted small">Based on quiz scores, the system recommends revision or next topics.</p>
           </div>
         </div>
       </div>
+
     </div>
+
   </div>
 </section>
 
-<!-- ===== ABOUT SECTION ===== -->
-<section class="py-5 border-top bg-light">
+
+<!-- ================= ABOUT ================= -->
+<section class="py-5 bg-light border-top">
   <div class="container text-center">
     <h2 class="fw-bold mb-3">What is EduBridge Kids?</h2>
-    <p class="lead text-muted mb-4 px-lg-5">
-      EduBridge Kids is a web platform designed to bridge the learning gap for students up to Class 8 — offering offline-first access, multilingual learning, and a supportive community.
+    <p class="lead text-muted mb-4">
+      A simple offline-ready learning platform built for regions with unstable internet — helping children learn anytime.
     </p>
-    <a href="/register" class="btn btn-primary btn-lg">Join Now</a>
+    <a href="/register" class="btn btn-primary btn-lg fw-semibold">Get Started</a>
   </div>
 </section>
 

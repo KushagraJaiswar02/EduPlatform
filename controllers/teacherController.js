@@ -3,70 +3,149 @@ const Quiz = require('../models/Quiz');
 const Result = require('../models/Result');
 const Class = require('../models/Class');
 
+// ===============================
+// TEACHER DASHBOARD
+// ===============================
 exports.getDashboard = async (req, res) => {
-  const classes = await Class.find();
-  const lessons = await Lesson.find().populate('classRef', 'classNumber subject');
-  res.render('teachers/dashboard', { user: req.user, classes, lessons });
+  try {
+    const teacherId = req.user._id;
+
+    // Classes where teacher teaches ANY subject
+    const classes = await Class.find({
+      "subjects.teacher": teacherId
+    });
+
+    // Lessons created BY this teacher
+    const myLessons = await Lesson.find({
+      uploadedBy: teacherId
+    }).populate("classRef", "classNumber subjects");
+
+    // Quizzes created BY this teacher (nested populate)
+    const myQuizzes = await Quiz.find({
+      createdBy: teacherId
+    }).populate({
+      path: "lessonId",
+      populate: {
+        path: "classRef",
+        select: "classNumber subjects"
+      }
+    });
+
+    return res.render("teachers/dashboard", {
+      user: req.user,
+      classes,
+      myLessons,
+      myQuizzes
+    });
+
+  } catch (err) {
+    console.error("Dashboard Error:", err);
+    res.render("error", { message: "Could not load teacher dashboard" });
+  }
 };
+
+// ===============================
+// ADD LESSON
+// ===============================
 exports.addLesson = async (req, res) => {
-  const { classNumber, subject, title, content, lessonType } = req.body;
-  const classRef = (await Class.findOne({ classNumber }))?._id;
+  try {
+    const { classNumber, subject, title, content, lessonType } = req.body;
 
-  await Lesson.create({
-    classRef,
-    subject,
-    title,
-    content,
-    lessonType,
-    uploadedBy: req.user._id
-  });
+    const classDoc = await Class.findOne({ classNumber });
+    if (!classDoc) {
+      req.flash("error", "Class not found.");
+      return res.redirect("/teacher/dashboard");
+    }
 
-  req.flash('success', 'Lesson added successfully.');
-  res.redirect('/teacher/dashboard');
+    await Lesson.create({
+      classRef: classDoc._id,
+      subject,
+      title,
+      content,
+      lessonType,
+      uploadedBy: req.user._id
+    });
+
+    req.flash("success", "Lesson added successfully.");
+    return res.redirect("/teacher/dashboard");
+
+  } catch (err) {
+    console.error("Add Lesson Error:", err);
+    req.flash("error", "Failed to add lesson.");
+    return res.redirect("/teacher/dashboard");
+  }
 };
 
+// ===============================
+// ADD QUIZ
+// ===============================
 exports.addQuiz = async (req, res) => {
   try {
-    const { lessonId } = req.body;
-    const questions = req.body.questions; // already an array from form
+    const { lessonId, questions } = req.body;
+
     const lesson = await Lesson.findById(lessonId);
     if (!lesson) {
-      req.flash('error', 'Lesson not found.');
-      return res.redirect('/teacher/dashboard');
+      req.flash("error", "Lesson not found.");
+      return res.redirect("/teacher/dashboard");
     }
 
     await Quiz.create({
       lessonId,
-      classRef: lesson.classRef,
-      questions, // from form, no need to JSON.parse
+      questions,
       createdBy: req.user._id
     });
 
-    req.flash('success', 'Quiz created successfully!');
-    res.redirect('/teacher/dashboard');
+    req.flash("success", "Quiz created successfully!");
+    return res.redirect("/teacher/dashboard");
+
   } catch (err) {
-    console.error(err);
-    req.flash('error', 'Error creating quiz.');
-    res.redirect('/teacher/dashboard');
+    console.error("Add Quiz Error:", err);
+    req.flash("error", "Error creating quiz.");
+    return res.redirect("/teacher/dashboard");
   }
 };
 
-
+// ===============================
+// VIEW QUIZ RESULTS
+// ===============================
 exports.viewResults = async (req, res) => {
-  const results = await Result.find().populate('userId quizId');
-  res.render('teacher/results', { results });
+  try {
+    const results = await Result.find()
+      .populate("userId", "name email")
+      .populate({
+        path: "quizId",
+        populate: {
+          path: "lessonId",
+          select: "title"
+        }
+      });
+
+    return res.render("teachers/results", { results });
+
+  } catch (err) {
+    console.error("View Results Error:", err);
+    res.render("error", { message: "Failed to load results" });
+  }
 };
 
-
+// ===============================
+// TEACHER'S QUIZZES PAGE
+// ===============================
 exports.getAllQuizzes = async (req, res) => {
   try {
     const quizzes = await Quiz.find({ createdBy: req.user._id })
-      .populate('lessonId', 'title subject')
-      .populate('classRef', 'classNumber');
-    
-    res.render('teachers/quizzes', { quizzes });
+      .populate({
+        path: "lessonId",
+        populate: {
+          path: "classRef",
+          select: "classNumber subjects"
+        }
+      });
+
+    return res.render("teachers/quizzes", { quizzes });
+
   } catch (err) {
-    console.error(err);
-    res.render('error', { message: 'Failed to load quizzes' });
+    console.error("Load Quizzes Error:", err);
+    res.render("error", { message: "Failed to load quizzes" });
   }
 };

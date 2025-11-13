@@ -1,65 +1,93 @@
 const Forum = require('../models/Forum');
 const Class = require('../models/Class');
 
-
-exports.getNewQuestionForm = (req, res) => {
+// ===============================
+// NEW DOUBT FORM
+// ===============================
+exports.getNewQuestionForm = async (req, res) => {
   try {
-    // If teacher, provide list of classes they teach so they can choose target class
-    if (req.user && req.user.role === 'teacher') {
-      Class.find({ 'subjects.teacher': req.user._id })
-        .then(classes => res.render('forum/doubt', { pageTitle: 'Post a New Doubt', classes }))
-        .catch(err => {
-          console.error('Error fetching teacher classes:', err);
-          res.render('forum/doubt', { pageTitle: 'Post a New Doubt', classes: [] });
-        });
-      return;
+    let classes = [];
+
+    if (req.user.role === 'teacher') {
+      classes = await Class.find({ "subjects.teacher": req.user._id });
     }
 
-    // For students or others, render form; students will have classRef set on server when posting
-    res.render('forum/doubt', { pageTitle: 'Post a New Doubt', classes: [] });
+    res.render('forum/doubt', {
+      pageTitle: 'Post a New Doubt',
+      classes
+    });
+
   } catch (err) {
-    console.error('Error rendering new doubt form:', err);
+    console.error(err);
     res.render('forum/doubt', { pageTitle: 'Post a New Doubt', classes: [] });
   }
 };
 
+// ===============================
+// GET FORUM WITH CLASS FILTER
+// ===============================
 exports.getForum = async (req, res) => {
   try {
     if (!req.user) {
       req.flash('error', 'Please log in to view the forum.');
-      return res.render('forum/forum', { forum: [] });
+      return res.render('forum/forum', { forum: [], classes: [], selectedClass: null });
     }
 
-    // Build list of class IDs the current user belongs to or teaches
-    let classIds = [];
+    // class filter via query ?class=ID
+    const selectedClass = req.query.class || null;
+
+    // Build accessible classes for the current user
+    let userClasses = [];
+
     if (req.user.role === 'student') {
-      if (req.user.classRef) classIds.push(req.user.classRef);
-    } else if (req.user.role === 'teacher') {
-      const classes = await Class.find({ 'subjects.teacher': req.user._id }).select('_id');
-      classIds = classes.map(c => c._id);
-    } else if (req.user.role === 'admin') {
-      // admin: show all posts
-      classIds = null;
+      if (req.user.classRef) userClasses = [req.user.classRef];
     }
 
-    if (classIds && classIds.length === 0) {
-      req.flash('info', 'No forum posts available for your classes.');
-      return res.render('forum/forum', { forum: [] });
+    if (req.user.role === 'teacher') {
+      const clsDocs = await Class.find({ "subjects.teacher": req.user._id });
+      userClasses = clsDocs.map(c => c._id);
     }
 
-    const query = classIds ? { classRef: { $in: classIds } } : {};
+    if (req.user.role === 'admin') {
+      userClasses = null; // admin sees all
+    }
+
+    // Class filter logic
+    let query = {};
+
+    if (userClasses && userClasses.length > 0) {
+      query.classRef = { $in: userClasses };
+    }
+
+    if (selectedClass) {
+      query.classRef = selectedClass;
+    }
+
+    // Fetch forum posts + populate relations
     const forum = await Forum.find(query)
-      .populate('askedBy')
-      .populate('answers.answeredBy')
-      .populate('classRef');
-    res.render('forum/forum', { forum });
+      .populate("askedBy", "name role")
+      .populate("answers.answeredBy", "name role")
+      .populate("classRef", "classNumber");
+
+    // All classes for dropdown
+    const allClasses = await Class.find({}, "classNumber");
+
+    res.render('forum/forum', {
+      forum,
+      classes: allClasses,
+      selectedClass
+    });
+
   } catch (err) {
-    console.error('Error fetching forum posts:', err);
+    console.error("Error fetching forum:", err);
     req.flash('error', 'Could not load forum posts.');
-    res.render('forum/forum', { forum: [] });
+    res.render('forum/forum', { forum: [], classes: [], selectedClass: null });
   }
 };
 
+// ===============================
+// POST NEW QUESTION
+// ===============================
 exports.postQuestion = async (req, res) => {
   try {
     if (!req.user) {
@@ -67,68 +95,57 @@ exports.postQuestion = async (req, res) => {
       return res.redirect('/forum/ask');
     }
 
-    // Support two possible form shapes:
-    // 1) req.body.subject & req.body.question
-    // 2) req.body.forum = { title, description, tags }
-  let subject = req.body.subject;
-  let question = req.body.question;
-  let tags = [];
-  let targetClassId = req.body.classId || null;
+    const { subject, question, classId, tags } = req.body;
 
-    if (!subject && !question && req.body.forum) {
-      subject = req.body.forum.title;
-      question = req.body.forum.description;
-      if (req.body.forum.tags) {
-        // allow comma separated tags or array
-        if (Array.isArray(req.body.forum.tags)) tags = req.body.forum.tags;
-        else tags = String(req.body.forum.tags).split(',').map(t => t.trim()).filter(Boolean);
-      }
-    }
-
-    // parse flat tags field if present (comma separated)
-    if (!tags.length && req.body.tags) {
-      if (Array.isArray(req.body.tags)) tags = req.body.tags;
-      else tags = String(req.body.tags).split(',').map(t => t.trim()).filter(Boolean);
-    }
-
-    // If fields are still missing, show an error
     if (!subject || !question) {
-      req.flash('error', 'Please provide a subject and a detailed question.');
+      req.flash('error', 'Please fill all fields.');
       return res.redirect('/forum/ask');
     }
 
-    // Determine classRef: priority -> explicit classId (teacher), then user's classRef
     let classRef = null;
-    if (targetClassId) classRef = targetClassId;
-    else if (req.user.classRef) classRef = req.user.classRef;
+
+    // Teachers pick class manually
+    if (req.user.role === 'teacher' && classId) {
+      classRef = classId;
+    }
+
+    // Students get class automatically
+    if (req.user.role === 'student') {
+      classRef = req.user.classRef;
+    }
 
     if (!classRef) {
-      req.flash('error', 'Please select a target class for this doubt.');
+      req.flash('error', 'No class assigned to this question.');
       return res.redirect('/forum/ask');
     }
 
     await Forum.create({
-      classRef,
       subject,
       question,
-      tags,
+      tags: tags ? tags.split(',').map(t => t.trim()) : [],
+      classRef,
       askedBy: req.user._id
     });
 
-    req.flash('success', 'Doubt posted successfully.');
+    req.flash('success', 'Your doubt has been posted.');
     res.redirect('/forum');
+
   } catch (err) {
-    console.error('Error posting question:', err);
-    req.flash('error', 'Could not post your doubt.');
+    console.error("Error posting question:", err);
+    req.flash('error', 'Something went wrong.');
     res.redirect('/forum/ask');
   }
 };
 
+// ===============================
+// POST ANSWER
+// ===============================
 exports.postAnswer = async (req, res) => {
   try {
     const forumPost = await Forum.findById(req.params.id);
+
     if (!forumPost) {
-      req.flash('error', 'Forum post not found.');
+      req.flash('error', 'This post no longer exists.');
       return res.redirect('/forum');
     }
 
@@ -136,11 +153,14 @@ exports.postAnswer = async (req, res) => {
       text: req.body.text,
       answeredBy: req.user._id
     });
+
     await forumPost.save();
-    req.flash('success', 'Answer posted.');
+
+    req.flash('success', 'Answer added.');
     res.redirect('/forum');
+
   } catch (err) {
-    console.error('Error posting answer:', err);
+    console.error("Error posting answer:", err);
     req.flash('error', 'Could not post your answer.');
     res.redirect('/forum');
   }
