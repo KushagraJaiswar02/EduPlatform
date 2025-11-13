@@ -557,3 +557,142 @@ footer {
     gap: 0.7rem;
   }
 }
+
+/* === NAVBAR WRAPPER === */
+.ed-nav {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  padding: 0.6rem 0;
+  transition: all 0.3s ease;
+}
+
+/* BRAND */
+.ed-brand {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #2563eb !important;
+}
+
+.ed-brand span {
+  color: #1e40af;
+}
+
+/* NAV LINKS */
+.ed-link {
+  font-weight: 500;
+  padding: 8px 14px !important;
+  border-radius: 8px;
+  transition: 0.25s ease;
+  color: #374151 !important;
+}
+
+.ed-link:hover {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1e40af !important;
+}
+
+.navbar-nav .nav-link.active {
+  background: rgba(37,99,235,0.15);
+  color: #1e40af !important;
+}
+
+/* RIGHT BUTTONS */
+.ed-btn {
+  padding: 6px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.25s ease-in-out;
+  display: inline-block;
+}
+
+/* COLOR VARIANTS */
+.ed-btn.primary {
+  background: #2563eb;
+  color: white !important;
+}
+.ed-btn.primary:hover {
+  background: #1e40af;
+}
+
+.ed-btn.green {
+  background: #10b981;
+  color: white !important;
+}
+.ed-btn.green:hover {
+  background: #059669;
+}
+
+.ed-btn.dark {
+  background: #1f2937;
+  color: white !important;
+}
+.ed-btn.dark:hover {
+  background: #111827;
+}
+
+.ed-btn.outline-blue {
+  border: 2px solid #2563eb;
+  color: #2563eb !important;
+}
+.ed-btn.outline-blue:hover {
+  background: #2563eb;
+  color: white !important;
+}
+
+.ed-btn.outline-red {
+  border: 2px solid #dc2626;
+  color: #dc2626 !important;
+}
+.ed-btn.outline-red:hover {
+  background: #dc2626;
+  color: white !important;
+}
+
+/* LANGUAGE SWITCH */
+.lang-pill {
+  padding: 5px 10px;
+  font-size: .75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  margin-right: 4px;
+  transition: all 0.2s ease;
+  color: #4b5563;
+}
+
+.lang-pill:hover {
+  background: rgba(0,0,0,0.08);
+}
+
+.lang-pill.active {
+  background: #2563eb;
+  color: white !important;
+}
+
+/* MOBILE TOGGLER */
+.nav-toggle {
+  border: none;
+  background: transparent;
+  font-size: 1.4rem;
+  color: #1e3a8a;
+}
+
+.nav-toggle:active {
+  transform: scale(0.9);
+}
+
+/* MOBILE: stack items nicer */
+@media(max-width: 992px){
+  .ed-right {
+    margin-top: 1rem;
+    padding-top: .7rem;
+    border-top: 1px solid rgba(0,0,0,0.08);
+  }
+
+  .ed-left-links {
+    margin-top: .5rem;
+  }
+}
