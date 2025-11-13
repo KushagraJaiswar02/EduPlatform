@@ -8,7 +8,7 @@
   <% } else { %>
     <div class="list-group">
       <% quizzes.forEach(q => { %>
-        <a href="/student/quiz/<%= q.lessonId._id %>" class="list-group-item list-group-item-action">
+        <a href="/student/quiz/<%= q._id %>" class="list-group-item list-group-item-action">
           <div class="d-flex w-100 justify-content-between">
             <h5 class="mb-1"><%= q.lessonId.title %></h5>
             <small>Questions: <%= q.questions.length %></small>

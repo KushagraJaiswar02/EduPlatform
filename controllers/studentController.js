@@ -172,17 +172,17 @@ exports.getAllQuizzes = async (req, res) => {
   }
 };
 
-
 // ==========================
-// GET SINGLE QUIZ (BY LESSON)
+// GET SINGLE QUIZ (BY QUIZ ID)
 // ==========================
 exports.getQuiz = async (req, res) => {
   try {
-    const quiz = await Quiz.findOne({ lessonId: req.params.lessonId })
-      .populate("lessonId", "title subject");
+    const quiz = await Quiz.findById(req.params.quizId)
+      console.log(req.params.quizId)
 
     if (!quiz) {
-      req.flash("error", "No quiz found for this lesson.");
+      req.flash("error", "Quiz not found.");
+      console.log(quiz)
       return res.redirect("/student/quizzes");
     }
 
@@ -193,10 +193,10 @@ exports.getQuiz = async (req, res) => {
 
   } catch (err) {
     console.error("Quiz error:", err);
+    req.flash("error", "Could not load quiz.");
     res.redirect("/student/quizzes");
   }
 };
-
 
 // ==========================
 // SUBMIT QUIZ
@@ -205,12 +205,19 @@ exports.submitQuiz = async (req, res) => {
   try {
     const quiz = await Quiz.findById(req.params.quizId);
 
+    if (!quiz) {
+      req.flash("error", "Quiz not found.");
+      return res.redirect("/student/quizzes");
+    }
+
     let score = 0;
 
+    // Calculate score by comparing answers
     quiz.questions.forEach((q, i) => {
       if (req.body[`q${i}`] === q.answer) score++;
     });
 
+    // Create result record
     const result = await Result.create({
       userId: req.user._id,
       quizId: quiz._id,
@@ -218,16 +225,23 @@ exports.submitQuiz = async (req, res) => {
       total: quiz.questions.length
     });
 
-    req.flash("success", "Quiz submitted successfully!");
+    // Update user's profile stats
+    req.user.profile.totalQuizzesTaken = (req.user.profile.totalQuizzesTaken || 0) + 1;
+    req.user.profile.averageScore = (
+      (req.user.profile.averageScore * (req.user.profile.totalQuizzesTaken - 1) + score) / 
+      req.user.profile.totalQuizzesTaken
+    ).toFixed(2);
+    await req.user.save();
+
+    req.flash("success", `Quiz submitted! Your score: ${score}/${quiz.questions.length}`);
     res.redirect(`/student/results/${result._id}`);
 
   } catch (err) {
     console.error("Submit quiz error:", err);
+    req.flash("error", "Failed to submit quiz.");
     res.redirect("/student/quizzes");
   }
 };
-
-
 // ==========================
 // RESULTS LIST
 // ==========================
