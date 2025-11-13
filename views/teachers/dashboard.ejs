@@ -268,59 +268,7 @@
   </div>
 </div>
 
-<!-- JS for adding quiz questions & resources -->
-<script>
-  const container = document.getElementById('questions-container');
-  const addBtn = document.getElementById('addQuestionBtn');
-  let qIndex = 0;
 
-  addBtn?.addEventListener('click', () => {
-    qIndex++;
-    const box = document.createElement('div');
-    box.className = "mb-3 border rounded p-3";
-    box.innerHTML = `
-      <label class="form-label">Question ${qIndex}</label>
-      <input name="questions[${qIndex}][question]" class="form-control mb-2" required>
-      <label class="form-label">Answer</label>
-      <input name="questions[${qIndex}][answer]" class="form-control" required>
-    `;
-    container.appendChild(box);
-  });
-
-  const resContainer = document.getElementById('resources-container');
-  const addResBtn = document.getElementById('addResourceBtn');
-
-  function makeResourceRow(value = ''){
-    const wrap = document.createElement('div');
-    wrap.className = 'input-group mb-2';
-    wrap.innerHTML = `
-      <input type="text" name="resources[]" class="form-control" value="${String(value).replace(/"/g,'&quot;')}" placeholder="https://example.com/resource or short text">
-      <button type="button" class="btn btn-outline-danger remove-resource">Remove</button>
-    `;
-    return wrap;
-  }
-
-  addResBtn?.addEventListener('click', () => {
-    resContainer.appendChild(makeResourceRow(''));
-  });
-
-  resContainer?.addEventListener('click', (e) => {
-    if (e.target && e.target.classList.contains('remove-resource')){
-      const row = e.target.closest('.input-group');
-      row?.remove();
-    }
-  });
-
-  // Live lecture UI: show/hide schedule input
-  const liveSwitch = document.getElementById('liveSwitch');
-  const liveScheduleWrap = document.getElementById('liveScheduleWrap');
-  if (liveSwitch) {
-    liveSwitch.addEventListener('change', function(){
-      if (this.checked) liveScheduleWrap.style.display = '';
-      else liveScheduleWrap.style.display = 'none';
-    });
-  }
-</script>
 
 <script>
   // Socket.IO for teacher dashboard: start/stop live sessions
