@@ -22,6 +22,7 @@ const forumRoutes = require('./routes/forum');
 const adminRoutes = require('./routes/admin');
 const chatbotRoutes = require('./routes/chatbot');
 
+
 // Initialize app
 const app = express();
 
@@ -75,12 +76,6 @@ app.use(methodOverride('_method'));
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', authRoutes);
-app.use('/student', studentRoutes);
-app.use('/teacher', teacherRoutes);
-app.use('/forum', forumRoutes);
-app.use('/admin', adminRoutes);
-app.use('/chatbot', chatbotRoutes);
 
 app.use(cookieParser());
 
@@ -155,6 +150,8 @@ app.use('/student', studentRoutes);
 app.use('/teacher', teacherRoutes);
 app.use('/forum', forumRoutes);
 app.use('/admin', adminRoutes);
+app.use('/chatbot', chatbotRoutes);
+
 
 // ==========================
 // OFFLINE + DEFAULT ROUTES
@@ -175,7 +172,55 @@ app.use((req, res) => {
 
 
 // ==========================
-// Start Server
+// Start Server + Socket.IO
 // ==========================
+const http = require('http');
+const { Server } = require('socket.io');
+const Lesson = require('./models/Lesson');
+
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 EduBridge Kids running on http://localhost:${PORT}`));
+
+// create http server so we can attach socket.io
+const server = http.createServer(app);
+const io = new Server(server);
+
+// make io available to routes/controllers if needed
+app.set('io', io);
+
+io.on('connection', (socket) => {
+  // join a lesson room
+  socket.on('joinLesson', ({ lessonId }) => {
+    if (!lessonId) return;
+    const room = `lesson-${lessonId}`;
+    socket.join(room);
+    // optional: emit current live state to the joiner
+    Lesson.findById(lessonId).then(lesson => {
+      if (lesson && lesson.live && typeof lesson.live.active !== 'undefined') {
+        socket.emit('lesson:status', { lessonId, active: !!lesson.live.active });
+      }
+    }).catch(() => {});
+  });
+
+  // teacher toggles live state for a lesson
+  socket.on('lesson:toggle', async ({ lessonId, active }) => {
+    if (!lessonId) return;
+    try {
+      // persist new active state
+      const updated = await Lesson.findByIdAndUpdate(lessonId, { 'live.active': !!active }, { new: true });
+      const payload = { lessonId, active: !!active, meetingUrl: updated && updated.live ? updated.live.meetingUrl : null };
+      // broadcast to all clients in lesson room
+      io.to(`lesson-${lessonId}`).emit('lesson:status', payload);
+      // also emit to the requesting socket in case it hasn't joined the room
+      socket.emit('lesson:status', payload);
+    } catch (err) {
+      console.error('Error toggling lesson live state:', err);
+      socket.emit('lesson:toggle:error', { message: 'Could not update lesson state' });
+    }
+  });
+
+  socket.on('disconnect', () => {
+    // nothing for now
+  });
+});
+
+server.listen(PORT, () => console.log(`🚀 EduBridge Kids running on http://localhost:${PORT}`));
