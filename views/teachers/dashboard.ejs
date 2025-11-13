@@ -5,18 +5,20 @@
 
   <div class="row">
 
-    <!-- ===================== LEFT PROFILE CARD ===================== -->
+    <!-- LEFT PROFILE CARD -->
     <div class="col-lg-4 col-md-5">
+      <% const t = (typeof user !== 'undefined' && user) ? user : (typeof currentUser !== 'undefined' ? currentUser : null); %>
       <div class="card shadow-sm mb-4">
         <div class="card-body text-center">
           <div class="avatar mb-3" style="width:75px;height:75px;font-size:1.6rem;margin:auto;">
-            <%= user.name.split(' ').map(n=>n[0]).slice(0,2).join('') %>
+            <%= t && t.name ? t.name.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase() : 'T' %>
           </div>
 
-          <h4 class="mb-0"><%= user.name %></h4>
-          <p class="text-muted mb-1"><%= user.email %></p>
-          <p><strong>Role:</strong> Teacher</p>
+          <h4 class="mb-0"><%= t && t.name ? t.name : __('Teacher') %></h4>
+          <p class="text-muted mb-1"><%= t && t.email ? t.email : '' %></p>
+          <p><strong><%= __('Role') %>:</strong> <%= __('Teacher') %></p>
 
+<<<<<<< HEAD
           <% if (classes && classes.length) { %>
             <p>
               <strong>Teaching Classes:</strong><br>
@@ -37,32 +39,54 @@
 
             <p class="text-muted">No classes assigned.</p>
           <% } %>
+=======
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <strong><%= __('Assigned Classes') %>:</strong>
+              <ul class="mb-0">
+                <% if (typeof classes !== 'undefined' && classes && classes.length) { %>
+                  <% classes.forEach(cls => { %>
+                    <li>Class <%= cls.classNumber %></li>
+                  <% }) %>
+                <% } else if (t && t.classRef) { %>
+                  <li>Class <%= t.classRef.classNumber %></li>
+                <% } else { %>
+                  <li><%= __('None') %></li>
+                <% } %>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body">
+          <a href="/teacher/results" class="btn btn-primary w-100"><%= __('View Results') %></a>
+>>>>>>> d3631539af01fa271b3a9d9f138bc5a00f79412b
         </div>
       </div>
 
       <!-- QUICK ACTIONS -->
       <div class="card shadow-sm">
         <div class="card-body">
-          <h5 class="fw-bold mb-3">Quick Actions</h5>
-          <a href="#collapseLesson" class="btn btn-primary w-100 mb-2">+ Add Lesson</a>
-          <a href="#collapseQuiz" class="btn btn-success w-100 mb-2">+ Create Quiz</a>
-          <a href="#myLessonsSection" class="btn btn-outline-primary w-100 mb-2">📘 My Lessons</a>
-          <a href="#myQuizzesSection" class="btn btn-outline-success w-100">📝 My Quizzes</a>
+          <h5 class="fw-bold mb-3"><%= __('Quick Actions') %></h5>
+          <a href="#collapseLesson" class="btn btn-primary w-100 mb-2">+ <%= __('Add Lesson') %></a>
+          <a href="#collapseQuiz" class="btn btn-success w-100 mb-2">+ <%= __('Create Quiz') %></a>
+          <a href="#myLessonsSection" class="btn btn-outline-primary w-100 mb-2">📘 <%= __('My Lessons') %></a>
+          <a href="#myQuizzesSection" class="btn btn-outline-success w-100">📝 <%= __('My Quizzes') %></a>
         </div>
       </div>
     </div>
 
-    <!-- ===================== RIGHT SIDE CONTENT ===================== -->
+    <!-- RIGHT SIDE CONTENT -->
     <div class="col-lg-8 col-md-7">
 
       <!-- ACCORDION: ADD LESSON & QUIZ -->
       <div class="accordion mb-4" id="teacherAccordion">
 
-        <!-- ========== ADD LESSON ========== -->
+        <!-- ADD LESSON -->
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingLesson">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLesson">
-              📘 Add New Lesson
+              📘 <%= __('Add New Lesson') %>
             </button>
           </h2>
 
@@ -72,53 +96,55 @@
                 <div class="row g-3">
 
                   <div class="col-md-6">
-                    <label class="form-label">Class</label>
+                    <label class="form-label"><%= __('Class') %></label>
                     <select name="classNumber" class="form-select" required>
-                      <% classes.forEach(cls => { %>
-                        <option value="<%= cls.classNumber %>">
-                          Class <%= cls.classNumber %>
-                        </option>
-                      <% }) %>
+                      <% if (typeof classes !== 'undefined' && classes && classes.length) { %>
+                        <% classes.forEach(cls => { %>
+                          <option value="<%= cls.classNumber %>">Class <%= cls.classNumber %></option>
+                        <% }) %>
+                      <% } else { %>
+                        <option value=""><%= __('Select class') %></option>
+                      <% } %>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Subject</label>
+                    <label class="form-label"><%= __('Subject') %></label>
                     <input type="text" name="subject" class="form-control" required>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Lesson Type</label>
+                    <label class="form-label"><%= __('Lesson Type') %></label>
                     <select name="lessonType" class="form-select">
-                      <option value="core">Core</option>
-                      <option value="revision">Revision</option>
-                      <option value="practice">Practice</option>
+                      <option value="core"><%= __('Core') %></option>
+                      <option value="revision"><%= __('Revision') %></option>
+                      <option value="practice"><%= __('Practice') %></option>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Difficulty Level</label>
+                    <label class="form-label"><%= __('Difficulty Level') %></label>
                     <select name="difficultyLevel" class="form-select">
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="advanced">Advanced</option>
+                      <option value="beginner"><%= __('Beginner') %></option>
+                      <option value="intermediate"><%= __('Intermediate') %></option>
+                      <option value="advanced"><%= __('Advanced') %></option>
                     </select>
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Title</label>
+                    <label class="form-label"><%= __('Title') %></label>
                     <input type="text" name="title" class="form-control" required>
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Content</label>
+                    <label class="form-label"><%= __('Content') %></label>
                     <textarea name="content" class="form-control" rows="4" required></textarea>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Related To (optional)</label>
+                    <label class="form-label"><%= __('Related To (optional)') %></label>
                     <select name="relatedTo" class="form-select">
-                      <option value="">-- None --</option>
+                      <option value="">-- <%= __('None') %> --</option>
                       <% if (myLessons && myLessons.length) { %>
                         <% myLessons.forEach(l => { %>
                           <option value="<%= l._id %>"><%= l.title %></option>
@@ -128,14 +154,14 @@
                   </div>
 
                   <div class="col-12" id="resources-section">
-                    <label class="form-label">Resources (URLs or text)</label>
+                    <label class="form-label"><%= __('Resources (URLs or text)') %></label>
                     <div id="resources-container">
                       <div class="input-group mb-2">
                         <input type="text" name="resources[]" class="form-control" placeholder="https://example.com/resource or short text">
                         <button type="button" class="btn btn-outline-danger remove-resource">Remove</button>
                       </div>
                     </div>
-                    <button type="button" id="addResourceBtn" class="btn btn-sm btn-outline-primary">+ Add Resource</button>
+                    <button type="button" id="addResourceBtn" class="btn btn-sm btn-outline-primary">+ <%= __('Add Resource') %></button>
                   </div>
 
                   <div class="col-md-6 form-check form-switch mt-2">
@@ -156,57 +182,60 @@
                   </div>
 
                 </div>
-                <button class="btn btn-primary mt-3">Add Lesson</button>
+                <button class="btn btn-primary mt-3"><%= __('Add Lesson') %></button>
               </form>
             </div>
           </div>
         </div>
 
-        <!-- ========== CREATE QUIZ ========== -->
+        <!-- CREATE QUIZ -->
         <div class="accordion-item mt-3">
           <h2 class="accordion-header" id="headingQuiz">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseQuiz">
-              📝 Create Quiz
+              📝 <%= __('Create Quiz') %>
             </button>
           </h2>
 
           <div id="collapseQuiz" class="accordion-collapse collapse">
             <div class="accordion-body">
-
               <form action="/teacher/add-quiz" method="POST" id="quizForm">
 
                 <div class="mb-3">
-                  <label class="form-label">Select Lesson</label>
+                  <label class="form-label"><%= __('Select Lesson') %></label>
                   <select name="lessonId" class="form-select" required>
-                    <% myLessons.forEach(lesson => { %>
-                      <option value="<%= lesson._id %>">
-                        Class <%= lesson.classRef ? lesson.classRef.classNumber : 'N/A' %> — <%= lesson.title %>
-                      </option>
-                    <% }) %>
+                    <% if (myLessons && myLessons.length) { %>
+                      <% myLessons.forEach(lesson => { %>
+                        <option value="<%= lesson._id %>">
+                          Class <%= lesson.classRef ? lesson.classRef.classNumber : 'N/A' %> — <%= lesson.title %>
+                        </option>
+                      <% }) %>
+                    <% } else { %>
+                      <option value=""><%= __('No lessons available') %></option>
+                    <% } %>
                   </select>
                 </div>
 
                 <div id="questions-container"></div>
 
-                <button type="button" class="btn btn-outline-primary btn-sm" id="addQuestionBtn">+ Add Question</button>
-                <button type="submit" class="btn btn-success">Create Quiz</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="addQuestionBtn">+ <%= __('Add Question') %></button>
+                <button type="submit" class="btn btn-success"><%= __('Create Quiz') %></button>
 
               </form>
-
             </div>
           </div>
         </div>
 
       </div>
 
-      <!-- ===================== MY LESSONS ===================== -->
-      <h4 id="myLessonsSection" class="fw-bold mt-4 mb-3">📘 My Lessons</h4>
+      <!-- MY LESSONS -->
+      <h4 id="myLessonsSection" class="fw-bold mt-4 mb-3">📘 <%= __('My Lessons') %></h4>
 
       <% if (!myLessons || myLessons.length === 0) { %>
-        <p class="text-muted">You haven’t created any lessons yet.</p>
+        <p class="text-muted"><%= __('You haven’t created any lessons yet.') %></p>
       <% } else { %>
         <div class="list-group mb-4">
           <% myLessons.forEach(lesson => { %>
+<<<<<<< HEAD
             <div class="list-group-item d-flex align-items-start justify-content-between">
               <div>
                 <strong><%= lesson.title %></strong>
@@ -237,37 +266,29 @@
                   <% } %>
                 </div>
               </div>
+=======
+            <div class="list-group-item">
+              <strong><%= lesson.title %></strong>
+              <span class="text-muted">· <%= lesson.classRef ? ('Class ' + lesson.classRef.classNumber) : 'N/A' %></span>
+              <div class="small text-muted"><%= lesson.subject %> | <%= lesson.lessonType %></div>
+>>>>>>> d3631539af01fa271b3a9d9f138bc5a00f79412b
             </div>
           <% }) %>
         </div>
       <% } %>
 
-      <!-- ===================== MY QUIZZES ===================== -->
-      <h4 id="myQuizzesSection" class="fw-bold mb-3">📝 My Quizzes</h4>
+      <!-- MY QUIZZES -->
+      <h4 id="myQuizzesSection" class="fw-bold mb-3">📝 <%= __('My Quizzes') %></h4>
 
       <% if (!myQuizzes || myQuizzes.length === 0) { %>
-        <p class="text-muted">You haven’t created any quizzes yet.</p>
+        <p class="text-muted"><%= __('You haven’t created any quizzes yet.') %></p>
       <% } else { %>
         <div class="list-group">
           <% myQuizzes.forEach(qz => { %>
             <div class="list-group-item">
-
-              <strong>
-                <%= qz.lessonId ? qz.lessonId.title : "Unknown Lesson" %>
-              </strong>
-
-              <span class="text-muted">
-                · Class <%= 
-                    qz.lessonId && qz.lessonId.classRef 
-                      ? qz.lessonId.classRef.classNumber 
-                      : "N/A" 
-                %>
-              </span>
-
-              <div class="small text-muted">
-                <%= qz.questions ? qz.questions.length : 0 %> questions
-              </div>
-
+              <strong><%= qz.lessonId ? qz.lessonId.title : __('Unknown Lesson') %></strong>
+              <span class="text-muted">· Class <%= qz.lessonId && qz.lessonId.classRef ? qz.lessonId.classRef.classNumber : 'N/A' %></span>
+              <div class="small text-muted"><%= qz.questions ? qz.questions.length : 0 %> <%= __('questions') %></div>
             </div>
           <% }) %>
         </div>
@@ -277,8 +298,7 @@
   </div>
 </div>
 
-
-<!-- ========== JS for Adding Quiz Questions ========== -->
+<!-- JS for adding quiz questions & resources -->
 <script>
   const container = document.getElementById('questions-container');
   const addBtn = document.getElementById('addQuestionBtn');
@@ -291,14 +311,12 @@
     box.innerHTML = `
       <label class="form-label">Question ${qIndex}</label>
       <input name="questions[${qIndex}][question]" class="form-control mb-2" required>
-
       <label class="form-label">Answer</label>
       <input name="questions[${qIndex}][answer]" class="form-control" required>
     `;
     container.appendChild(box);
   });
 
-  // Resources dynamic inputs for Add Lesson
   const resContainer = document.getElementById('resources-container');
   const addResBtn = document.getElementById('addResourceBtn');
 
@@ -306,7 +324,7 @@
     const wrap = document.createElement('div');
     wrap.className = 'input-group mb-2';
     wrap.innerHTML = `
-      <input type="text" name="resources[]" class="form-control" value="${value.replace(/\"/g,'&quot;')}" placeholder="https://example.com/resource or short text">
+      <input type="text" name="resources[]" class="form-control" value="${String(value).replace(/"/g,'&quot;')}" placeholder="https://example.com/resource or short text">
       <button type="button" class="btn btn-outline-danger remove-resource">Remove</button>
     `;
     return wrap;

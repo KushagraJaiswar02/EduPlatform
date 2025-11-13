@@ -1,0 +1,60 @@
+<!-- filepath: e:\Majors\EduPlatform\views\students\result-detail.ejs -->
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0"><%= result.quizId.lessonId ? result.quizId.lessonId.title : 'Quiz Result' %></h4>
+        </div>
+        <div class="card-body">
+          <!-- Score Summary -->
+          <div class="text-center mb-4">
+            <h2 class="display-4 fw-bold text-primary">
+              <%= result.score %> / <%= result.total %>
+            </h2>
+            <p class="text-muted">
+              <%= ((result.score / result.total) * 100).toFixed(1) %>%
+            </p>
+          </div>
+
+          <!-- Performance Badge -->
+          <div class="text-center mb-4">
+            <% if (result.score / result.total < 0.5) { %>
+              <span class="badge bg-danger p-2 fs-6"><%= __('Needs Practice') %></span>
+            <% } else if (result.score / result.total < 0.8) { %>
+              <span class="badge bg-warning text-dark p-2 fs-6"><%= __('Good') %></span>
+            <% } else { %>
+              <span class="badge bg-success p-2 fs-6"><%= __('Excellent') %></span>
+            <% } %>
+          </div>
+
+          <!-- Details -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <p><strong><%= __('Lesson') %>:</strong> <%= result.quizId.lessonId ? result.quizId.lessonId.title : '—' %></p>
+              <p><strong><%= __('Subject') %>:</strong> <%= result.quizId.lessonId ? result.quizId.lessonId.subject : '—' %></p>
+            </div>
+            <div class="col-md-6">
+              <p><strong><%= __('Date') %>:</strong> <%= new Date(result.createdAt).toLocaleDateString() %></p>
+              <p><strong><%= __('Time') %>:</strong> <%= new Date(result.createdAt).toLocaleTimeString() %></p>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="d-flex gap-2">
+            <a href="/student/results" class="btn btn-secondary">
+              <%= __('Back to Results') %>
+            </a>
+            <a href="/student/quizzes" class="btn btn-primary">
+              <%= __('Take Another Quiz') %>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

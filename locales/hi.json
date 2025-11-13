@@ -117,5 +117,18 @@
 	"Select Lesson": "पाठ चुनें",
 	"Add Question": "सवाल जोड़ें",
 	"Answer": "उत्तर",
-	"No classes assigned": "कोई कक्षा निर्दिष्ट नहीं"
+	"No classes assigned": "कोई कक्षा निर्दिष्ट नहीं",
+	"Lesson": "पाठ",
+	"Date": "तारीख",
+	"Time": "समय",
+	"Back to Results": "परिणामों पर वापस जाएं",
+	"Take Another Quiz": "एक और क्विज लें",
+	"Quiz Result": "क्विज परिणाम",
+	"Needs Practice": "अभ्यास की आवश्यकता है",
+	"Good": "अच्छा",
+	"Excellent": "शानदार",
+	"Student Quiz Results": "Student Quiz Results",
+	"Score": "Score",
+	"View": "View",
+	"View Results": "View Results"
 }

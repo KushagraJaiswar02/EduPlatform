@@ -15,7 +15,7 @@
         <div>
           <h1 class="h4 fw-bold"><%= lesson.title %></h1>
           <div class="text-muted small">
-            By <strong><%= lesson.authorName || 'Teacher' %></strong>
+            By <strong><%= lesson.uploadedBy.name || 'Teacher' %></strong>
             <% if (lesson.createdAt) { %> • <%= new Date(lesson.createdAt).toLocaleDateString() %><% } %>
             <% if (lesson.subject) { %> • <span class="badge bg-primary"><%= lesson.subject %></span><% } %>
           </div>
