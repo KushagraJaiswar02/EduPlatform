@@ -25,6 +25,16 @@
               <% }) %>
             </p>
           <% } else { %>
+              <!-- DEBUG: toggle to show raw lessons data for troubleshooting -->
+              <div class="mt-3">
+                <button id="showLessonsDebugBtn" class="btn btn-outline-secondary btn-sm">Show Lessons Debug</button>
+                <div id="lessonsDebug" style="display:none; margin-top:10px;">
+                  <pre style="max-height:240px; overflow:auto; background:#f8f9fa; padding:10px; border:1px solid #e9ecef;">
+        <%= JSON.stringify(myLessons || [], null, 2) %>
+                  </pre>
+                </div>
+              </div>
+
             <p class="text-muted">No classes assigned.</p>
           <% } %>
         </div>
@@ -58,7 +68,7 @@
 
           <div id="collapseLesson" class="accordion-collapse collapse show">
             <div class="accordion-body">
-              <form action="/teacher/add-lesson" method="POST">
+              <form action="/teacher/add-lesson" method="POST" enctype="multipart/form-data">
                 <div class="row g-3">
 
                   <div class="col-md-6">
@@ -128,6 +138,23 @@
                     <button type="button" id="addResourceBtn" class="btn btn-sm btn-outline-primary">+ Add Resource</button>
                   </div>
 
+                  <div class="col-md-6 form-check form-switch mt-2">
+                    <input class="form-check-input" type="checkbox" id="liveSwitch" name="liveEnabled">
+                    <label class="form-check-label" for="liveSwitch">Enable Live Lecture</label>
+                  </div>
+
+                  <div class="col-md-6" id="liveScheduleWrap" style="display:none;">
+                    <label class="form-label">Schedule (optional)</label>
+                    <input type="datetime-local" name="liveScheduledAt" class="form-control">
+                    <div class="form-text">Optional scheduled start time for the live lecture.</div>
+                  </div>
+
+                  <div class="col-12">
+                    <label class="form-label">Lecture Video (optional)</label>
+                    <input type="file" name="video" accept="video/*" class="form-control">
+                    <div class="form-text">Upload a lecture video. Students will be able to view and download it.</div>
+                  </div>
+
                 </div>
                 <button class="btn btn-primary mt-3">Add Lesson</button>
               </form>
@@ -180,12 +207,36 @@
       <% } else { %>
         <div class="list-group mb-4">
           <% myLessons.forEach(lesson => { %>
-            <div class="list-group-item">
-              <strong><%= lesson.title %></strong>
-              <span class="text-muted">
-                · Class <%= lesson.classRef ? lesson.classRef.classNumber : 'N/A' %>
-              </span>
-              <div class="small text-muted"><%= lesson.subject %> | <%= lesson.lessonType %></div>
+            <div class="list-group-item d-flex align-items-start justify-content-between">
+              <div>
+                <strong><%= lesson.title %></strong>
+                <span class="text-muted"> · Class <%= lesson.classRef ? lesson.classRef.classNumber : 'N/A' %></span>
+                <div class="small text-muted"><%= lesson.subject %> | <%= lesson.lessonType %></div>
+              </div>
+              <div class="text-end">
+                <% if (lesson.live && lesson.live.enabled) { %>
+                  <span class="badge bg-success mb-2">Live Enabled</span>
+                <% } %>
+                <div>
+                  <a href="/teacher/lesson/<%= lesson._id %>" class="btn btn-sm btn-outline-primary">Manage</a>
+                  <% if (lesson.live && lesson.live.meetingUrl) { %>
+                    <a href="<%= lesson.live.meetingUrl %>" target="_blank" class="btn btn-sm btn-primary ms-2">Join Live</a>
+                    <button class="btn btn-sm btn-warning ms-2 toggle-live-btn" data-lesson-id="<%= lesson._id %>" data-active="<%= lesson.live.active ? '1' : '0' %>">
+                      <%= lesson.live && lesson.live.active ? 'Stop Live' : 'Stop Live' %>
+                    </button>
+                  <% } else if (lesson.live && lesson.live.enabled) { %>
+                    <!-- meetingUrl missing but live.enabled true: show toggle -->
+                    <button class="btn btn-sm btn-warning ms-2 toggle-live-btn" data-lesson-id="<%= lesson._id %>" data-active="<%= lesson.live.active ? '1' : '0' %>">
+                      <%= lesson.live && lesson.live.active ? 'Stop Live' : 'Start Live' %>
+                    </button>
+                  <% } else { %>
+                    <!-- no live configured: offer to enable live -->
+                    <form action="/teacher/lesson/<%= lesson._id %>/enable-live" method="POST" style="display:inline-block;">
+                      <button class="btn btn-sm btn-outline-success ms-2">Enable Live</button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
             </div>
           <% }) %>
         </div>
@@ -271,6 +322,74 @@
       row?.remove();
     }
   });
+
+  // Live lecture UI: show/hide schedule input
+  const liveSwitch = document.getElementById('liveSwitch');
+  const liveScheduleWrap = document.getElementById('liveScheduleWrap');
+  if (liveSwitch) {
+    liveSwitch.addEventListener('change', function(){
+      if (this.checked) liveScheduleWrap.style.display = '';
+      else liveScheduleWrap.style.display = 'none';
+    });
+  }
+</script>
+
+<script>
+  // Socket.IO for teacher dashboard: start/stop live sessions
+    (function(){
+      // wait until the whole page (including footer scripts like socket.io) is loaded
+      window.addEventListener('load', function(){
+        if (typeof io === 'undefined') return; // socket.io client not loaded
+        const socket = io();
+
+        // join rooms for lessons that have toggle buttons so teacher receives broadcasts
+        document.querySelectorAll('.toggle-live-btn').forEach(btn => {
+          const lessonId = btn.getAttribute('data-lesson-id');
+          if (lessonId) socket.emit('joinLesson', { lessonId });
+        });
+
+        // handle button clicks
+        document.querySelectorAll('.toggle-live-btn').forEach(btn => {
+          btn.addEventListener('click', function(e){
+            const lessonId = this.getAttribute('data-lesson-id');
+            const currentlyActive = this.getAttribute('data-active') === '1';
+            const newActive = !currentlyActive;
+            // optimistic UI
+            this.disabled = true;
+            this.textContent = newActive ? 'Starting...' : 'Stopping...';
+            // ensure the toggling socket is part of the room (server also emits back to socket)
+            socket.emit('joinLesson', { lessonId });
+            socket.emit('lesson:toggle', { lessonId, active: newActive });
+          });
+        });
+
+        // listen for status updates from server
+        socket.on('lesson:status', function(payload){
+          if (!payload || !payload.lessonId) return;
+          const btn = document.querySelector(`.toggle-live-btn[data-lesson-id="${payload.lessonId}"]`);
+          if (btn){
+            btn.disabled = false;
+            btn.setAttribute('data-active', payload.active ? '1' : '0');
+            if (payload.active){
+              btn.classList.remove('btn-secondary');
+              btn.classList.remove('btn-warning');
+              btn.classList.add('btn-warning');
+              btn.textContent = 'Stop Live';
+            } else {
+              btn.classList.remove('btn-warning');
+              btn.classList.add('btn-secondary');
+              btn.textContent = 'Start Live';
+            }
+          }
+        });
+
+        socket.on('lesson:toggle:error', function(err){
+          alert(err && err.message ? err.message : 'Failed to toggle live state');
+          // re-enable all buttons in case of error
+          document.querySelectorAll('.toggle-live-btn').forEach(b => b.disabled = false);
+        });
+      });
+    })();
 </script>
 
 <%- include('../partials/footer') %>

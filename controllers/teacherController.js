@@ -2,6 +2,20 @@ const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
 const Result = require('../models/Result');
 const Class = require('../models/Class');
+const cloudinary = require('cloudinary').v2;
+const fs = require('fs');
+const path = require('path');
+
+// Configure Cloudinary from env (CLOUDINARY_URL or individual vars)
+if (process.env.CLOUDINARY_URL) {
+  cloudinary.config({ url: process.env.CLOUDINARY_URL });
+} else if (process.env.CLOUDINARY_CLOUD_NAME) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+  });
+}
 
 // ===============================
 // TEACHER DASHBOARD
@@ -59,12 +73,67 @@ exports.addLesson = async (req, res) => {
       relatedTo
     } = req.body;
 
-    // normalize resources[] (can be single string or array)
+    // normalize resources[] (can be single string or array) and convert to resource objects
     let resourcesArr = [];
     if (req.body.resources) {
-      if (Array.isArray(req.body.resources)) resourcesArr = req.body.resources;
-      else resourcesArr = [req.body.resources];
-      resourcesArr = resourcesArr.map(r => String(r).trim()).filter(Boolean);
+      let incoming = [];
+      if (Array.isArray(req.body.resources)) incoming = req.body.resources;
+      else incoming = [req.body.resources];
+      incoming = incoming.map(r => String(r).trim()).filter(Boolean);
+      // store as objects (backwards-compatible)
+      resourcesArr = incoming.map(r => ({ url: r, title: undefined, description: undefined, type: 'link', downloadable: false }));
+    }
+
+    // If a video file was uploaded via multer (memoryStorage), upload it to Cloudinary if configured,
+    // otherwise save locally to public/uploads/videos so students can play/download.
+    if (req.file && req.file.buffer) {
+      if (cloudinary.config().cloud_name) {
+        try {
+          const uploadStream = () => new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream({ resource_type: 'video', folder: 'lessons' }, (error, result) => {
+              if (error) return reject(error);
+              resolve(result);
+            });
+            stream.end(req.file.buffer);
+          });
+
+          const result = await uploadStream();
+          // Prepend the uploaded video resource so it's visible first
+          resourcesArr.unshift({
+            title: title ? title + ' — Video' : 'Lecture Video',
+            url: result.secure_url || result.url,
+            description: undefined,
+            type: 'video',
+            downloadable: true
+          });
+        } catch (upErr) {
+          console.error('Cloudinary upload failed:', upErr);
+          // carry on without failing the whole request; flash a warning
+          req.flash('error', 'Video upload failed — lesson saved without video.');
+        }
+      } else {
+        try {
+          // ensure upload dir exists
+          const uploadDir = path.join(__dirname, '..', 'public', 'uploads', 'videos');
+          fs.mkdirSync(uploadDir, { recursive: true });
+          // make a safe filename
+          const safeName = `${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`;
+          const fullPath = path.join(uploadDir, safeName);
+          fs.writeFileSync(fullPath, req.file.buffer);
+          const publicUrl = `/uploads/videos/${safeName}`;
+          resourcesArr.unshift({
+            title: title ? title + ' — Video' : 'Lecture Video',
+            url: publicUrl,
+            description: undefined,
+            type: 'video',
+            downloadable: true
+          });
+          req.flash('success', 'Video saved locally and attached to the lesson.');
+        } catch (fsErr) {
+          console.error('Local video save failed:', fsErr);
+          req.flash('error', 'Video upload failed — lesson saved without video.');
+        }
+      }
     }
 
     const classDoc = await Class.findOne({ classNumber });
@@ -80,7 +149,8 @@ exports.addLesson = async (req, res) => {
       if (rel) relatedToId = rel._id;
     }
 
-    await Lesson.create({
+    // create lesson first
+    const created = await Lesson.create({
       classRef: classDoc._id,
       subject,
       title,
@@ -91,6 +161,28 @@ exports.addLesson = async (req, res) => {
       resources: resourcesArr,
       uploadedBy: req.user._id
     });
+
+    // handle live lecture option
+    const liveEnabled = req.body.liveEnabled === 'on' || req.body.liveEnabled === 'true' || req.body.liveEnabled === true;
+    if (liveEnabled) {
+      // scheduled time (optional)
+      let scheduledAt = null;
+      if (req.body.liveScheduledAt) {
+        const d = new Date(req.body.liveScheduledAt);
+        if (!isNaN(d)) scheduledAt = d;
+      }
+
+      // Generate a Jitsi room name using lesson id for predictability
+      const roomName = `eduplatform-lesson-${created._id}`;
+      const meetingUrl = `https://meet.jit.si/${encodeURIComponent(roomName)}`;
+
+      created.live = {
+        enabled: true,
+        meetingUrl,
+        scheduledAt: scheduledAt || undefined
+      };
+      await created.save();
+    }
 
     req.flash("success", "Lesson added successfully.");
     return res.redirect("/teacher/dashboard");
@@ -173,5 +265,39 @@ exports.getAllQuizzes = async (req, res) => {
   } catch (err) {
     console.error("Load Quizzes Error:", err);
     res.render("error", { message: "Failed to load quizzes" });
+  }
+};
+
+// ===============================
+// ENABLE LIVE FOR EXISTING LESSON
+// ===============================
+exports.enableLive = async (req, res) => {
+  try {
+    const lessonId = req.params.id;
+    const lesson = await Lesson.findById(lessonId);
+    if (!lesson) {
+      req.flash('error', 'Lesson not found.');
+      return res.redirect('/teacher/dashboard');
+    }
+
+    // If already has meetingUrl, just enable
+    if (lesson.live && lesson.live.meetingUrl) {
+      lesson.live = Object.assign({}, lesson.live, { enabled: true });
+      await lesson.save();
+      req.flash('success', 'Live enabled for lesson.');
+      return res.redirect('/teacher/dashboard');
+    }
+
+    // Otherwise generate meeting URL and enable
+    const roomName = `eduplatform-lesson-${lesson._id}`;
+    const meetingUrl = `https://meet.jit.si/${encodeURIComponent(roomName)}`;
+    lesson.live = Object.assign({}, lesson.live || {}, { enabled: true, meetingUrl });
+    await lesson.save();
+    req.flash('success', 'Live enabled for lesson.');
+    return res.redirect('/teacher/dashboard');
+  } catch (err) {
+    console.error('Enable Live Error:', err);
+    req.flash('error', 'Could not enable live for this lesson.');
+    return res.redirect('/teacher/dashboard');
   }
 };
