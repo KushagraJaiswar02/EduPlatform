@@ -42,14 +42,27 @@ exports.getDashboard = async (req, res) => {
 // ==========================
 exports.getAllLessons = async (req, res) => {
   try {
-    const selectedClass = req.query.class || null;
-
+    // 1. Sabhi classes ko pehle hi fetch kar lein (dropdown ke liye)
     const classes = await Class.find({}, "classNumber");
+    
+    let selectedClass = null; // Default display value
+    let query = {}; // Default query (sabhi lessons dikhaye)
 
-    const query = selectedClass
-      ? { classRef: selectedClass }
-      : {}; // show ALL classes if filter not selected
+    // 2. Check karein ki user aur unka classRef maujood hai
+    if (req.user && req.user.classRef) {
+      
+      // 3. Query ke liye seedha ObjectId ka istemaal karein
+      query = { classRef: req.user.classRef };
 
+      // 4. Sirf display ke liye user ki class ka number fetch karein
+      // Note: Hum classDoc ko null check kar rahe hain taaki crash na ho
+      const classDoc = await Class.findById(req.user.classRef);
+      if (classDoc) {
+        selectedClass = classDoc.classNumber;
+      }
+    }
+
+    // 5. Ab query sahi hai (ya toh {} ya { classRef: ObjectId(...) })
     const lessons = await Lesson.find(query)
       .populate("classRef", "classNumber");
 
@@ -57,15 +70,24 @@ exports.getAllLessons = async (req, res) => {
       user: req.user,
       lessons,
       classes,
-      selectedClass
+      selectedClass // Ye ab ya toh null hai ya class ka number
     });
 
   } catch (err) {
     console.error("Lesson loading error:", err);
+    
+    // Error hone par bhi, classes ko render karne ki koshish karein
+    let classes = [];
+    try {
+      classes = await Class.find({}, "classNumber");
+    } catch (e) {
+      // Agar yahaan bhi error aaye toh ignore karein
+    }
+
     res.render("students/lessons", {
       user: req.user,
       lessons: [],
-      classes: [],
+      classes, // Page crash na ho isliye classes pass karein
       selectedClass: null
     });
   }
