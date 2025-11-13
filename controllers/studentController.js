@@ -178,6 +178,7 @@ exports.getAllQuizzes = async (req, res) => {
 exports.getQuiz = async (req, res) => {
   try {
     const quiz = await Quiz.findById(req.params.quizId)
+      .populate("lessonId", "title subject classRef");
       console.log(req.params.quizId)
 
     if (!quiz) {
@@ -250,42 +251,58 @@ exports.getAllResults = async (req, res) => {
     const results = await Result.find({ userId: req.user._id })
       .populate({
         path: 'quizId',
-        populate: { path: 'lessonId', select: 'title subject' }
+        populate: {
+          path: 'lessonId',
+          select: 'title subject'
+        }
       })
       .sort({ createdAt: -1 });
 
-    res.render('students/results', { user: req.user, results });
+    res.render('students/result', {
+      user: req.user,
+      results
+    });
 
   } catch (err) {
-    console.error(err);
-    res.render('error', { message: 'Failed to load results' });
+    console.error("Get results error:", err);
+    req.flash("error", "Could not load results.");
+    res.redirect("/student/dashboard");
   }
 };
 
-
 // ==========================
-// SINGLE RESULT PAGE
+// GET SINGLE RESULT (DETAIL)
 // ==========================
 exports.getResultById = async (req, res) => {
   try {
     const result = await Result.findById(req.params.id)
       .populate({
         path: 'quizId',
-        populate: { path: 'lessonId', select: 'title subject' }
+        populate: {
+          path: 'lessonId',
+          select: 'title subject'
+        }
       });
 
     if (!result) {
-      req.flash('error', 'Result not found.');
-      return res.redirect('/student/results');
+      req.flash("error", "Result not found.");
+      return res.redirect("/student/results");
     }
 
-    res.render('students/result', {
+    // Ensure user owns this result
+    if (result.userId.toString() !== req.user._id.toString()) {
+      req.flash("error", "Unauthorized access.");
+      return res.redirect("/student/results");
+    }
+
+    res.render('students/result-detail', {
       user: req.user,
       result
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("Get result by id error:", err);
+    req.flash("error", "Could not load result.");
     res.redirect("/student/results");
   }
 };
