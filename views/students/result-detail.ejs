@@ -1,57 +1,114 @@
-<!-- filepath: e:\Majors\EduPlatform\views\students\result-detail.ejs -->
 <%- include('../partials/header') %>
 
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-md-8 offset-md-2">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0"><%= result.quizId.lessonId ? result.quizId.lessonId.title : 'Quiz Result' %></h4>
+<style>
+  /* Fade Animation */
+  .fade-in {
+    animation: fadeIn 0.7s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Score Circle */
+  .score-circle {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #2563eb;
+    background: conic-gradient(#2563eb var(--percent), #e5e7eb 0deg);
+  }
+
+  .score-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .detail-label {
+    font-weight: 600;
+    color: #374151;
+  }
+</style>
+
+<div class="container mt-5 fade-in">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white py-3">
+          <h4 class="mb-0 text-center">
+            <%= result.quizId.lessonId ? result.quizId.lessonId.title : 'Quiz Result' %>
+          </h4>
         </div>
-        <div class="card-body">
-          <!-- Score Summary -->
-          <div class="text-center mb-4">
-            <h2 class="display-4 fw-bold text-primary">
-              <%= result.score %> / <%= result.total %>
-            </h2>
-            <p class="text-muted">
-              <%= ((result.score / result.total) * 100).toFixed(1) %>%
-            </p>
+
+        <div class="card-body p-4">
+
+          <!-- SCORE CIRCLE -->
+          <div class="score-container">
+            <% let percent = ((result.score / result.total) * 100).toFixed(1); %>
+            <div class="score-circle" style="--percent: <%= percent %>deg;">
+              <%= result.score %>/<%= result.total %>
+            </div>
           </div>
 
-          <!-- Performance Badge -->
+          <p class="text-center text-muted mb-4 fs-5">
+            <%= percent %>% Score
+          </p>
+
+          <!-- PERFORMANCE BADGE -->
           <div class="text-center mb-4">
             <% if (result.score / result.total < 0.5) { %>
-              <span class="badge bg-danger p-2 fs-6"><%= __('Needs Practice') %></span>
+              <span class="badge bg-danger p-2 fs-6 shadow-sm">Needs Practice</span>
             <% } else if (result.score / result.total < 0.8) { %>
-              <span class="badge bg-warning text-dark p-2 fs-6"><%= __('Good') %></span>
+              <span class="badge bg-warning text-dark p-2 fs-6 shadow-sm">Good Effort</span>
             <% } else { %>
-              <span class="badge bg-success p-2 fs-6"><%= __('Excellent') %></span>
+              <span class="badge bg-success p-2 fs-6 shadow-sm">Excellent!</span>
             <% } %>
           </div>
 
-          <!-- Details -->
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <p><strong><%= __('Lesson') %>:</strong> <%= result.quizId.lessonId ? result.quizId.lessonId.title : '—' %></p>
-              <p><strong><%= __('Subject') %>:</strong> <%= result.quizId.lessonId ? result.quizId.lessonId.subject : '—' %></p>
-            </div>
-            <div class="col-md-6">
-              <p><strong><%= __('Date') %>:</strong> <%= new Date(result.createdAt).toLocaleDateString() %></p>
-              <p><strong><%= __('Time') %>:</strong> <%= new Date(result.createdAt).toLocaleTimeString() %></p>
+          <!-- DETAILS BOX -->
+          <div class="border rounded p-3 mb-4 bg-light">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <p class="mb-1"><span class="detail-label">Lesson:</span>
+                  <%= result.quizId.lessonId ? result.quizId.lessonId.title : '—' %>
+                </p>
+
+                <p class="mb-1"><span class="detail-label">Subject:</span>
+                  <%= result.quizId.lessonId ? result.quizId.lessonId.subject : '—' %>
+                </p>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <p class="mb-1"><span class="detail-label">Date:</span>
+                  <%= new Date(result.createdAt).toLocaleDateString() %>
+                </p>
+
+                <p class="mb-1"><span class="detail-label">Time:</span>
+                  <%= new Date(result.createdAt).toLocaleTimeString() %>
+                </p>
+              </div>
             </div>
           </div>
 
-          <!-- Action Buttons -->
+          <!-- ACTION BUTTONS -->
           <div class="d-flex gap-2">
-            <a href="/student/results" class="btn btn-secondary">
-              <%= __('Back to Results') %>
+            <a href="/student/results" class="btn btn-secondary w-50">
+              ← Back to Results
             </a>
-            <a href="/student/quizzes" class="btn btn-primary">
-              <%= __('Take Another Quiz') %>
+            <a href="/student/quizzes" class="btn btn-primary w-50">
+              Take Another Quiz →
             </a>
           </div>
+
         </div>
+
       </div>
     </div>
   </div>

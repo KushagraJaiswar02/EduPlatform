@@ -1,131 +1,138 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-md-8 offset-md-2">
+<div class="container py-4">
 
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h3 class="fw-bold"><%= __('Community Forum') %></h3>
+  <!-- Page Heading -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <h2 class="fw-bold text-primary mb-0 fade-in">Community Forum</h2>
 
-        <!-- CLASS FILTER -->
-        <form method="GET" action="/forum">
-          <select name="class" class="form-select form-select-sm" onchange="this.form.submit()">
-            <option value="">All Classes</option>
+    <form method="GET" action="/forum" class="d-flex">
+      <select
+        name="class"
+        class="form-select form-select-sm rounded-3 smooth-select"
+        style="min-width: 150px;"
+        onchange="this.form.submit()">
 
-            <% classes.forEach(cls => { %>
-              <option value="<%= cls._id %>"
-                <%= selectedClass == cls._id ? "selected" : "" %>>
-                Class <%= cls.classNumber %>
-              </option>
-            <% }) %>
-          </select>
-        </form>
-      </div>
+        <option value="">All Classes</option>
 
-      <% if (forum && forum.length > 0) { %>
-        <% forum.slice().reverse().forEach(post => { %>
-
-          <article class="forum-card mb-3">
-
-            <!-- HEADER -->
-            <div class="forum-header">
-              <div class="avatar">
-                <%= post.askedBy && post.askedBy.name 
-                      ? post.askedBy.name.split(" ").map(n=>n[0]).join("") 
-                      : 'U' 
-                %>
-              </div>
-
-              <div class="forum-meta">
-                <p class="forum-title"><%= post.subject %></p>
-
-                <div class="forum-submeta">
-                  <span><%= post.askedBy ? post.askedBy.name : "Unknown User" %></span>
-                  &middot;
-
-                  <small class="text-muted">
-                    <%= new Date(post.createdAt).toLocaleString() %>
-                  </small>
-
-                  <% if (post.classRef) { %>
-                    &middot;
-                    <small class="ms-2 text-muted">
-                      Class <strong><%= post.classRef.classNumber %></strong>
-                    </small>
-                  <% } %>
-                </div>
-
-                <% if (post.tags && post.tags.length) { %>
-                  <div class="mt-2">
-                    <% post.tags.forEach(tag => { %>
-                      <span class="tag-badge"><%= tag %></span>
-                    <% }) %>
-                  </div>
-                <% } %>
-              </div>
-            </div>
-
-            <!-- BODY -->
-            <div class="forum-body">
-              <p><%= post.question %></p>
-            </div>
-
-            <!-- ANSWERS -->
-            <div class="answers-wrap">
-              <h6 class="mb-2"><%= __('Answers') %></h6>
-
-              <% if (post.answers && post.answers.length) { %>
-
-                <% post.answers.forEach(answer => { %>
-                  <div class="answer">
-                    <div class="avatar">
-                      <%= answer.answeredBy && answer.answeredBy.name 
-                            ? answer.answeredBy.name.split(" ").map(n=>n[0]).join("") 
-                            : "U" 
-                      %>
-                    </div>
-
-                    <div>
-                      <p class="mb-1"><%= answer.text %></p>
-
-                      <small class="text-muted">
-                        — <strong><%= answer.answeredBy ? answer.answeredBy.name : "Deleted User" %></strong>
-                        <span class="ms-2">
-                          (<%= new Date(answer.createdAt).toLocaleString() %>)
-                        </span>
-                      </small>
-                    </div>
-                  </div>
-                <% }) %>
-
-              <% } else { %>
-                <p class="text-muted">
-                  <small>No answers yet — be the first to reply!</small>
-                </p>
-              <% } %>
-
-              <!-- REPLY FORM -->
-              <div class="reply-box">
-                <form action="/forum/<%= post._id %>/answer" method="POST" class="d-flex gap-2">
-                  <input type="text" class="form-control form-control-sm" name="text" placeholder="Write your answer..." required>
-                  <button class="btn btn-primary reply-btn" type="submit">Reply</button>
-                </form>
-              </div>
-
-            </div>
-
-          </article>
-
+        <% classes.forEach(cls => { %>
+          <option value="<%= cls._id %>" <%= selectedClass == cls._id ? 'selected' : '' %>>
+            Class <%= cls.classNumber %>
+          </option>
         <% }) %>
 
-      <% } else { %>
-
-        <p class="text-muted">No questions found for the selected class.</p>
-
-      <% } %>
-
-    </div>
+      </select>
+    </form>
   </div>
+
+  <% if (forum && forum.length > 0) { %>
+
+    <% forum.slice().reverse().forEach((post, i) => { %>
+
+      <!-- Animated Forum Card -->
+      <div class="card border-0 shadow-sm mb-4 rounded-4 forum-card animate-post" style="--i:<%= i %>">
+
+        <!-- Header -->
+        <div class="card-body pb-0 d-flex gap-3">
+
+          <div class="avatar pulse"
+               style="width: 48px; height: 48px; font-size: 1.1rem;">
+            <%= post.askedBy?.name 
+                  ? post.askedBy.name.split(' ').map(n=>n[0]).join('') 
+                  : 'U' %>
+          </div>
+
+          <div class="flex-grow-1">
+            <h5 class="fw-semibold mb-1"><%= post.subject %></h5>
+
+            <div class="text-muted small mb-2">
+              <%= post.askedBy ? post.askedBy.name : "Unknown User" %>
+              &middot;
+              <%= new Date(post.createdAt).toLocaleString() %>
+
+              <% if (post.classRef) { %>
+                &middot;
+                <span class="ms-1">Class <strong><%= post.classRef.classNumber %></strong></span>
+              <% } %>
+            </div>
+
+            <% if (post.tags?.length) { %>
+              <div class="mb-2 fade-tags">
+                <% post.tags.forEach(t => { %>
+                  <span class="badge tag-anim bg-light text-primary border rounded-pill px-2 py-1 me-1">
+                    #<%= t %>
+                  </span>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Body -->
+        <div class="card-body pt-2 pb-3">
+          <p class="mb-0"><%= post.question %></p>
+        </div>
+
+        <hr class="my-0">
+
+        <!-- Answers -->
+        <div class="card-body">
+
+          <h6 class="fw-semibold mb-3">Answers</h6>
+
+          <% if (post.answers && post.answers.length) { %>
+
+            <% post.answers.forEach(answer => { %>
+
+              <div class="d-flex mb-3 border-start ps-3 answer-slide">
+
+                <div class="avatar small-avatar pulse">
+                  <%= answer.answeredBy?.name 
+                        ? answer.answeredBy.name.split(' ').map(n=>n[0]).join('') 
+                        : 'U' %>
+                </div>
+
+                <div>
+                  <p class="mb-1"><%= answer.text %></p>
+                  <small class="text-muted">
+                    — <strong><%= answer.answeredBy ? answer.answeredBy.name : "Deleted User" %></strong>
+                    &middot;
+                    <%= new Date(answer.createdAt).toLocaleString() %>
+                  </small>
+                </div>
+
+              </div>
+
+            <% }) %>
+
+          <% } else { %>
+            <p class="text-muted"><small>No answers yet—be the first to reply!</small></p>
+          <% } %>
+
+          <!-- Reply -->
+          <form action="/forum/<%= post._id %>/answer"
+                method="POST"
+                class="d-flex gap-2 mt-3 reply-expand">
+
+            <input type="text"
+                   name="text"
+                   required
+                   class="form-control form-control-sm rounded-3"
+                   placeholder="Write your answer...">
+
+            <button class="btn btn-primary btn-sm rounded-3">Reply</button>
+          </form>
+
+        </div>
+
+      </div>
+
+    <% }) %>
+
+  <% } else { %>
+    <p class="text-muted">No questions found for the selected class.</p>
+  <% } %>
+
 </div>
 
 <%- include('../partials/footer') %>

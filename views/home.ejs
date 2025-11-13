@@ -1,95 +1,158 @@
 <%- include('partials/header') %>
 
-<!-- ================= HERO (DYNAMIC) ================= -->
-<section class="py-5 text-center text-lg-start" style="background: linear-gradient(120deg, #2563eb, #3b82f6); color: white;">
+<style>
+  /* Animations */
+  .fade-in { animation: fadeIn .6s ease both; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .float-up { animation: floatUp .7s ease both; }
+  @keyframes floatUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity:1; transform: translateY(0); }
+  }
+
+  /* Feature cards */
+  .feature-card {
+    border-radius: 14px !important;
+    transition: transform .25s ease, box-shadow .25s ease;
+  }
+  .feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+
+  /* Step cards */
+  .step-card {
+    border-radius: 14px !important;
+    transition: transform .25s ease;
+  }
+  .step-card:hover {
+    transform: scale(1.03);
+  }
+
+  /* Glass buttons */
+  .glass-btn {
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.4);
+    color: #fff !important;
+    padding: 12px 26px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: .25s ease;
+  }
+  .glass-btn:hover {
+    background: rgba(255,255,255,0.35);
+    transform: translateY(-2px);
+  }
+
+  .glass-btn-outline {
+    backdrop-filter: blur(8px);
+    background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,255,255,0.35);
+    color: #fff !important;
+    padding: 12px 26px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: .25s ease;
+  }
+  .glass-btn-outline:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+</style>
+
+
+
+<!-- ====================== HERO ====================== -->
+<section class="py-5 text-center text-lg-start fade-in"
+style="background: linear-gradient(135deg, #1e40af, #2563eb, #3b82f6); color: white;">
   <div class="container py-5">
 
-    <h1 class="fw-bold display-5 mb-3">EduBridge Kids – Learning That Works Offline</h1>
-    <p class="lead mb-4">
-      Simple, fast and accessible learning for students up to Class 8 — even without internet.
+    <h1 class="fw-bold display-4 mb-3">Learning That Works Offline</h1>
+    <p class="lead mb-4" style="max-width: 620px;">
+      EduBridge Kids makes school learning simple, fast and accessible — even with poor or no internet.
     </p>
 
-    <!-- ========== DYNAMIC BUTTONS ========== -->
+    <!-- =================== ROLE BUTTONS =================== -->
     <% if (!role) { %>
       <!-- NOT LOGGED IN -->
-      <div class="d-grid gap-3 d-sm-flex justify-content-center">
-        <a href="/student/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">I’m a Student</a>
-        <a href="/teacher/dashboard" class="btn btn-outline-light btn-lg px-4 fw-semibold">I’m a Teacher</a>
+      <div class="d-flex flex-wrap gap-3 justify-content-center">
+        <a href="/login" class="glass-btn">I’m a Student</a>
+        <a href="/login" class="glass-btn-outline">I’m a Teacher</a>
       </div>
 
     <% } else if (role === 'student') { %>
-      <!-- STUDENT LOGGED IN -->
-      <div class="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start">
-        <a href="/student/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">Go to Dashboard</a>
-        <a href="/student/lessons" class="btn btn-outline-light btn-lg px-4 fw-semibold">View Lessons</a>
-        <a href="/student/quizzes" class="btn btn-outline-light btn-lg px-4 fw-semibold">Take Quiz</a>
+      <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+        <a href="/student/dashboard" class="glass-btn">Go to Dashboard</a>
+        <a href="/student/lessons" class="glass-btn-outline">View Lessons</a>
+        <a href="/student/quizzes" class="glass-btn-outline">Take Quiz</a>
       </div>
 
     <% } else if (role === 'teacher') { %>
-      <!-- TEACHER LOGGED IN -->
-      <div class="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start">
-        <a href="/teacher/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">Teacher Dashboard</a>
-        <a href="/teacher/add-lesson" class="btn btn-outline-light btn-lg px-4 fw-semibold">Add Lesson</a>
-        <a href="/teacher/add-quiz" class="btn btn-outline-light btn-lg px-4 fw-semibold">Add Quiz</a>
+      <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+        <a href="/teacher/dashboard" class="glass-btn">Teacher Dashboard</a>
       </div>
 
     <% } else if (role === 'admin') { %>
-      <!-- ADMIN LOGGED IN -->
-      <div class="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start">
-        <a href="/admin/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">Admin Panel</a>
-        <a href="/admin/lessons" class="btn btn-outline-light btn-lg px-4 fw-semibold">Review Lessons</a>
-        <a href="/admin/users" class="btn btn-outline-light btn-lg px-4 fw-semibold">Manage Users</a>
+      <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+        <a href="/admin/dashboard" class="glass-btn">Admin Panel</a>
       </div>
+
     <% } %>
 
   </div>
 </section>
 
 
-<!-- ================= FEATURES ================= -->
+
+<!-- ====================== FEATURES ====================== -->
 <section class="py-5 bg-light">
   <div class="container">
 
-    <h2 class="text-center fw-bold mb-5">Why EduBridge Kids?</h2>
+    <h2 class="text-center fw-bold mb-5 fade-in">Why EduBridge Kids?</h2>
 
     <div class="row g-4 text-center">
-      
-      <div class="col-sm-6 col-lg-3">
+
+      <div class="col-sm-6 col-lg-3 float-up" style="animation-delay:.1s;">
         <div class="card border-0 shadow-sm h-100 feature-card">
-          <div class="card-body">
+          <div class="card-body py-4">
             <h1>📚</h1>
             <h5 class="fw-bold mt-2">Offline Lessons</h5>
-            <p class="text-muted small">Learn anytime — fully offline after first load.</p>
+            <p class="text-muted small">Learn anytime after first download — no internet required.</p>
           </div>
         </div>
       </div>
 
-      <div class="col-sm-6 col-lg-3">
+      <div class="col-sm-6 col-lg-3 float-up" style="animation-delay:.2s;">
         <div class="card border-0 shadow-sm h-100 feature-card">
-          <div class="card-body">
+          <div class="card-body py-4">
             <h1>🧠</h1>
             <h5 class="fw-bold mt-2">Smart Feedback</h5>
-            <p class="text-muted small">AI-based suggestions: revise, practice or move ahead.</p>
+            <p class="text-muted small">Adaptive suggestions based on your quiz performance.</p>
           </div>
         </div>
       </div>
 
-      <div class="col-sm-6 col-lg-3">
+      <div class="col-sm-6 col-lg-3 float-up" style="animation-delay:.3s;">
         <div class="card border-0 shadow-sm h-100 feature-card">
-          <div class="card-body">
+          <div class="card-body py-4">
             <h1>💬</h1>
             <h5 class="fw-bold mt-2">Forum Support</h5>
-            <p class="text-muted small">Ask doubts and learn together with your class.</p>
+            <p class="text-muted small">Ask doubts anytime and get help from your class.</p>
           </div>
         </div>
       </div>
 
-      <div class="col-sm-6 col-lg-3">
+      <div class="col-sm-6 col-lg-3 float-up" style="animation-delay:.4s;">
         <div class="card border-0 shadow-sm h-100 feature-card">
-          <div class="card-body">
+          <div class="card-body py-4">
             <h1>🌐</h1>
             <h5 class="fw-bold mt-2">Multilingual</h5>
-            <p class="text-muted small">English / Hindi support with one tap switch.</p>
+            <p class="text-muted small">Switch between English and Hindi with one tap.</p>
           </div>
         </div>
       </div>
@@ -100,36 +163,38 @@
 </section>
 
 
-<!-- ================= HOW IT WORKS ================= -->
+
+<!-- ====================== HOW IT WORKS ====================== -->
 <section class="py-5">
   <div class="container">
+
     <h2 class="text-center fw-bold mb-5">How It Works</h2>
 
     <div class="row g-4 text-center">
 
-      <div class="col-md-4">
+      <div class="col-md-4 float-up" style="animation-delay:.1s;">
         <div class="card h-100 shadow-sm border-0 step-card">
-          <div class="card-body">
+          <div class="card-body py-4">
             <h4 class="fw-semibold">👩‍🏫 Teachers Upload</h4>
-            <p class="text-muted small">Lessons and quizzes are added by teachers and approved by admins.</p>
+            <p class="text-muted small">Lessons and quizzes are uploaded and managed by teachers.</p>
           </div>
         </div>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-4 float-up" style="animation-delay:.2s;">
         <div class="card h-100 shadow-sm border-0 step-card">
-          <div class="card-body">
+          <div class="card-body py-4">
             <h4 class="fw-semibold">👩‍🎓 Students Learn</h4>
-            <p class="text-muted small">Students access lessons online or fully offline after caching.</p>
+            <p class="text-muted small">Students study online or fully offline after caching.</p>
           </div>
         </div>
       </div>
 
-      <div class="col-md-4">
+      <div class="col-md-4 float-up" style="animation-delay:.3s;">
         <div class="card h-100 shadow-sm border-0 step-card">
-          <div class="card-body">
+          <div class="card-body py-4">
             <h4 class="fw-semibold">🧠 AI Suggests</h4>
-            <p class="text-muted small">Based on quiz scores, the system recommends revision or next topics.</p>
+            <p class="text-muted small">Personalized revision recommendations based on scores.</p>
           </div>
         </div>
       </div>
@@ -140,15 +205,17 @@
 </section>
 
 
-<!-- ================= ABOUT ================= -->
-<section class="py-5 bg-light border-top">
-  <div class="container text-center">
+
+<!-- ====================== ABOUT ====================== -->
+<section class="py-5 bg-light border-top text-center">
+  <div class="container fade-in">
     <h2 class="fw-bold mb-3">What is EduBridge Kids?</h2>
     <p class="lead text-muted mb-4">
-      A simple offline-ready learning platform built for regions with unstable internet — helping children learn anytime.
+      A simple offline-ready platform designed for areas with unstable internet connectivity — helping children learn anytime.
     </p>
-    <a href="/register" class="btn btn-primary btn-lg fw-semibold">Get Started</a>
+    <a href="/register" class="btn btn-primary btn-lg fw-semibold px-4">Get Started</a>
   </div>
 </section>
+
 
 <%- include('./partials/footer') %>

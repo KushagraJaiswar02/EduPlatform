@@ -146,5 +146,7 @@
 	"None": "None",
 	"Resources (URLs or text)": "Resources (URLs or text)",
 	"Add Resource": "Add Resource",
-	"questions": "questions"
+	"questions": "questions",
+	"Select class": "Select class",
+	"You haven’t created any quizzes yet.": "You haven’t created any quizzes yet."
 }

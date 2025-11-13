@@ -20,75 +20,70 @@
 </head>
 <body class="bg-light">
 
-<!-- ========== NAVBAR ========== -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+<nav class="navbar navbar-expand-lg ed-nav shadow-sm">
   <div class="container">
-    <!-- Brand -->
-    <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
-      <img src="/images/logo-32.png" alt="Logo" width="32" height="32" class="me-2 d-none d-sm-inline">
-      EduBridge Kids
+
+    <!-- BRAND -->
+    <a class="navbar-brand ed-brand" href="/">
+      EduBridge <span>Kids</span>
     </a>
 
-    <!-- Toggler for mobile -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
-      aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
+    <!-- MOBILE TOGGLER -->
+    <button class="nav-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <i class="fa-solid fa-bars"></i>
     </button>
 
+    <!-- NAV CONTENT -->
     <div class="collapse navbar-collapse" id="mainNav">
-      <!-- Left Side -->
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-        <li class="nav-item"><a class="nav-link" href="/forum">Forum</a></li>
+
+      <!-- LEFT LINKS -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 ed-left-links">
+        <li class="nav-item">
+          <a class="nav-link ed-link" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link ed-link" href="/forum">Forum</a>
+        </li>
       </ul>
 
-      <!-- Right Side -->
-      <ul class="navbar-nav ms-auto align-items-center">
+      <!-- RIGHT SIDE -->
+      <ul class="navbar-nav ms-auto align-items-center gap-2 ed-right">
 
-        <!-- Language toggle (Includes fix for "currentLocale is not defined") -->
-        <li class="nav-item me-3 d-flex">
-          <a href="/setLang/en" 
-            class="btn btn-sm <%= typeof currentLocale !== 'undefined' && currentLocale === 'en' ? 'btn-primary' : 'btn-outline-secondary' %> me-2">
-            EN
-          </a>
-          <a href="/setLang/hi" 
-            class="btn btn-sm <%= typeof currentLocale !== 'undefined' && currentLocale === 'hi' ? 'btn-primary' : 'btn-outline-secondary' %>">
-            HI
-          </a>
-        </li>
+        <!-- LANGUAGE -->
+        <div class="lang-switch">
+          <a href="/setLang/en" class="lang-pill <%= currentLocale==='en'?'active':'' %>">EN</a>
+          <a href="/setLang/hi" class="lang-pill <%= currentLocale==='hi'?'active':'' %>">HI</a>
+        </div>
 
-        <% if (typeof role !== 'undefined' && role) { %>
-          <!-- LOGGED IN VIEW -->
+        <% if (role) { %>
+
           <% if (role === 'student') { %>
-            <li class="nav-item">
-              <a href="/student/dashboard" class="btn btn-sm btn-primary me-2">Student Dashboard</a>
-            </li>
-          <% } else if (role === 'teacher') { %>
-            <li class="nav-item">
-              <a href="/teacher/dashboard" class="btn btn-sm btn-success me-2">Teacher Dashboard</a>
-            </li>
-          <% } else if (role === 'admin') { %>
-            <li class="nav-item">
-              <a href="/admin/dashboard" class="btn btn-sm btn-dark me-2">Admin Panel</a>
-            </li>
+            <a href="/student/dashboard" class="ed-btn primary">Student</a>
           <% } %>
-          <li class="nav-item">
-            <a href="/logout" class="btn btn-sm btn-outline-danger">Logout</a>
-          </li>
+
+          <% if (role === 'teacher') { %>
+            <a href="/teacher/dashboard" class="ed-btn green">Teacher</a>
+          <% } %>
+
+          <% if (role === 'admin') { %>
+            <a href="/admin/dashboard" class="ed-btn dark">Admin</a>
+          <% } %>
+
+          <a href="/logout" class="ed-btn outline-red">Logout</a>
 
         <% } else { %>
-          <!-- LOGGED OUT VIEW -->
-          <li class="nav-item">
-            <a href="/login" class="btn btn-sm btn-outline-primary me-2">Login</a>
-          </li>
-          <li class="nav-item">
-            <a href="/register" class="btn btn-sm btn-primary">Register</a>
-          </li>
+
+          <a href="/login" class="ed-btn outline-blue">Login</a>
+          <a href="/register" class="ed-btn primary">Register</a>
+
         <% } %>
+
       </ul>
+
     </div>
   </div>
 </nav>
+
 
 <!-- FLASH MESSAGES -->
 <div class="container mt-3">

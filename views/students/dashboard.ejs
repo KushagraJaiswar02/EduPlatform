@@ -1,80 +1,182 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <% const u = (typeof user !== 'undefined' && user) ? user : (typeof currentUser !== 'undefined' ? currentUser : null); %>
-                    <div class="avatar mb-3" style="width:72px;height:72px;font-size:1.6rem;margin:auto;">
-                        <%= u && u.name ? u.name.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase() : 'U' %>
-                    </div>
-                    <h4 class="mb-0">
-                        <%= u && u.name ? u.name : __('User') %>
-                    </h4>
-                    <p class="text-muted small mb-1">
-                        <%= u && u.email ? u.email : '' %>
-                    </p>
-                    <p class="mb-0"><strong><%= __('Role') %>:</strong> <%= u && u.role ? (u.role.charAt(0).toUpperCase() + u.role.slice(1)) : __('Student') %></p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                      <strong><%= __('Class') %>:</strong>
-                      <% const cr = u && u.classRef ? u.classRef : null; %>
-                      <% if (cr && (cr.classNumber || cr.classNumber === 0)) { %>
-                        <%= __('Class') %> <%= cr.classNumber %>
-                      <% } else if (cr) { %>
-                        <%= __('Assigned') %>
-                      <% } else { %>
-                        <%= __('Not Assigned') %>
-                      <% } %>
-                    </li>
-                    <li class="list-group-item"><strong><%= __('Quizzes Taken') %>:</strong> <%= u && u.profile ? (u.profile.totalQuizzesTaken || 0) : 0 %></li>
-                    <li class="list-group-item"><strong><%= __('Avg. Score') %>:</strong> <%= u && u.profile ? (u.profile.averageScore || 0) : 0 %></li>
-                </ul>
-                <div class="card-body">
-                    <a href="/student/results" class="btn btn-primary w-100"><%= __('View Results') %></a>
-                </div>
-            </div>
-        </div>
+<style>
+  /* -------- Dashboard Styling -------- */
+  
+  .dash-welcome {
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    padding: 30px;
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
+  }
 
-        <div class="col-md-8">
-            <div class="row row-cols-1 row-cols-md-2 g-4">
-                <div class="col">
-                    <div class="card h-100 shadow-sm border-primary">
-                        <div class="card-body">
-                            <h5 class="card-title text-primary">❓ <%= __('Doubt Forum') %></h5>
-                            <p class="card-text"><%= __('Ask questions and discuss with peers and teachers. Post a new doubt here.') %></p>
-                            <a href="/forum/ask" class="btn btn-outline-primary mt-2"><%= __('Post New Doubt') %></a>
-                            <a href="/forum" class="btn btn-primary mt-2"><%= __('View All Doubts') %></a>
-                        </div>
-                    </div>
-                </div>
+  .dash-avatar {
+    width: 70px;
+    height: 70px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    font-size: 1.8rem;
+    font-weight: 600;
+    display: flex; justify-content: center; align-items: center;
+    margin-bottom: 10px;
+    backdrop-filter: blur(6px);
+  }
 
-                <div class="col">
-                    <div class="card h-100 shadow-sm border-info">
-                        <div class="card-body">
-                            <h5 class="card-title text-info">📚 <%= __('Lessons & Study Material') %></h5>
-                            <p class="card-text"><%= __('Access lessons and study material for your subjects.') %></p>
-                            <a href="/student/lessons" class="btn btn-outline-info mt-2"><%= __('Go to Lessons') %></a>
-                        </div>
-                    </div>
-                </div>
+  .stats-box {
+    background: white;
+    padding: 18px;
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+  }
 
-                <div class="col">
-                    <div class="card h-100 shadow-sm border-warning">
-                        <div class="card-body">
-                            <h5 class="card-title text-warning">📝 <%= __('Quizzes & Tests') %></h5>
-                            <p class="card-text"><%= __('Take quizzes and tests to assess your knowledge.') %></p>
-                            <a href="/student/quizzes" class="btn btn-outline-warning mt-2"><%= __('Take Quiz') %></a>
-                            <a href="/student/results" class="btn btn-primary mt-2"><%= __('View Results') %></a>
-                        </div>
-                    </div>
-                </div>
+  .stats-number {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #2563eb;
+  }
 
-            </div>
-        </div>
+  .dash-section-title {
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #1e293b;
+  }
+
+  .quick-card {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    height: 100%;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.07);
+    transition: .25s;
+  }
+
+  .quick-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .quick-icon {
+    font-size: 1.9rem;
+    margin-bottom: 8px;
+  }
+
+  .recommend-box {
+    background: #f1f5ff;
+    border-left: 4px solid #2563eb;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+
+</style>
+
+<%
+  const u = user || currentUser;
+  const initials = u.name ? u.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
+%>
+
+<div class="container mt-4 mb-5">
+
+  <!-- =======================
+         Welcome Header
+  ======================== -->
+  <div class="dash-welcome mb-4">
+    <div class="row align-items-center">
+      <div class="col-md-2 text-center">
+        <div class="dash-avatar"><%= initials %></div>
+      </div>
+      <div class="col-md-10">
+        <h3 class="fw-bold mb-1">Welcome back, <%= u.name.split(' ')[0] %> 👋</h3>
+        <p class="mb-0">Ready to continue learning and growing today?</p>
+      </div>
     </div>
+  </div>
+
+  <!-- =======================
+        Quick Stats
+  ======================== -->
+  <h5 class="dash-section-title">Your Learning Stats</h5>
+  <div class="row g-3 mb-4">
+    <div class="col-4">
+      <div class="stats-box">
+        <div class="stats-number"><%= u.profile?.totalQuizzesTaken || 0 %></div>
+        <div class="text-muted small">Quizzes Taken</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="stats-box">
+        <div class="stats-number"><%= u.profile?.averageScore || 0 %>%</div>
+        <div class="text-muted small">Avg. Score</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="stats-box">
+        <div class="stats-number"><%= u.classRef?.classNumber || '-' %></div>
+        <div class="text-muted small">Your Class</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =======================
+        Recommendations
+  ======================== -->
+  <h5 class="dash-section-title">Recommended for You</h5>
+
+  <!-- Example rules -->
+  <% if ((u.profile?.averageScore || 0) < 40) { %>
+    <div class="recommend-box">
+      <strong>📘 Revision Recommended</strong>
+      <br> Your scores show you might need revision. Check core lessons again.
+    </div>
+  <% } else if ((u.profile?.averageScore || 0) < 70) { %>
+    <div class="recommend-box">
+      <strong>📝 Practice More</strong>
+      <br> You’re improving! Try more quizzes to boost confidence.
+    </div>
+  <% } else { %>
+    <div class="recommend-box">
+      <strong>🚀 Great Work!</strong>
+      <br> You're doing excellent. Explore new topics or try advanced quizzes.
+    </div>
+  <% } %>
+
+  <!-- =======================
+        Quick Actions
+  ======================== -->
+  <h5 class="dash-section-title">Quick Actions</h5>
+  <div class="row g-4 mt-2">
+
+    <div class="col-md-4 col-sm-6">
+      <div class="quick-card">
+        <div class="quick-icon text-primary">❓</div>
+        <h6 class="fw-semibold">Ask a Doubt</h6>
+        <p class="small text-muted">Post your question & get helpful answers.</p>
+        <a href="/forum/ask" class="btn btn-primary w-100 btn-modern">Ask Now</a>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+      <div class="quick-card">
+        <div class="quick-icon text-info">📚</div>
+        <h6 class="fw-semibold">Lessons</h6>
+        <p class="small text-muted">Access lessons & notes for your subjects.</p>
+        <a href="/student/lessons" class="btn btn-info text-white w-100 btn-modern">View Lessons</a>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-sm-6">
+      <div class="quick-card">
+        <div class="quick-icon text-warning">📝</div>
+        <h6 class="fw-semibold">Take a Quiz</h6>
+        <p class="small text-muted">Test what you’ve learned today.</p>
+        <a href="/student/quizzes" class="btn btn-warning w-100 btn-modern">Start Quiz</a>
+        <a href="/student/results" class="btn btn-outline-warning w-100 mt-2 btn-modern">View Results</a>
+      </div>
+    </div>
+
+  </div>
+
 </div>
 
 <%- include('../partials/footer') %>

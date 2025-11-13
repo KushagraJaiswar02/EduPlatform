@@ -1,23 +1,98 @@
 <%- include('../partials/header') %>
 
+<style>
+  .quiz-card {
+    border-radius: 14px;
+    transition: 0.25s ease;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .quiz-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+  }
+
+  .subject-badge {
+    font-size: 0.75rem;
+    background: #eef2ff;
+    color: #4338ca;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
 <div class="container mt-4">
-  <h3 class="fw-bold mb-4">🧠 Available Quizzes</h3>
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold">🧠 Available Quizzes</h3>
+    <span class="badge bg-primary fs-6 px-3 py-2">
+      <%= quizzes.length %> Total
+    </span>
+  </div>
 
   <% if (quizzes.length === 0) { %>
-    <p class="text-muted">No quizzes available for your class yet.</p>
-  <% } else { %>
-    <div class="list-group">
-      <% quizzes.forEach(q => { %>
-        <a href="/student/quiz/<%= q._id %>" class="list-group-item list-group-item-action">
-          <div class="d-flex w-100 justify-content-between">
-            <h5 class="mb-1"><%= q.lessonId.title %></h5>
-            <small>Questions: <%= q.questions.length %></small>
-          </div>
-          <p class="mb-1 text-muted"><%= q.lessonId.subject %></p>
-        </a>
-      <% }) %>
+
+    <!-- NO QUIZZES MESSAGE -->
+    <div class="text-center py-5">
+      <img src="https://cdn-icons-png.flaticon.com/512/4076/4076508.png" 
+           width="90" class="mb-3 opacity-75">
+      <p class="text-muted">No quizzes available for your class yet.</p>
     </div>
+
+  <% } else { %>
+
+    <!-- QUIZ GRID -->
+    <div class="row g-3">
+
+      <% quizzes.forEach(q => { %>
+        <div class="col-md-4 col-sm-6">
+
+          <a href="/student/quiz/<%= q._id %>" 
+             class="text-decoration-none text-dark">
+
+            <div class="card quiz-card shadow-sm h-100">
+
+              <div class="card-body">
+
+                <!-- TITLE -->
+                <h5 class="fw-semibold mb-1">
+                  <%= q.lessonId.title %>
+                </h5>
+
+                <!-- SUBJECT BADGE -->
+                <span class="subject-badge mb-2 d-inline-block">
+                  <%= q.lessonId.subject %>
+                </span>
+
+                <!-- QUESTIONS COUNT -->
+                <p class="text-muted small mb-0">
+                  <strong><%= q.questions.length %></strong> Questions
+                </p>
+
+              </div>
+
+              <div class="card-footer bg-white border-0">
+                <button class="btn btn-primary btn-sm w-100">
+                  Start Quiz →
+                </button>
+              </div>
+
+            </div>
+
+          </a>
+        </div>
+      <% }) %>
+
+    </div>
+
   <% } %>
+
 </div>
 
 <%- include('../partials/footer') %>

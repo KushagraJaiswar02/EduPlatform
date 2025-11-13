@@ -243,3 +243,317 @@ footer {
 .avatar { background: linear-gradient(135deg,#60a5fa,#3b82f6); color:#fff; display:inline-flex; align-items:center; justify-content:center; border-radius:50%; }
 .card h5 { font-weight:700; }
 .accordion-button { font-weight:600 }
+
+.form-control-lg {
+  padding: 0.9rem 1.1rem !important;
+}
+
+.form-select-lg {
+  padding: 0.9rem !important;
+}
+
+.card {
+  border-radius: 1.1rem !important;
+}
+
+.btn-lg {
+  border-radius: 0.7rem !important;
+}
+
+/* Smooth Fade-In */
+.fade-in {
+  animation: fadeIn 0.7s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Post stagger animation */
+.animate-post {
+  opacity: 0;
+  animation: postEnter 0.5s ease forwards;
+  animation-delay: calc(var(--i) * 0.07s);
+}
+@keyframes postEnter {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Hover lift */
+.forum-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.forum-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+}
+
+/* Avatar Pulse */
+.pulse {
+  animation: pulseAnim 2.5s infinite ease-in-out;
+}
+@keyframes pulseAnim {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Tag shimmer fade */
+.fade-tags .tag-anim {
+  animation: fadeTag 0.6s ease forwards;
+}
+@keyframes fadeTag {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Answer Slide In */
+.answer-slide {
+  animation: answerSlide 0.5s ease;
+}
+@keyframes answerSlide {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Reply box subtle slide */
+.reply-expand {
+  animation: replyAppear 0.5s ease;
+}
+@keyframes replyAppear {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Select dropdown smooth */
+.smooth-select {
+  transition: all 0.2s ease;
+}
+.smooth-select:hover {
+  background-color: #eef4ff;
+}
+ 
+/* ------------------------------------------
+   EDU NAVBAR — Sexy, Modern, Animated
+-------------------------------------------*/
+
+.ed-nav {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+  padding: 0.8rem 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+/* BRAND */
+.ed-brand {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #1e293b !important;
+}
+
+.ed-brand span {
+  color: #2563eb;
+}
+
+/* TOGGLER */
+.nav-toggle {
+  border: none;
+  background: none;
+  font-size: 1.6rem;
+  color: #2563eb;
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .nav-toggle { display: block; }
+}
+
+/* LEFT LINKS */
+.ed-link {
+  position: relative;
+  padding: 8px 14px !important;
+  color: #475569 !important;
+  font-weight: 500;
+  transition: .25s;
+  border-radius: 10px;
+}
+
+.ed-link:hover {
+  color: #2563eb !important;
+  background: rgba(37, 99, 235, 0.08);
+}
+
+/* Animated underline */
+.ed-link::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  bottom: 3px;
+  width: 0;
+  height: 2px;
+  background: #2563eb;
+  border-radius: 10px;
+  transition: width .3s ease;
+}
+
+.ed-link:hover::after {
+  width: 60%;
+}
+
+/* LANGUAGE PILL */
+.lang-switch {
+  display: flex;
+  gap: 6px;
+  margin-right: 10px;
+}
+
+.lang-pill {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid #cbd5e1;
+  font-size: 0.75rem;
+  color: #475569;
+  transition: .3s;
+  background: white;
+}
+
+.lang-pill:hover {
+  background: #e9efff;
+  color: #2563eb;
+}
+
+.lang-pill.active {
+  background: #2563eb;
+  color: #fff;
+  border-color: #2563eb;
+}
+
+/* BUTTONS */
+.ed-btn {
+  padding: 7px 18px;
+  border-radius: 50px;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: .25s;
+  display: inline-block;
+}
+
+.ed-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+/* Color variants */
+.ed-btn.primary { background: #2563eb; color: #fff; }
+.ed-btn.green { background: #16a34a; color: #fff; }
+.ed-btn.dark { background: #0f172a; color: #fff; }
+
+/* Outlines */
+.ed-btn.outline-blue {
+  border: 1px solid #2563eb; color: #2563eb;
+}
+
+.ed-btn.outline-red {
+  border: 1px solid #dc2626; color: #dc2626;
+}
+
+.ed-btn.outline-blue:hover {
+  background: #2563eb; color: #fff;
+}
+
+.ed-btn.outline-red:hover {
+  background: #dc2626; color: #fff;
+}
+
+/* MOBILE FIXES */
+@media (max-width: 991px) {
+  .ed-right {
+    margin-top: 12px;
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .ed-btn {
+    width: 100%;
+    margin-bottom: 6px;
+  }
+
+  .lang-switch {
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+}
+ 
+/* ------------------------------------------
+   Sexy Modern Footer
+-------------------------------------------*/
+
+.ed-footer {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(0,0,0,0.05);
+  position: relative;
+}
+
+/* subtle top gradient accent */
+.ed-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb, #4f46e5, #3b82f6);
+  opacity: 0.7;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.f-link {
+  color: #475569;
+  font-weight: 500;
+  text-decoration: none;
+  position: relative;
+  transition: 0.25s ease;
+}
+
+.f-link:hover {
+  color: #2563eb;
+}
+
+/* animated underline on hover */
+.f-link::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: #2563eb;
+  transition: width 0.25s ease;
+  border-radius: 20px;
+}
+
+.f-link:hover::after {
+  width: 100%;
+}
+
+.footer-copy {
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+/* MOBILE */
+@media (max-width: 576px) {
+  .footer-links {
+    gap: 0.7rem;
+  }
+}

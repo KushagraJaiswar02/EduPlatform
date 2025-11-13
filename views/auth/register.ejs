@@ -1,98 +1,124 @@
 <%- include('../partials/header') %>
 
-<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
-  <div class="col-md-6 col-lg-4">
-    <div class="card shadow-sm border-0">
-      <div class="card-body p-4">
-        <h3 class="text-center mb-4 fw-semibold text-primary">
-          <i class="bi bi-person-plus-fill me-2"></i> <%= __('Register') %>
-        </h3>
+<div class="container py-5">
 
-        <!-- Register Form -->
-        <form action="/register" method="POST">
-  <div class="mb-3">
-    <label for="name" class="form-label fw-semibold"><%= __('Full Name') %></label>
-    <input 
-      type="text" 
-      class="form-control" 
-      id="name" 
-      name="name" 
-      placeholder="<%= __('Enter your full name') %>" 
-      required
-    />
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+
+      <!-- CARD -->
+      <div class="card border-0 shadow-lg rounded-4 p-2">
+        <div class="card-body p-4">
+
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary">Create an Account</h2>
+            <p class="text-muted mb-0">Join EduBridge and start learning smarter</p>
+          </div>
+
+          <!-- REGISTER FORM -->
+          <form action="/register" method="POST">
+
+            <!-- Full Name -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Full Name</label>
+              <input 
+                type="text" 
+                class="form-control form-control-lg rounded-3"
+                id="name"
+                name="name"
+                placeholder="Enter your full name"
+                required
+              >
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Email Address</label>
+              <input 
+                type="email" 
+                class="form-control form-control-lg rounded-3"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              >
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Password</label>
+              <input 
+                type="password" 
+                class="form-control form-control-lg rounded-3"
+                id="password"
+                name="password"
+                placeholder="Create a password"
+                required
+              >
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Confirm Password</label>
+              <input 
+                type="password" 
+                class="form-control form-control-lg rounded-3"
+                id="confirmPassword"
+                name="confirmPassword"
+                placeholder="Confirm your password"
+                required
+              >
+            </div>
+
+            <!-- Role -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Select Role</label>
+              <select class="form-select form-select-lg rounded-3" id="role" name="role" required>
+                <option value="student" selected>I'm a Student</option>
+                <option value="teacher">I'm a Teacher</option>
+              </select>
+            </div>
+
+            <!-- Class selection (only for students) -->
+            <div class="mb-3" id="classSelection">
+              <label class="form-label fw-semibold">Select Class</label>
+              <select class="form-select form-select-lg rounded-3" id="classNumber" name="classNumber" required>
+                <option value="">-- Select a Class --</option>
+                <% classes.forEach(cls => { %>
+                  <option value="<%= cls.classNumber %>">Class <%= cls.classNumber %></option>
+                <% }) %>
+              </select>
+            </div>
+
+            <!-- Submit -->
+            <div class="d-grid mt-3 mb-3">
+              <button type="submit" class="btn btn-primary btn-lg rounded-3">
+                Register
+              </button>
+            </div>
+
+            <!-- Login Link -->
+            <div class="text-center small mt-2">
+              Already have an account?
+              <a href="/login" class="fw-semibold text-decoration-none">Login</a>
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <div class="mb-3">
-    <label for="email" class="form-label fw-semibold"><%= __('Email address') %></label>
-    <input 
-      type="email" 
-      class="form-control" 
-      id="email" 
-      name="email" 
-      placeholder="<%= __('Enter your email') %>" 
-      required
-    />
-  </div>
+</div>
 
-  <div class="mb-3">
-    <label for="password" class="form-label fw-semibold"><%= __('Password') %></label>
-    <input 
-      type="password" 
-      class="form-control" 
-      id="password" 
-      name="password" 
-      placeholder="<%= __('Create a password') %>" 
-      required
-    />
-  </div>
-
-  <div class="mb-3">
-    <label for="confirmPassword" class="form-label fw-semibold"><%= __('Confirm Password') %></label>
-    <input 
-      type="password" 
-      class="form-control" 
-      id="confirmPassword" 
-      name="confirmPassword" 
-      placeholder="<%= __('Confirm your password') %>" 
-      required
-    />
-  </div>
-
-  <div class="mb-3">
-    <label for="role" class="form-label fw-semibold"><%= __('Select your role') %></label>
-    <select class="form-select" id="role" name="role" required>
-      <option value="student" selected><%= __("I'm a Student") %></option>
-      <option value="teacher"><%= __("I'm a Teacher") %></option>
-    </select>
-  </div>
-
-  <!-- Class Selection (only for students) -->
-  <div class="mb-3" id="classSelection">
-    <label for="classNumber" class="form-label fw-semibold"><%= __('Select a Class') %></label>
-    <select class="form-select" id="classNumber" name="classNumber" required>
-      <option value="">-- <%= __('Select a Class') %> --</option>
-      <% classes.forEach(cls => { %>
-        <option value="<%= cls.classNumber %>"><%= __('Class') %> <%= cls.classNumber %></option>
-      <% }) %>
-    </select>
-  </div>
-
-  <div class="d-grid mb-3">
-    <button type="submit" class="btn btn-primary btn-lg"><%= __('Register') %></button>
-  </div>
-
-  <div class="text-center small">
-    <span><%= __('Already have an account?') %></span>
-    <a href="/login" class="fw-semibold text-decoration-none"><%= __('Login') %></a>
-  </div>
-</form>
-
-<!-- Small JS to toggle class dropdown -->
+<!-- Script for toggling class dropdown -->
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const roleSelect = document.getElementById('role');
     const classSelection = document.getElementById('classSelection');
-    
+
     function toggleClassDropdown() {
       if (roleSelect.value === 'student') {
         classSelection.style.display = 'block';
@@ -104,13 +130,8 @@
     }
 
     roleSelect.addEventListener('change', toggleClassDropdown);
-    toggleClassDropdown(); // initial run
+    toggleClassDropdown();
   });
 </script>
-
-      </div>
-    </div>
-  </div>
-</div>
 
 <%- include('../partials/footer') %>
