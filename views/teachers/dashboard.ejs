@@ -86,6 +86,15 @@
                     </select>
                   </div>
 
+                  <div class="col-md-6">
+                    <label class="form-label">Difficulty Level</label>
+                    <select name="difficultyLevel" class="form-select">
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                    </select>
+                  </div>
+
                   <div class="col-12">
                     <label class="form-label">Title</label>
                     <input type="text" name="title" class="form-control" required>
@@ -94,6 +103,29 @@
                   <div class="col-12">
                     <label class="form-label">Content</label>
                     <textarea name="content" class="form-control" rows="4" required></textarea>
+                  </div>
+
+                  <div class="col-md-6">
+                    <label class="form-label">Related To (optional)</label>
+                    <select name="relatedTo" class="form-select">
+                      <option value="">-- None --</option>
+                      <% if (myLessons && myLessons.length) { %>
+                        <% myLessons.forEach(l => { %>
+                          <option value="<%= l._id %>"><%= l.title %></option>
+                        <% }) %>
+                      <% } %>
+                    </select>
+                  </div>
+
+                  <div class="col-12" id="resources-section">
+                    <label class="form-label">Resources (URLs or text)</label>
+                    <div id="resources-container">
+                      <div class="input-group mb-2">
+                        <input type="text" name="resources[]" class="form-control" placeholder="https://example.com/resource or short text">
+                        <button type="button" class="btn btn-outline-danger remove-resource">Remove</button>
+                      </div>
+                    </div>
+                    <button type="button" id="addResourceBtn" class="btn btn-sm btn-outline-primary">+ Add Resource</button>
                   </div>
 
                 </div>
@@ -213,6 +245,31 @@
       <input name="questions[${qIndex}][answer]" class="form-control" required>
     `;
     container.appendChild(box);
+  });
+
+  // Resources dynamic inputs for Add Lesson
+  const resContainer = document.getElementById('resources-container');
+  const addResBtn = document.getElementById('addResourceBtn');
+
+  function makeResourceRow(value = ''){
+    const wrap = document.createElement('div');
+    wrap.className = 'input-group mb-2';
+    wrap.innerHTML = `
+      <input type="text" name="resources[]" class="form-control" value="${value.replace(/\"/g,'&quot;')}" placeholder="https://example.com/resource or short text">
+      <button type="button" class="btn btn-outline-danger remove-resource">Remove</button>
+    `;
+    return wrap;
+  }
+
+  addResBtn?.addEventListener('click', () => {
+    resContainer.appendChild(makeResourceRow(''));
+  });
+
+  resContainer?.addEventListener('click', (e) => {
+    if (e.target && e.target.classList.contains('remove-resource')){
+      const row = e.target.closest('.input-group');
+      row?.remove();
+    }
   });
 </script>
 

@@ -49,12 +49,35 @@ exports.getDashboard = async (req, res) => {
 // ===============================
 exports.addLesson = async (req, res) => {
   try {
-    const { classNumber, subject, title, content, lessonType } = req.body;
+    const {
+      classNumber,
+      subject,
+      title,
+      content,
+      lessonType,
+      difficultyLevel,
+      relatedTo
+    } = req.body;
+
+    // normalize resources[] (can be single string or array)
+    let resourcesArr = [];
+    if (req.body.resources) {
+      if (Array.isArray(req.body.resources)) resourcesArr = req.body.resources;
+      else resourcesArr = [req.body.resources];
+      resourcesArr = resourcesArr.map(r => String(r).trim()).filter(Boolean);
+    }
 
     const classDoc = await Class.findOne({ classNumber });
     if (!classDoc) {
       req.flash("error", "Class not found.");
       return res.redirect("/teacher/dashboard");
+    }
+
+    // validate relatedTo if provided
+    let relatedToId = undefined;
+    if (relatedTo && String(relatedTo).trim()) {
+      const rel = await Lesson.findById(String(relatedTo).trim());
+      if (rel) relatedToId = rel._id;
     }
 
     await Lesson.create({
@@ -63,6 +86,9 @@ exports.addLesson = async (req, res) => {
       title,
       content,
       lessonType,
+      difficultyLevel: difficultyLevel || 'beginner',
+      relatedTo: relatedToId,
+      resources: resourcesArr,
       uploadedBy: req.user._id
     });
 
