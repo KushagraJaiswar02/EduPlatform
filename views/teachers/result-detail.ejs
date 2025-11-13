@@ -1,0 +1,52 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <div>
+            <h5 class="mb-0"><%= result.quizId && result.quizId.lessonId ? result.quizId.lessonId.title : __('Quiz Result') %></h5>
+            <small class="text-white-50">
+              <%= __('Student') %>: <%= result.userId ? result.userId.name : 'Deleted user' %>
+              <% if (result.userId && result.userId.email) { %>
+                &nbsp;(<%= result.userId.email %>)
+              <% } %>
+            </small>
+          </div>
+          <div class="text-end">
+            <small><%= new Date(result.createdAt).toLocaleString() %></small>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-4">
+            <h2 class="display-5 fw-bold text-primary"><%= result.score %> / <%= result.total %></h2>
+            <p class="text-muted"><%= ((result.score / result.total) * 100).toFixed(1) %>%</p>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <p><strong><%= __('Lesson') %>:</strong> <%= result.quizId && result.quizId.lessonId ? result.quizId.lessonId.title : '—' %></p>
+              <p><strong><%= __('Class') %>:</strong>
+                <% if (result.quizId && result.quizId.lessonId && result.quizId.lessonId.classRef) { %>
+                  <%= result.quizId.lessonId.classRef.classNumber || '—' %>
+                <% } else { %> — <% } %>
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p><strong><%= __('Date') %>:</strong> <%= new Date(result.createdAt).toLocaleDateString() %></p>
+              <p><strong><%= __('Time') %>:</strong> <%= new Date(result.createdAt).toLocaleTimeString() %></p>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <a href="/teacher/results" class="btn btn-outline-secondary"><%= __('Back') %></a>
+            <a href="/teacher/results?student=<%= result.userId ? result.userId._id : '' %>" class="btn btn-primary"><%= __('View other results for student') %></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

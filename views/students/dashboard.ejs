@@ -5,31 +5,36 @@
         <div class="col-md-4">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
+                    <% const u = (typeof user !== 'undefined' && user) ? user : (typeof currentUser !== 'undefined' ? currentUser : null); %>
                     <div class="avatar mb-3" style="width:72px;height:72px;font-size:1.6rem;margin:auto;">
-                        <%= (typeof user !== 'undefined' && user.name) ? user.name.split(' ').map(n=>n[0]).slice(0,2).join('') : (currentUser && currentUser.name ? currentUser.name.split(' ').map(n=>n[0]).slice(0,2).join('') : 'U') %>
+                        <%= u && u.name ? u.name.split(' ').map(n=>n[0]).slice(0,2).join('').toUpperCase() : 'U' %>
                     </div>
                     <h4 class="mb-0">
-                        <%= (typeof user !== 'undefined' && user.name) ? user.name : (currentUser && currentUser.name ? currentUser.name : __('User')) %>
+                        <%= u && u.name ? u.name : __('User') %>
                     </h4>
                     <p class="text-muted small mb-1">
-                        <%= (typeof user !== 'undefined' && user.email) ? user.email : (currentUser && currentUser.email ? currentUser.email : '') %>
+                        <%= u && u.email ? u.email : '' %>
                     </p>
-                    <p class="mb-0"><strong><%= __('Role') %>:</strong> <%= (typeof user !== 'undefined' && user.role) ? __('I\'m a ' + user.role.charAt(0).toUpperCase() + user.role.slice(1)) : (currentUser && currentUser.role ? __('I\'m a ' + currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)) : __("I'm a Student")) %></p>
+                    <p class="mb-0"><strong><%= __('Role') %>:</strong> <%= u && u.role ? (u.role.charAt(0).toUpperCase() + u.role.slice(1)) : __('Student') %></p>
                 </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong><%= __('Class') %>:</strong> 
-                            <% let cr = (typeof user !== 'undefined' && user.classRef) ? user.classRef : (currentUser && currentUser.classRef ? currentUser.classRef : null); %>
-                        <% if (cr && cr.classNumber) { %>
-                            <%= __('Class') %> <%= cr.classNumber %>
-                        <% } else if (cr) { %>
-                            <%= __('Assigned') %>
-                        <% } else { %>
-                            <%= __('Not Assigned') %>
-                        <% } %>
+                    <li class="list-group-item">
+                      <strong><%= __('Class') %>:</strong>
+                      <% const cr = u && u.classRef ? u.classRef : null; %>
+                      <% if (cr && (cr.classNumber || cr.classNumber === 0)) { %>
+                        <%= __('Class') %> <%= cr.classNumber %>
+                      <% } else if (cr) { %>
+                        <%= __('Assigned') %>
+                      <% } else { %>
+                        <%= __('Not Assigned') %>
+                      <% } %>
                     </li>
-                    <li class="list-group-item"><strong><%= __('Quizzes Taken') %>:</strong> <%= (typeof user !== 'undefined' && user.profile) ? user.profile.totalQuizzesTaken : ((currentUser && currentUser.profile) ? currentUser.profile.totalQuizzesTaken : 0) %></li>
-                    <li class="list-group-item"><strong><%= __('Avg. Score') %>:</strong> <%= (typeof user !== 'undefined' && user.profile) ? user.profile.averageScore : ((currentUser && currentUser.profile) ? currentUser.profile.averageScore : 0) %></li>
+                    <li class="list-group-item"><strong><%= __('Quizzes Taken') %>:</strong> <%= u && u.profile ? (u.profile.totalQuizzesTaken || 0) : 0 %></li>
+                    <li class="list-group-item"><strong><%= __('Avg. Score') %>:</strong> <%= u && u.profile ? (u.profile.averageScore || 0) : 0 %></li>
                 </ul>
+                <div class="card-body">
+                    <a href="/student/results" class="btn btn-primary w-100"><%= __('View Results') %></a>
+                </div>
             </div>
         </div>
 
@@ -62,9 +67,11 @@
                             <h5 class="card-title text-warning">📝 <%= __('Quizzes & Tests') %></h5>
                             <p class="card-text"><%= __('Take quizzes and tests to assess your knowledge.') %></p>
                             <a href="/student/quizzes" class="btn btn-outline-warning mt-2"><%= __('Take Quiz') %></a>
+                            <a href="/student/results" class="btn btn-primary mt-2"><%= __('View Results') %></a>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>

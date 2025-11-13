@@ -19,4 +19,7 @@ router.get('/quizzes', isLoggedIn, isTeacher, teacherController.getAllQuizzes);
 // View quiz results
 router.get('/results', isLoggedIn, isTeacher, teacherController.viewResults);
 
+router.get('/results/:id', isLoggedIn, isTeacher, teacherController.getResultDetail);
+
+
 module.exports = router;

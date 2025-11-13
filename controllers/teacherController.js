@@ -175,3 +175,92 @@ exports.getAllQuizzes = async (req, res) => {
     res.render("error", { message: "Failed to load quizzes" });
   }
 };
+
+
+exports.getResults = async (req, res) => {
+  try {
+    // 1) find classes where this teacher appears in subjects (adjust to your Class schema)
+    const classes = await Class.find({ 'subjects.teacher': req.user._id }).select('_id classNumber');
+
+    if (!classes || classes.length === 0) {
+      req.flash('info', 'You are not assigned to any classes yet.');
+      return res.render('teachers/results', { results: [], classes: [] , filterClass: null });
+    }
+
+    const classIds = classes.map(c => c._id);
+
+    // 2) lessons that belong to these classes
+    const lessons = await Lesson.find({ classRef: { $in: classIds } }).select('_id title classRef');
+
+    const lessonIds = lessons.map(l => l._id);
+
+    // 3) quizzes that refer to those lessons
+    const quizzes = await Quiz.find({ lessonId: { $in: lessonIds } }).select('_id lessonId');
+
+    const quizIds = quizzes.map(q => q._id);
+
+    // 4) results for these quizzes
+    const results = await Result.find({ quizId: { $in: quizIds } })
+      .populate({
+        path: 'quizId',
+        populate: { path: 'lessonId', select: 'title classRef' }
+      })
+      .populate('userId', 'name email classRef')
+      .sort({ createdAt: -1 });
+
+    res.render('teachers/results', {
+      results,
+      classes,
+      filterClass: null
+    });
+
+  } catch (err) {
+    console.error('Teacher getResults error:', err);
+    req.flash('error', 'Could not load results.');
+    return res.redirect('/teacher/dashboard');
+  }
+};
+
+exports.getResultDetail = async (req, res) => {
+  try {
+    // 1) find classes teacher handles
+    const classes = await Class.find({ 'subjects.teacher': req.user._id }).select('_id');
+    const classIds = classes.map(c => c._id.toString());
+
+    // 2) load the result with nested populates
+    const result = await Result.findById(req.params.id)
+      .populate('userId', 'name email classRef')
+      .populate({
+        path: 'quizId',
+        populate: {
+          path: 'lessonId',
+          select: 'title classRef'
+        }
+      });
+
+    if (!result) {
+      req.flash('error', 'Result not found.');
+      return res.redirect('/teacher/results');
+    }
+
+    // 3) authorization: ensure the lesson's classRef belongs to one of teacher's classes
+    const lesson = result.quizId && result.quizId.lessonId;
+    const lessonClassId = lesson && lesson.classRef ? lesson.classRef.toString() : null;
+
+    if (!lessonClassId || !classIds.includes(lessonClassId)) {
+      req.flash('error', 'You are not authorized to view this result.');
+      return res.redirect('/teacher/results');
+    }
+
+    // 4) render detail view
+    res.render('teachers/result-detail', {
+      result,
+      classes
+    });
+
+  } catch (err) {
+    console.error('Teacher getResultDetail error:', err);
+    req.flash('error', 'Could not load result detail.');
+    return res.redirect('/teacher/results');
+  }
+};
