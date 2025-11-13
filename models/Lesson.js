@@ -32,7 +32,19 @@ const lessonSchema = new mongoose.Schema({
     enum: ['beginner', 'intermediate', 'advanced'],
     default: 'beginner'
   },
-  resources: [String],
+  // resources can be simple strings (legacy) or richer objects
+  // Use Mixed so both string and object representations are accepted without cast errors.
+  resources: {
+    type: [mongoose.Schema.Types.Mixed],
+    default: []
+  },
+  live: {
+    enabled: { type: Boolean, default: false },
+    meetingUrl: String,
+    scheduledAt: Date,
+    // whether a live session is currently active (teacher started it)
+    active: { type: Boolean, default: false }
+  },
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'

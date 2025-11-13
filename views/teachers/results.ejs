@@ -1,0 +1,47 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-4">
+  <h3 class="fw-bold mb-4"><%= __('Student Quiz Results') %></h3>
+
+  <% if (results.length === 0) { %>
+    <div class="alert alert-info"><%= __('No results found for your classes yet.') %></div>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle">
+        <thead class="table-light">
+          <tr>
+            <th><%= __('Student') %></th>
+            <th><%= __('Class') %></th>
+            <th><%= __('Lesson') %></th>
+            <th><%= __('Score') %></th>
+            <th><%= __('Date') %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% results.forEach(r => { %>
+            <tr>
+              <td><%= r.userId ? r.userId.name : 'Deleted user' %> <small class="text-muted d-block"><%= r.userId ? r.userId.email : '' %></small></td>
+              <td>
+                <% if (r.quizId && r.quizId.lessonId && r.quizId.lessonId.classRef) { %>
+                  <%= r.quizId.lessonId.classRef.classNumber || '—' %>
+                <% } else { %>
+                  —
+                <% } %>
+              </td>
+              <td><%= r.quizId && r.quizId.lessonId ? r.quizId.lessonId.title : '—' %></td>
+              <td><%= r.score %> / <%= r.total %></td>
+              <td><%= new Date(r.createdAt).toLocaleString() %></td>
+              <td>
+                <a href="/teacher/results/<%= r._id %>" class="btn btn-sm btn-outline-primary"><%= __('View') %></a>
+              </td>
+            </tr>
+           
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

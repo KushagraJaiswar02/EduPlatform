@@ -17,14 +17,14 @@ router.get('/lesson/:id', isLoggedIn, isStudent, studentController.getLesson);
 // ==========================
 // QUIZZES
 // ==========================
-// View all quizzes for student’s class
+// View all quizzes for student's class
 router.get('/quizzes', isLoggedIn, isStudent, studentController.getAllQuizzes);
 
-// Take quiz for a lesson
-router.get('/quiz/:lessonId', isLoggedIn, isStudent, studentController.getQuiz);
+// Take quiz by quizId (not lessonId)
+router.get('/quiz/:quizId', isLoggedIn, isStudent, studentController.getQuiz);
 
-// Submit quiz answers
-router.post('/quiz/:quizId/submit', isLoggedIn, isStudent, studentController.submitQuiz);
+// Submit quiz answers — matches form action
+router.post('/quiz/:quizId', isLoggedIn, isStudent, studentController.submitQuiz);
 
 // ==========================
 // RESULTS
