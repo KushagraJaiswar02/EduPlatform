@@ -134,5 +134,17 @@
 	"Score": "Score",
 	"View": "View",
 	"Not assigned": "Not assigned",
-	"View Results": "View Results"
+	"View Results": "View Results",
+	"Assigned Classes": "Assigned Classes",
+	"My Lessons": "My Lessons",
+	"My Quizzes": "My Quizzes",
+	"Difficulty Level": "Difficulty Level",
+	"Beginner": "Beginner",
+	"Intermediate": "Intermediate",
+	"Advanced": "Advanced",
+	"Related To (optional)": "Related To (optional)",
+	"None": "None",
+	"Resources (URLs or text)": "Resources (URLs or text)",
+	"Add Resource": "Add Resource",
+	"questions": "questions"
 }

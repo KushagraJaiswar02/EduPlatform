@@ -18,7 +18,6 @@
           <p class="text-muted mb-1"><%= t && t.email ? t.email : '' %></p>
           <p><strong><%= __('Role') %>:</strong> <%= __('Teacher') %></p>
 
-<<<<<<< HEAD
           <% if (classes && classes.length) { %>
             <p>
               <strong>Teaching Classes:</strong><br>
@@ -39,28 +38,6 @@
 
             <p class="text-muted">No classes assigned.</p>
           <% } %>
-=======
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <strong><%= __('Assigned Classes') %>:</strong>
-              <ul class="mb-0">
-                <% if (typeof classes !== 'undefined' && classes && classes.length) { %>
-                  <% classes.forEach(cls => { %>
-                    <li>Class <%= cls.classNumber %></li>
-                  <% }) %>
-                <% } else if (t && t.classRef) { %>
-                  <li>Class <%= t.classRef.classNumber %></li>
-                <% } else { %>
-                  <li><%= __('None') %></li>
-                <% } %>
-              </ul>
-            </li>
-          </ul>
-        </div>
-
-        <div class="card-body">
-          <a href="/teacher/results" class="btn btn-primary w-100"><%= __('View Results') %></a>
->>>>>>> d3631539af01fa271b3a9d9f138bc5a00f79412b
         </div>
       </div>
 
@@ -235,7 +212,6 @@
       <% } else { %>
         <div class="list-group mb-4">
           <% myLessons.forEach(lesson => { %>
-<<<<<<< HEAD
             <div class="list-group-item d-flex align-items-start justify-content-between">
               <div>
                 <strong><%= lesson.title %></strong>
@@ -266,12 +242,6 @@
                   <% } %>
                 </div>
               </div>
-=======
-            <div class="list-group-item">
-              <strong><%= lesson.title %></strong>
-              <span class="text-muted">· <%= lesson.classRef ? ('Class ' + lesson.classRef.classNumber) : 'N/A' %></span>
-              <div class="small text-muted"><%= lesson.subject %> | <%= lesson.lessonType %></div>
->>>>>>> d3631539af01fa271b3a9d9f138bc5a00f79412b
             </div>
           <% }) %>
         </div>

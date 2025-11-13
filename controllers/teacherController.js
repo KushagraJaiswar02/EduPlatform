@@ -268,7 +268,6 @@ exports.getAllQuizzes = async (req, res) => {
   }
 };
 
-<<<<<<< HEAD
 // ===============================
 // ENABLE LIVE FOR EXISTING LESSON
 // ===============================
@@ -302,7 +301,6 @@ exports.enableLive = async (req, res) => {
     return res.redirect('/teacher/dashboard');
   }
 };
-=======
 
 exports.getResults = async (req, res) => {
   try {
@@ -391,4 +389,3 @@ exports.getResultDetail = async (req, res) => {
     return res.redirect('/teacher/results');
   }
 };
->>>>>>> d3631539af01fa271b3a9d9f138bc5a00f79412b
