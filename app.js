@@ -20,6 +20,7 @@ const studentRoutes = require('./routes/student');
 const teacherRoutes = require('./routes/teacher');
 const forumRoutes = require('./routes/forum');
 const adminRoutes = require('./routes/admin');
+const chatbotRoutes = require('./routes/chatbot');
 
 // Initialize app
 const app = express();
@@ -74,6 +75,12 @@ app.use(methodOverride('_method'));
 app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/', authRoutes);
+app.use('/student', studentRoutes);
+app.use('/teacher', teacherRoutes);
+app.use('/forum', forumRoutes);
+app.use('/admin', adminRoutes);
+app.use('/chatbot', chatbotRoutes);
 
 app.use(cookieParser());
 

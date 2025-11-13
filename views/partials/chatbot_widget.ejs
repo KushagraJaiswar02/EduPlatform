@@ -1,0 +1,230 @@
+<% if (currentUser) { %>
+<style>
+    /* Basic Chatbot Styling - You may move this to your public/css/style.css */
+    .chatbot-icon {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        cursor: pointer;
+        padding: 15px;
+        background-color: #3f51b5; /* Primary Color */
+        color: white;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .chatbot-window {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        width: 300px;
+        height: 400px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        display: none; /* Starts hidden */
+        flex-direction: column;
+        z-index: 999;
+    }
+    .chat-header {
+        background-color: #536dfe;
+        color: white;
+        padding: 10px;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: bold;
+    }
+    .chat-body {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: white;
+        border-bottom: 1px solid #eee;
+    }
+    .chat-footer {
+        padding: 10px;
+        display: flex;
+    }
+    .chat-footer input {
+        flex-grow: 1;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-right: 5px;
+    }
+    .chat-footer button {
+        padding: 8px 10px;
+        background-color: #3f51b5;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .message {
+        margin-bottom: 8px;
+        padding: 8px 12px;
+        border-radius: 18px;
+        max-width: 80%;
+        word-wrap: break-word;
+        font-size: 0.9em;
+    }
+    .message.user {
+        background-color: #e3f2fd; /* Light Blue */
+        margin-left: auto;
+        border-bottom-right-radius: 4px;
+    }
+    .message.bot {
+        background-color: #f1f8e9; /* Light Green */
+        margin-right: auto;
+        border-bottom-left-radius: 4px;
+    }
+    .clear-button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 0.8em;
+        cursor: pointer;
+        opacity: 0.8;
+        margin-left: 10px;
+        padding: 2px 5px;
+    }
+    .clear-button:hover {
+        opacity: 1;
+        text-decoration: underline;
+    }
+</style>
+
+<div id="chatbot-icon" class="chatbot-icon">
+    <i class="fas fa-robot" style="font-size: 24px;"></i> 
+</div>
+
+<div id="chatbot-window" class="chatbot-window">
+    <div class="chat-header">
+        <span>EduBot Assistant</span>
+        <div>
+            <button class="clear-button" id="clear-chat-btn">Clear History</button>
+            <button class="clear-button" onclick="document.getElementById('chatbot-window').style.display='none';">X</button>
+        </div>
+    </div>
+    <div class="chat-body" id="chat-body">
+        <div class="message bot">Hello! I'm EduBot, your learning assistant. How can I help you today?</div>
+    </div>
+    <div class="chat-footer">
+        <input type="text" id="chat-input" placeholder="Ask EduBot a question...">
+        <button id="send-btn">Send</button>
+    </div>
+</div>
+
+<script>
+    const chatWindow = document.getElementById('chatbot-window');
+    const chatIcon = document.getElementById('chatbot-icon');
+    const chatBody = document.getElementById('chat-body');
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-btn');
+    const clearButton = document.getElementById('clear-chat-btn');
+
+    // Toggle chat window visibility
+    chatIcon.addEventListener('click', () => {
+        chatWindow.style.display = chatWindow.style.display === 'flex' ? 'none' : 'flex';
+        if (chatWindow.style.display === 'flex') {
+            chatInput.focus();
+            scrollToBottom();
+        }
+    });
+
+    function scrollToBottom() {
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    function appendMessage(sender, text) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', sender);
+        
+        // Sanitize the text to handle potential HTML/Markdown from the bot safely
+        messageDiv.innerHTML = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        
+        // Basic markdown/newline interpretation (optional, for better formatting)
+        messageDiv.innerHTML = messageDiv.innerHTML.replace(/\n/g, '<br>');
+        
+        chatBody.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // 1. Display user message immediately
+        appendMessage('user', message);
+        chatInput.value = '';
+        sendButton.disabled = true;
+        chatInput.placeholder = 'EduBot is typing...';
+
+        try {
+            // 2. Send request to the backend
+            const response = await fetch('/chatbot/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // Send the plain text message
+                body: JSON.stringify({ message: message }) 
+            });
+
+            const data = await response.json();
+
+            // 3. Handle response
+            if (response.ok) {
+                appendMessage('bot', data.reply);
+            } else {
+                appendMessage('bot', data.error || 'Error: Could not connect to the assistant.');
+            }
+
+        } catch (error) {
+            console.error('Network or Fetch Error:', error);
+            appendMessage('bot', 'A network error occurred. Please check your connection.');
+        } finally {
+            // 4. Reset input state
+            sendButton.disabled = false;
+            chatInput.placeholder = 'Ask EduBot a question...';
+            chatInput.focus();
+        }
+    }
+
+    // Event listeners
+    sendButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+    
+    clearButton.addEventListener('click', async () => {
+        if (!confirm('Are you sure you want to clear the conversation history? This cannot be undone.')) return;
+        
+        try {
+            const response = await fetch('/chatbot/clear', { 
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+                // Reset the chat body with the initial message
+                chatBody.innerHTML = '<div class="message bot">Chat history cleared. Hello! I\'m EduBot, how can I help you learn today?</div>';
+                scrollToBottom();
+            } else {
+                alert('Could not clear chat history.');
+            }
+        } catch (e) {
+            alert('A network error occurred while trying to clear the chat.');
+        }
+    });
+</script>
+<% } %>
