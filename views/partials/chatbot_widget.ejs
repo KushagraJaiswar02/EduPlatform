@@ -166,18 +166,21 @@
         appendMessage('user', message);
         chatInput.value = '';
         sendButton.disabled = true;
-        chatInput.placeholder = 'EduBot is typing...';
+        chatInput.placeholder = 'EduBot is typing...';
 
-        try {
-            // 2. Send request to the backend
-            const response = await fetch('/chatbot/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                // Send the plain text message
-                body: JSON.stringify({ message: message }) 
-            });
+        // NAYA: Current page ka URL capture karein
+        const currentURL = window.location.href;
+
+        try {
+            // 2. Send request to the backend
+            const response = await fetch('/chatbot/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                // NAYA: Message ke saath URL bhi bhejein
+                body: JSON.stringify({ message: message, currentURL: currentURL }) 
+            });
 
             const data = await response.json();
 
