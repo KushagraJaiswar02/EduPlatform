@@ -15,6 +15,9 @@ router.get('/dashboard', isLoggedIn, isTeacher, teacherController.getDashboard);
 // Enable live for existing lesson (create meetingUrl and enable)
 router.post('/lesson/:id/enable-live', isLoggedIn, isTeacher, teacherController.enableLive);
 
+// Disable live for existing lesson (NEW)
+router.post('/lesson/:id/disable-live', isLoggedIn, isTeacher, teacherController.disableLive);
+
 // Create lesson (accept optional video upload in field 'video')
 router.post('/add-lesson', isLoggedIn, isTeacher, upload.single('video'), teacherController.addLesson);
 

@@ -2,33 +2,34 @@
 
 <style>
   .fade-in { animation: fadeIn .4s ease; }
-  @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1;
+transform:translateY(0);} }
 
   .dash-card {
     border-radius: 12px !important;
     overflow: hidden;
-  }
+}
 
   .section-title {
     font-weight: 700;
     margin-bottom: 15px;
-  }
+}
 
   .list-item-clean {
     border: none !important;
     border-bottom: 1px solid #eee !important;
-  }
+}
   .list-item-clean:last-child {
     border-bottom: none !important;
-  }
+}
 
   .tag-badge { 
     padding: 4px 10px; 
     border-radius: 10px; 
     background: #eef2ff; 
     color:#4f46e5; 
-    font-size: 0.75rem; 
-  }
+    font-size: 0.75rem;
+}
 </style>
 
 
@@ -38,21 +39,23 @@
 
   <div class="row">
 
-    <!-- LEFT COLUMN -->
     <div class="col-lg-4 col-md-5">
 
-      <!-- PROFILE CARD -->
       <div class="card shadow-sm dash-card mb-4">
         <div class="card-body text-center">
 
-          <% const t = user || currentUser; %>
+          <% const t = user ||
+currentUser; %>
 
           <div class="avatar mb-3" style="width:80px;height:80px;font-size:1.8rem;margin:auto;">
-            <%= t?.name ? t.name.split(' ').map(n=>n[0]).join('').toUpperCase() : 'T' %>
+            <%= t?.name ?
+t.name.split(' ').map(n=>n[0]).join('').toUpperCase() : 'T' %>
           </div>
 
-          <h4 class="fw-bold mb-0"><%= t?.name || 'Teacher' %></h4>
-          <p class="text-muted small mb-1"><%= t?.email || '' %></p>
+          <h4 class="fw-bold mb-0"><%= t?.name ||
+'Teacher' %></h4>
+          <p class="text-muted small mb-1"><%= t?.email ||
+'' %></p>
           <p class="mb-2"><strong>Role:</strong> Teacher</p>
 
           <% if (classes?.length) { %>
@@ -60,7 +63,8 @@
               <strong>Teaching:</strong>
               <div class="mt-1">
                 <% classes.forEach(cls => { %>
-                  <span class="tag-badge me-1">Class <%= cls.classNumber %></span>
+           
+       <span class="tag-badge me-1">Class <%= cls.classNumber %></span>
                 <% }) %>
               </div>
             </div>
@@ -69,32 +73,30 @@
         </div>
       </div>
 
-      <!-- QUICK ACTIONS -->
-      <div class="card shadow-sm dash-card">
+      <div class="card shadow-sm 
+dash-card">
         <div class="card-body">
           <h5 class="section-title">⚡ Quick Actions</h5>
 
-          <a href="#collapseLesson" class="btn btn-primary w-100 mb-2">+ Add Lesson</a>
-          <a href="#collapseQuiz" class="btn btn-success w-100 mb-2">+ Create Quiz</a>
+          <a href="/teacher/results" class="btn btn-success w-100 mb-2">View Quiz Results</a>
           <a href="#myLessonsSection" class="btn btn-outline-primary w-100 mb-2">📘 My Lessons</a>
           <a href="#myQuizzesSection" class="btn btn-outline-success w-100">📝 My Quizzes</a>
         </div>
-      </div>
+   
+   </div>
 
     </div>
 
 
-    <!-- RIGHT SIDE -->
     <div class="col-lg-8 col-md-7">
 
-      <!-- ACCORDION -->
       <div class="accordion mb-4" id="teacherAccordion">
 
-        <!-- ADD LESSON -->
         <div class="accordion-item dash-card shadow-sm mb-3">
           <h2 class="accordion-header">
             <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseLesson">
-              📘 Add New Lesson
+              
+📘 Add New Lesson
             </button>
           </h2>
 
@@ -104,59 +106,79 @@
               <form action="/teacher/add-lesson" method="POST" enctype="multipart/form-data">
                 <div class="row g-3">
 
-                  <div class="col-md-6">
+             
+     <div class="col-md-6">
                     <label class="form-label">Class</label>
                     <select name="classNumber" class="form-select" required>
                       <% classes?.forEach(cls => { %>
-                        <option value="<%= cls.classNumber %>">Class <%= cls.classNumber %></option>
+                        
+<option value="<%= cls.classNumber %>">Class <%= cls.classNumber %></option>
                       <% }) %>
                     </select>
                   </div>
 
                   <div class="col-md-6">
-                    <label class="form-label">Subject</label>
+             
+       <label class="form-label">Subject</label>
                     <input type="text" name="subject" class="form-control" required>
                   </div>
 
                   <div class="col-md-6">
                     <label class="form-label">Lesson Type</label>
-                    <select name="lessonType" class="form-select">
+         
+           <select name="lessonType" class="form-select">
                       <option value="core">Core</option>
                       <option value="revision">Revision</option>
                       <option value="practice">Practice</option>
-                    </select>
+                  
+  </select>
                   </div>
 
                   <div class="col-md-6">
                     <label class="form-label">Difficulty</label>
                     <select name="difficultyLevel" class="form-select">
-                      <option value="beginner">Beginner</option>
+                  
+    <option value="beginner">Beginner</option>
                       <option value="intermediate">Intermediate</option>
                       <option value="advanced">Advanced</option>
                     </select>
                   </div>
 
-                  <div class="col-12">
+           
+       <div class="col-12">
                     <label class="form-label">Title</label>
                     <input type="text" name="title" class="form-control" required>
                   </div>
 
                   <div class="col-12">
-                    <label class="form-label">Content</label>
+          
+          <label class="form-label">Content</label>
                     <textarea name="content" class="form-control" rows="4" required></textarea>
                   </div>
-
-                  <!-- Resources -->
+                  
                   <div class="col-12">
-                    <label class="form-label">Resources</label>
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" role="switch" id="liveEnabledCheck" name="liveEnabled" value="true">
+                      <label class="form-check-label" for="liveEnabledCheck">Enable Live Lesson (Jitsi)</label>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <label class="form-label">Live Schedule Time (Optional)</label>
+                    <input type="datetime-local" name="liveScheduledAt" class="form-control">
+                  </div>
+                  <div class="col-12">
+        
+            <label class="form-label">Resources</label>
                     <div id="resources-container">
                       <div class="input-group mb-2">
                         <input type="text" name="resources[]" class="form-control" placeholder="Paste a link or text">
-                        <button class="btn btn-outline-danger remove-resource" type="button">Remove</button>
+          
+              <button class="btn btn-outline-danger remove-resource" type="button">Remove</button>
                       </div>
                     </div>
                     <button id="addResourceBtn" class="btn btn-sm btn-outline-primary" type="button">+ Add Resource</button>
-                  </div>
+             
+     </div>
 
                 </div>
 
@@ -168,8 +190,7 @@
           </div>
         </div>
 
-        <!-- CREATE QUIZ -->
-        <div class="accordion-item dash-card shadow-sm">
+             <div class="accordion-item dash-card shadow-sm">
           <h2 class="accordion-header">
             <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseQuiz">
               📝 Create Quiz
@@ -179,20 +200,24 @@
           <div id="collapseQuiz" class="accordion-collapse collapse">
             <div class="accordion-body">
 
-              <form action="/teacher/add-quiz" method="POST" id="quizForm">
+ 
+             <form action="/teacher/add-quiz" method="POST" id="quizForm">
 
                 <div class="mb-3">
                   <label class="form-label">Select Lesson</label>
                   <select name="lessonId" class="form-select" required>
                     <% myLessons?.forEach(l => { %>
-                      <option value="<%= l._id %>">
-                        Class <%= l.classRef?.classNumber || 'N/A' %> — <%= l.title %>
+  
+                    <option value="<%= l._id %>">
+                        Class <%= l.classRef?.classNumber ||
+'N/A' %> — <%= l.title %>
                       </option>
                     <% }) %>
                   </select>
                 </div>
 
-                <div id="questions-container"></div>
+                <div 
+id="questions-container"></div>
 
                 <button id="addQuestionBtn" type="button" class="btn btn-outline-primary btn-sm">+ Add Question</button>
                 <button class="btn btn-success px-4" type="submit">Create Quiz</button>
@@ -205,8 +230,8 @@
 
       </div>
 
-      <!-- MY LESSONS -->
-      <h4 id="myLessonsSection" class="fw-bold mb-3">📘 My Lessons</h4>
+      
+<h4 id="myLessonsSection" class="fw-bold mb-3">📘 My Lessons</h4>
 
       <% if (!myLessons?.length) { %>
         <p class="text-muted">You have not created any lessons yet.</p>
@@ -214,26 +239,38 @@
         <div class="list-group shadow-sm dash-card">
 
           <% myLessons.forEach(lesson => { %>
-            <div class="list-group-item list-item-clean d-flex justify-content-between">
+            <div class="list-group-item list-item-clean d-flex justify-content-between align-items-center">
 
-              <div>
+          
+    <div>
                 <strong><%= lesson.title %></strong>
                 <div class="small text-muted">
-                  Class <%= lesson.classRef?.classNumber || 'N/A' %> • <%= lesson.subject %> • <%= lesson.lessonType %>
+                  Class <%= lesson.classRef?.classNumber ||
+'N/A' %> • <%= lesson.subject %> • <%= lesson.lessonType %>
                 </div>
               </div>
 
-              <a href="/teacher/lesson/<%= lesson._id %>" class="btn btn-sm btn-outline-primary">
-                Manage
-              </a>
-
-            </div>
+              <div class="ms-auto d-flex gap-2 align-items-center">
+                <% if (lesson.live && lesson.live.enabled) { %>
+                  <span class="badge bg-danger">LIVE</span>
+                  <% if (lesson.live.meetingUrl) { %>
+                    <a href="<%= lesson.live.meetingUrl %>" target="_blank" class="btn btn-sm btn-success">Join</a>
+                  <% } %>
+                  <form action="/teacher/lesson/<%= lesson._id %>/disable-live" method="POST" class="d-inline mb-0">
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Stop</button>
+                  </form>
+                <% } else { %>
+                  <form action="/teacher/lesson/<%= lesson._id %>/enable-live" method="POST" class="d-inline mb-0">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Enable Live</button>
+                  </form>
+                <% } %>
+              </div>
+               </div>
           <% }) %>
 
         </div>
       <% } %>
 
-      <!-- MY QUIZZES -->
       <h4 id="myQuizzesSection" class="fw-bold mt-4 mb-3">📝 My Quizzes</h4>
 
       <% if (!myQuizzes?.length) { %>
@@ -241,13 +278,15 @@
       <% } else { %>
         <div class="list-group shadow-sm dash-card">
 
-          <% myQuizzes.forEach(q => { %>
+     
+     <% myQuizzes.forEach(q => { %>
             <div class="list-group-item list-item-clean">
               <strong><%= q.lessonId?.title || 'Unknown Lesson' %></strong>
               <div class="small text-muted">
                 Class <%= q.lessonId?.classRef?.classNumber || 'N/A' %> • <%= q.questions?.length %> questions
               </div>
-            </div>
+  
+          </div>
           <% }) %>
 
         </div>

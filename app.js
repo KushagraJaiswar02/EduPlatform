@@ -178,7 +178,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const Lesson = require('./models/Lesson');
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 // create http server so we can attach socket.io
 const server = http.createServer(app);

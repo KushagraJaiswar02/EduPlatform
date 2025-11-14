@@ -302,6 +302,32 @@ exports.enableLive = async (req, res) => {
   }
 };
 
+// ===============================
+// DISABLE LIVE FOR EXISTING LESSON (NEW)
+// ===============================
+exports.disableLive = async (req, res) => {
+  try {
+    const lessonId = req.params.id;
+    const lesson = await Lesson.findById(lessonId);
+    if (!lesson) {
+      req.flash('error', 'Lesson not found.');
+      return res.redirect('/teacher/dashboard');
+    }
+
+    if (lesson.live) {
+      lesson.live.enabled = false;
+      await lesson.save();
+      req.flash('success', 'Live disabled for lesson.');
+    }
+    return res.redirect('/teacher/dashboard');
+  } catch (err) {
+    console.error('Disable Live Error:', err);
+    req.flash('error', 'Could not disable live.');
+    return res.redirect('/teacher/dashboard');
+  }
+};
+
+
 exports.getResults = async (req, res) => {
   try {
     // 1) find classes where this teacher appears in subjects (adjust to your Class schema)
