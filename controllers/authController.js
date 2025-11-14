@@ -33,20 +33,48 @@ exports.registerUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
+  console.log("hellooooooo", req.body);
+
   const { email, password } = req.body;
+
   const user = await User.findOne({ email });
-  if (!user) return res.redirect('/login');
+
+  if (!user) {
+    req.flash("error", "User not found! Please check your email.");
+    return res.redirect('/login');
+  }
+
+  console.log("FOUND USER:", user);
 
   const match = await user.matchPassword(password);
-  if (!match) return res.redirect('/login');
+
+  if (!match) {
+    req.flash("error", "Incorrect password! Please try again.");
+    return res.redirect('/login');
+  }
+
+  console.log("PASSWORD MATCHED");
 
   req.session.userId = user._id;
   req.session.role = user.role;
-  req.flash('success', `Welcome back, ${user.name}`);
-  if (user.role === 'teacher') return res.redirect('/teacher/dashboard');
-  if (user.role === 'admin') return res.redirect('/admin/dashboard');
-  res.redirect('/student/dashboard');
+
+  req.flash("success", `Welcome back, ${user.name}!`);
+  console.log("LOGGED IN USER:", user);
+
+  if (user.role === 'teacher') {
+    req.flash("success", "Logged in as Teacher");
+    return res.redirect('/teacher/dashboard');
+  }
+
+  if (user.role === 'admin') {
+    req.flash("success", "Logged in as Admin");
+    return res.redirect('/admin/dashboard');
+  }
+
+  req.flash("success", "Logged in as Student");
+  return res.redirect('/student/dashboard');
 };
+
 
 exports.logoutUser = (req, res) => {
   req.session.destroy(() => {

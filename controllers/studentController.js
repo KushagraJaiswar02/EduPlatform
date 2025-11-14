@@ -25,7 +25,6 @@ exports.getDashboard = async (req, res) => {
     const filteredQuizzes = quizzes.filter(q => q.lessonId);
 
     res.render('students/dashboard', {
-      user: req.user,
       lessons,
       quizzes: filteredQuizzes
     });
@@ -226,12 +225,21 @@ exports.submitQuiz = async (req, res) => {
       total: quiz.questions.length
     });
 
+    // Calculate new percentage for *this* quiz
+    const newPercentage = (score / quiz.questions.length) * 100;
+
     // Update user's profile stats
-    req.user.profile.totalQuizzesTaken = (req.user.profile.totalQuizzesTaken || 0) + 1;
+    const oldTotalQuizzes = req.user.profile.totalQuizzesTaken || 0;
+    const oldAverage = req.user.profile.averageScore || 0;
+    
+    req.user.profile.totalQuizzesTaken = oldTotalQuizzes + 1;
+    
+    // Correct running average calculation using percentages
     req.user.profile.averageScore = (
-      (req.user.profile.averageScore * (req.user.profile.totalQuizzesTaken - 1) + score) / 
-      req.user.profile.totalQuizzesTaken
+      ((oldAverage * oldTotalQuizzes) + newPercentage) / 
+      (oldTotalQuizzes + 1)
     ).toFixed(2);
+
     await req.user.save();
 
     req.flash("success", `Quiz submitted! Your score: ${score}/${quiz.questions.length}`);

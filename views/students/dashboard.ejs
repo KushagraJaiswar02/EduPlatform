@@ -72,7 +72,7 @@
 </style>
 
 <%
-  const u = user || currentUser;
+  const u = currentUser || {}; // Use currentUser directly, fallback to empty object
   const initials = u.name ? u.name.split(' ').map(n => n[0]).join('').toUpperCase() : 'U';
 %>
 

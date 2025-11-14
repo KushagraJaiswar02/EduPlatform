@@ -5,26 +5,13 @@
 const User = require('../models/User');
 
 // Middleware to ensure user is logged in
-exports.isLoggedIn = async (req, res, next) => {
-  try {
-    if (!req.session.userId) {
-      req.flash('error', 'You must be logged in first!');
-      return res.redirect('/login');
-    }
-
-    // Attach the full user object to req.user for later use
-    const user = await User.findById(req.session.userId);
-    if (!user) {
-      req.flash('error', 'User not found. Please log in again.');
-      return res.redirect('/login');
-    }
-
-    req.user = user;
-    next();
-  } catch (err) {
-    console.error('Auth error:', err);
-    res.redirect('/login');
+exports.isLoggedIn = (req, res, next) => {
+  // User is already attached in app.js
+  if (!req.user) {
+    req.flash('error', 'You must be logged in first!');
+    return res.redirect('/login');
   }
+  next();
 };
 
 // Check if the user is a Student

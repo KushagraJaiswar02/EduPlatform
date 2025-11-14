@@ -33,10 +33,11 @@ Here is the structure of the EduBridge Kids platform:
 * **Result Detail ('/student/results/:id')**: Shows a detailed breakdown of a single quiz result.
 
 **Teacher Features (under '/teacher'):**
-* **Teacher Dashboard ('/teacher/dashboard')**: The teacher's main page. They can see their profile, classes they teach, and "Quick Actions".
+* **Teacher Dashboard ('/teacher/dashboard')**: The teacher's main page. They can see their profile, classes, and "Quick Actions".
+* **"My Lessons" list**: This list is **on the dashboard** ('/teacher/dashboard') and shows all lessons the teacher has personally uploaded.
+* **"My Quizzes" list**: This list is **on the dashboard** ('/teacher/dashboard') and shows all quizzes the teacher has created.
 * **Add New Lesson**: From the dashboard, teachers can add new lessons for their classes.
 * **Create Quiz**: From the dashboard, teachers can create a new quiz and link it to one of their lessons.
-* **My Quizzes ('/teacher/quizzes')**: Shows a list of all quizzes created by that teacher.
 * **View Results ('/teacher/results')**: Allows teachers to see the quiz results submitted by students in their classes.
 
 **Admin Features (under '/admin'):**
@@ -47,7 +48,6 @@ Here is the structure of the EduBridge Kids platform:
 When a user asks "How do I..." or "Where can I...", use this context to guide them to the correct page or feature.
 **IMPORTANT:** You will also receive [User Context] and [Page Context] before the user's message. Use this *specific* context to give personalized recommendations. 
 For example, if the user's score is low, suggest revision. If they are on a specific lesson page, answer questions about *that* lesson.`;
-
 
 function getOrCreateChat(userId) {
   if (activeChatSessions.has(userId)) {
