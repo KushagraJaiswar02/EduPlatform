@@ -1,48 +1,124 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-4">
+<style>
+    .admin-welcome {
+        font-weight: 700;
+        letter-spacing: .5px;
+    }
+
+    .admin-subtext {
+        opacity: .85;
+    }
+
+    .dashboard-card {
+        border-radius: 14px;
+        transition: .25s ease;
+        cursor: pointer;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 28px rgba(0,0,0,0.15) !important;
+    }
+
+    .icon-circle {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .fade-in {
+        animation: fadeIn .45s ease both;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-divider {
+        border: none;
+        height: 1px;
+        background: rgba(0,0,0,0.08);
+        margin: 40px 0;
+    }
+</style>
+
+
+<div class="container mt-4 fade-in">
+
+    <!-- WELCOME HEADER -->
     <div class="row mb-4">
         <div class="col">
-            <h1 class="text-success">👋 Welcome, Admin <%= user.name %>!</h1>
-            <p class="lead">Yahan se aap poore platform ko manage kar sakte hain.</p>
+            <h1 class="admin-welcome text-success mb-1">
+                👋 Welcome, Admin <%= user.name %>
+            </h1>
+            <p class="lead admin-subtext">
+                Manage the entire EduBridge platform from here.
+            </p>
         </div>
     </div>
 
+    <!-- FEATURE CARDS -->
     <div class="row row-cols-1 row-cols-md-3 g-4">
-        
+
+        <!-- MANAGE USERS -->
         <div class="col">
-            <div class="card h-100 shadow-sm border-primary">
-                <div class="card-body">
-                    <h5 class="card-title text-primary">👥 Manage Users</h5>
-                    <p class="card-text">Sabhi students aur teachers ke accounts dekhein aur manage karein.</p>
-                    <a href="/admin/users" class="btn btn-outline-primary mt-2">View Users</a>
+            <a href="/admin/users" class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm dashboard-card border-primary">
+                    <div class="card-body text-center">
+
+                        <div class="icon-circle bg-primary text-white">
+                            👥
+                        </div>
+
+                        <h5 class="card-title fw-bold text-primary">Manage Users</h5>
+                        <p class="text-muted small mt-2">
+                            View, update or manage all student and teacher accounts.
+                        </p>
+
+                        <button class="btn btn-primary btn-sm mt-3 px-3">
+                            View Users
+                        </button>
+
+                    </div>
                 </div>
-            </div>
-        </div>
-         
-        <div class="col">
-            <div class="card h-100 shadow-sm border-info">
-                <div class="card-body">
-                    <h5 class="card-title text-info">🏫 Manage Classes</h5>
-                    <p class="card-text">Nayi classes banayein aur maujooda classes ko manage karein.</p>
-                    <a href="/admin/classes" class="btn btn-outline-info mt-2">View Classes</a>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col">
-            <div class="card h-100 shadow-sm border-warning">
-                <div class="card-body">
-                    <h5 class="card-title text-warning">✅ Approve Lessons</h5>
-                    <p class="card-text">Teachers dwara add kiye gaye naye lessons ko review aur approve karein.</p>
-                    <a href="/admin/approve-lessons" class="btn btn-outline-warning mt-2">Review Lessons</a>
-                </div>
-            </div>
+            </a>
         </div>
 
+        <!-- MANAGE CLASSES -->
+        <div class="col">
+            <a href="/admin/classes" class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm dashboard-card border-info">
+                    <div class="card-body text-center">
+
+                        <div class="icon-circle bg-info text-white">
+                            🏫
+                        </div>
+
+                        <h5 class="card-title fw-bold text-info">Manage Classes</h5>
+                        <p class="text-muted small mt-2">
+                            Create, edit and manage all classes and their subjects.
+                        </p>
+
+                        <button class="btn btn-info btn-sm mt-3 px-3 text-white">
+                            View Classes
+                        </button>
+
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        
+
     </div>
-    
-    <hr class="my-5">
+
+    <hr class="section-divider">
 
 </div>
 

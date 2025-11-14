@@ -1,41 +1,101 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-md-8 offset-md-2">
-      <div class="card shadow-sm">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0"><%= quiz.lessonId ? quiz.lessonId.title : 'Quiz' %></h4>
+<style>
+  .quiz-card {
+    border-radius: 14px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .question-block {
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    transition: 0.25s ease;
+  }
+
+  .question-block:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-2px);
+  }
+
+  .custom-radio .form-check-input {
+    border: 2px solid #6366f1;
+    cursor: pointer;
+  }
+
+  .custom-radio .form-check-input:checked {
+    background-color: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    h4 { font-size: 1.2rem; }
+    .question-block h6 { font-size: 1rem; }
+  }
+</style>
+
+<div class="container mt-4 fade-in">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+
+      <!-- QUIZ HEADER -->
+      <div class="card shadow-sm quiz-card mb-4">
+        <div class="card-header bg-primary text-white py-3">
+          <h4 class="mb-0 fw-semibold text-center">
+            📝 <%= quiz.lessonId ? quiz.lessonId.title : 'Quiz' %>
+          </h4>
         </div>
-        <div class="card-body">
+
+        <div class="card-body p-4">
+
           <form action="/student/quiz/<%= quiz._id %>" method="POST">
+
             <% quiz.questions.forEach((q, index) => { %>
-              <div class="mb-4 p-3 border rounded">
-                <h6 class="fw-bold mb-3"><%= index + 1 %>. <%= q.question %></h6>
-                <% q.options.forEach(opt => { %>
-                  <div class="form-check mb-2">
+
+              <div class="question-block p-3 mb-4">
+                <h6 class="fw-bold mb-3">
+                  <%= index + 1 %>. <%= q.question %>
+                </h6>
+
+                <% q.options.forEach((opt, i) => { %>
+                  <div class="form-check custom-radio mb-2">
                     <input 
                       type="radio" 
                       name="q<%= index %>" 
                       value="<%= opt %>" 
-                      class="form-check-input" 
-                      id="q<%= index %>_<%= opt %>"
-                      required>
-                    <label class="form-check-label" for="q<%= index %>_<%= opt %>">
+                      class="form-check-input"
+                      id="q<%= index %>_<%= i %>"
+                      required
+                    >
+
+                    <label class="form-check-label" for="q<%= index %>_<%= i %>">
                       <%= opt %>
                     </label>
                   </div>
                 <% }) %>
+
               </div>
+
             <% }) %>
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-success btn-lg">
-                <%= __('Submit Quiz') %>
+
+            <!-- SUBMIT BUTTON -->
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-success btn-lg fw-semibold">
+                Submit Quiz →
               </button>
             </div>
+
           </form>
+
         </div>
+
       </div>
+
     </div>
   </div>
 </div>

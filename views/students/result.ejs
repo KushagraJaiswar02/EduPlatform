@@ -1,43 +1,71 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-5">
+<style>
+  .fade-in { animation: fadeIn .6s ease; }
+  @keyframes fadeIn { from {opacity:0; transform:translateY(10px);} to {opacity:1; transform:translateY(0);} }
+
+  .perf-badge {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 12px;
+  }
+</style>
+
+<div class="container mt-5 fade-in">
   <h3 class="fw-bold mb-4 text-center">📊 Your Quiz Results</h3>
 
   <% if (results.length === 0) { %>
     <p class="text-muted text-center">No results yet. Take a quiz to see your scores!</p>
   <% } else { %>
-    <div class="table-responsive">
-      <table class="table table-striped align-middle">
-        <thead class="table-light">
-          <tr>
-            <th scope="col">Lesson</th>
-            <th scope="col">Subject</th>
-            <th scope="col">Score</th>
-            <th scope="col">Performance</th>
-            <th scope="col">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% results.forEach(r => { %>
-            <tr>
-              <td><%= r.quizId.lessonId ? r.quizId.lessonId.title : '—' %></td>
-              <td><%= r.quizId.lessonId ? r.quizId.lessonId.subject : '—' %></td>
-              <td><%= r.score %> / <%= r.total %></td>
-              <td>
-                <% if (r.score / r.total < 0.5) { %>
-                  <span class="badge bg-danger">Needs Practice</span>
-                <% } else if (r.score / r.total < 0.8) { %>
-                  <span class="badge bg-warning text-dark">Good</span>
-                <% } else { %>
-                  <span class="badge bg-success">Excellent</span>
-                <% } %>
-              </td>
-              <td><%= new Date(r.createdAt).toLocaleDateString() %></td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
+
+    <div class="card shadow-sm border-0">
+      <div class="card-body p-0">
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-primary">
+              <tr>
+                <th>Lesson</th>
+                <th>Subject</th>
+                <th>Score</th>
+                <th>Performance</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <% results.forEach(r => { 
+                let percent = r.score / r.total;
+              %>
+                <tr class="fade-in">
+                  <td class="fw-semibold"><%= r.quizId.lessonId ? r.quizId.lessonId.title : '—' %></td>
+                  <td><%= r.quizId.lessonId ? r.quizId.lessonId.subject : '—' %></td>
+
+                  <td class="fw-bold">
+                    <%= r.score %> / <%= r.total %>
+                  </td>
+
+                  <td>
+                    <% if (percent < 0.5) { %>
+                      <span class="perf-badge bg-danger text-white">Needs Practice</span>
+                    <% } else if (percent < 0.8) { %>
+                      <span class="perf-badge bg-warning text-dark">Good</span>
+                    <% } else { %>
+                      <span class="perf-badge bg-success text-white">Excellent</span>
+                    <% } %>
+                  </td>
+
+                  <td class="text-muted"><%= new Date(r.createdAt).toLocaleDateString() %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+
+          </table>
+        </div>
+
+      </div>
     </div>
+
   <% } %>
 </div>
 

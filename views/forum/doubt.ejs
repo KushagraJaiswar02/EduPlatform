@@ -1,56 +1,97 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <h1 class="mb-4 text-primary"><%= __('New Doubt/Forum Post') %></h1>
+<div class="container py-5">
 
-            <form action="/forum/ask" method="POST" class="needs-validation" novalidate>
-                <div class="mb-3">
-                    <label for="title" class="form-label"><%= __('Title/Topic') %></label>
-                    <input type="text" class="form-control" id="title" name="subject" required 
-                           placeholder="<%= __('Apne doubt ka short title likhen') %>">
-                    <div class="invalid-feedback">
-                        <%= __('Please provide a title for your doubt.') %>
-                    </div>
-                </div>
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
 
-                <div class="mb-3">
-                    <label for="description" class="form-label"><%= __('Detailed Description') %></label>
-                    <textarea class="form-control" id="description" name="question" rows="7" required
-                              placeholder="<%= __('Apne doubt ko detail mein explain karein.') %>"></textarea>
-                    <div class="invalid-feedback">
-                        <%= __('Please provide a detailed description of your doubt.') %>
-                    </div>
-                </div>
-                
-                <div class="mb-3">
-                    <label for="tags" class="form-label"><%= __('Tags (e.g., nodejs, math, mongo)') %></label>
-                    <input type="text" class="form-control" id="tags" name="tags"
-                                                 placeholder="<%= __('Tags ko comma se separate karein') %>">
-                    <div class="form-text"><%= __('Separate tags with commas for better visibility.') %></div>
-                </div>
+      <!-- CARD WRAPPER -->
+      <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body p-4">
 
-                                <% if (locals.classes && locals.classes.length) { %>
-                                    <div class="mb-3">
-                                        <label for="classId" class="form-label"><%= __('Post to Class') %></label>
-                                        <select name="classId" id="classId" class="form-select">
-                                            <% locals.classes.forEach(c => { %>
-                                                <option value="<%= c._id %>"><%= __('Class') %> <%= c.classNumber %></option>
-                                            <% }) %>
-                                        </select>
-                                    </div>
-                                <% } %>
+          <!-- Header -->
+          <div class="text-center mb-4">
+            <h2 class="fw-bold text-primary">Ask a Doubt</h2>
+            <p class="text-muted mb-0">Post your question and get answers from teachers & students</p>
+          </div>
 
-                <div class="d-grid gap-2">
-                    <button class="btn btn-success btn-lg" type="submit"><%= __('Post Doubt') %></button>
-                    <a href="/forum" class="btn btn-secondary"><%= __('Cancel') %></a>
-                </div>
-            </form>
+          <!-- FORM -->
+          <form action="/forum/ask" method="POST" class="needs-validation" novalidate>
+
+            <!-- Title -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Title / Topic</label>
+              <input 
+                type="text" 
+                class="form-control form-control-lg rounded-3" 
+                id="title" 
+                name="subject" 
+                placeholder="Short title for your doubt" 
+                required
+              >
+              <div class="invalid-feedback">Please provide a valid title.</div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Detailed Description</label>
+              <textarea 
+                class="form-control rounded-3" 
+                id="description" 
+                name="question" 
+                rows="6" 
+                placeholder="Explain your doubt clearly with details" 
+                required
+              ></textarea>
+              <div class="invalid-feedback">Please describe your doubt.</div>
+            </div>
+
+            <!-- Tags -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Tags</label>
+              <input 
+                type="text" 
+                class="form-control rounded-3" 
+                id="tags" 
+                name="tags" 
+                placeholder="e.g., math, fractions, science, grammar"
+              >
+              <div class="form-text">Use commas to separate tags.</div>
+            </div>
+
+            <!-- Class Selection (teachers only) -->
+            <% if (classes && classes.length) { %>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Post to Class</label>
+                <select class="form-select rounded-3" id="classId" name="classId">
+                  <% classes.forEach(cls => { %>
+                    <option value="<%= cls._id %>">
+                      Class <%= cls.classNumber %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+            <% } %>
+
+            <!-- Buttons -->
+            <div class="d-grid gap-2 mt-4">
+              <button type="submit" class="btn btn-primary btn-lg rounded-3">
+                Post Doubt
+              </button>
+
+              <a href="/forum" class="btn btn-outline-secondary btn-lg rounded-3">
+                Cancel
+              </a>
+            </div>
+
+          </form>
 
         </div>
-    </div>
-    
-</div>
-    <%- include('../partials/footer') %>
+      </div>
 
+    </div>
+  </div>
+
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,85 +1,179 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-4">
-    <div class="row">
+<style>
+    .admin-title {
+        font-weight: 700;
+        letter-spacing: .3px;
+    }
 
-        
-        <div class="col-md-7">
-            <h2>Existing Classes</h2>
+    .class-card {
+        border-radius: 14px;
+        transition: .25s ease;
+    }
+
+    .class-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0,0,0,0.12) !important;
+    }
+
+    .subject-item {
+        border-left: 4px solid #2563eb;
+        border-radius: 0 10px 10px 0;
+        padding-left: 12px;
+        background: #f9fbff;
+    }
+
+    .form-section {
+        background: #f5f7fa;
+        border-radius: 8px;
+    }
+
+    .fade-up {
+        animation: fadeUp .4s ease both;
+    }
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+
+<div class="container mt-4">
+
+    <h2 class="admin-title mb-4">🏫 Manage Classes</h2>
+
+    <div class="row fade-up">
+
+        <div class="col-md-8">
+
             <% if (classes && classes.length > 0) { %>
+
                 <% classes.forEach(cls => { %>
-                    <div class="card shadow-sm mb-3">
-                        <div class="card-header bg-light py-3">
+
+                    <div class="card shadow-sm mb-4 class-card">
+                        
+                        <!-- CLASS HEADER -->
+                        <div class="card-header bg-primary text-white py-3 rounded-top">
                             <h5 class="mb-0">Class <%= cls.classNumber %></h5>
                         </div>
-                        <ul class="list-group list-group-flush">
-                            <% if (cls.subjects && cls.subjects.length > 0) { %>
-                                <% cls.subjects.forEach(subject => { %>
-                                    <li class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <strong><%= subject.name %></strong>
-                                        <span class="badge bg-info rounded-pill">
-                                        <%= subject.teacher ? subject.teacher.name : 'Unassigned' %>
-                                        </span>
-                                    </div>
 
-                                    <!-- Reassign form -->
-                                    <form action="/admin/reassign-teacher" method="POST" class="mt-2">
-                                        <input type="hidden" name="classId" value="<%= cls._id %>">
-                                        <input type="hidden" name="subjectName" value="<%= subject.name %>">
-                                        <div class="row g-2 align-items-center">
-                                        <div class="col-md-8">
-                                            <select name="newTeacherId" class="form-select form-select-sm" required>
-                                            <option value="">Select new teacher</option>
-                                            <% teachers.forEach(teacher => { %>
-                                                <option value="<%= teacher._id %>" 
-                                                <%= subject.teacher && teacher._id.toString() === subject.teacher._id.toString() ? 'selected' : '' %>>
-                                                <%= teacher.name %>
-                                                </option>
-                                            <% }) %>
-                                            </select>
+                        <ul class="list-group list-group-flush">
+
+                            <% if (cls.subjects && cls.subjects.length > 0) { %>
+
+                                <% cls.subjects.forEach(subject => { %>
+
+                                    <li class="list-group-item subject-item mb-2">
+
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <strong><%= subject.name %></strong>
+                                                <div class="small text-muted">Teacher Assigned</div>
+                                            </div>
+
+                                            <span class="badge bg-info text-dark px-3 py-2">
+                                                <%= subject.teacher ? subject.teacher.name : 'Unassigned' %>
+                                            </span>
                                         </div>
-                                        <div class="col-md-4 text-end">
-                                            <button type="submit" class="btn btn-sm btn-outline-primary w-100">
-                                            Reassign
-                                            </button>
-                                        </div>
-                                        </div>
-                                    </form>
+
+
+                                        <!-- REASSIGN FORM -->
+                                        <form action="/admin/reassign-teacher" method="POST" class="mt-3">
+
+                                            <input type="hidden" name="classId" value="<%= cls._id %>">
+                                            <input type="hidden" name="subjectName" value="<%= subject.name %>">
+
+                                            <div class="row g-2 align-items-center">
+
+                                                <div class="col-md-8">
+                                                    <select name="newTeacherId" class="form-select form-select-sm" required>
+                                                        <option value="">Select new teacher</option>
+                                                        <% teachers.forEach(teacher => { %>
+                                                            <option value="<%= teacher._id %>"
+                                                                <%= subject.teacher && teacher._id.toString() === subject.teacher._id.toString() ? 'selected' : '' %>>
+                                                                <%= teacher.name %>
+                                                            </option>
+                                                        <% }) %>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <button type="submit"
+                                                        class="btn btn-sm btn-outline-primary w-100">
+                                                        Reassign
+                                                    </button>
+                                                </div>
+
+                                            </div>
+
+                                        </form>
                                     </li>
 
-                                <% }); %>
-                            <% } else { %>
-                                <li class="list-group-item text-muted">No subjects assigned.</li>
-                            <% } %>
-                            
-                        </ul>
-                        <form action="/admin/add-subject" method="POST" class="p-3 border-top bg-light">
-                        <input type="hidden" name="classId" value="<%= cls._id %>">
-                        <div class="row g-2">
-                            <div class="col-md-5">
-                            <input type="text" name="subjectName" class="form-control" placeholder="New Subject Name" required>
-                            </div>
-                            <div class="col-md-5">
-                            <select name="subjectTeacher" class="form-select" required>
-                                <option value="">Select Teacher</option>
-                                <% teachers.forEach(teacher => { %>
-                                <option value="<%= teacher._id %>"><%= teacher.name %></option>
                                 <% }) %>
-                            </select>
-                            </div>
-                            <div class="col-md-2">
-                            <button type="submit" class="btn btn-sm btn-outline-primary w-100">Add</button>
-                            </div>
+
+                            <% } else { %>
+
+                                <li class="list-group-item text-muted">
+                                    No subjects assigned.
+                                </li>
+
+                            <% } %>
+
+                        </ul>
+
+
+                        <!-- ADD SUBJECT -->
+                        <div class="p-3 border-top form-section">
+
+                            <form action="/admin/add-subject" method="POST">
+
+                                <input type="hidden" name="classId" value="<%= cls._id %>">
+
+                                <label class="small fw-bold mb-1">Add New Subject</label>
+
+                                <div class="row g-2">
+
+                                    <div class="col-md-5">
+                                        <input type="text" name="subjectName" class="form-control"
+                                            placeholder="Subject Name" required>
+                                    </div>
+
+                                    <div class="col-md-5">
+                                        <select name="subjectTeacher" class="form-select" required>
+                                            <option value="">Select Teacher</option>
+                                            <% teachers.forEach(teacher => { %>
+                                                <option value="<%= teacher._id %>">
+                                                    <%= teacher.name %>
+                                                </option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <button type="submit" class="btn btn-sm btn-primary w-100">
+                                            Add
+                                        </button>
+                                    </div>
+
+                                </div>
+
+                            </form>
+
                         </div>
-                        </form>
 
                     </div>
+
                 <% }); %>
+
             <% } else { %>
-                <p>No classes found.</p>
+
+                <p class="text-muted">No classes found.</p>
+
             <% } %>
+
         </div>
+
     </div>
 </div>
+
 <%- include('../partials/footer') %>

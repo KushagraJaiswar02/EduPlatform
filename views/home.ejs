@@ -26,12 +26,14 @@
       </div>
 
     <% } else if (role === 'teacher') { %>
-      <!-- TEACHER LOGGED IN -->
-      <div class="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start">
-        <a href="/teacher/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">Teacher Dashboard</a>
-        <a href="/teacher/add-lesson" class="btn btn-outline-light btn-lg px-4 fw-semibold">Add Lesson</a>
-        <a href="/teacher/add-quiz" class="btn btn-outline-light btn-lg px-4 fw-semibold">Add Quiz</a>
-      </div>
+  <!-- TEACHER LOGGED IN -->
+  <div class="d-grid gap-3 d-sm-flex justify-content-center justify-content-lg-start">
+    <a href="/teacher/dashboard" class="btn btn-light btn-lg px-4 fw-semibold">Teacher Dashboard</a>
+    <a href="/teacher/add-lesson" class="btn btn-outline-light btn-lg px-4 fw-semibold">Add Lesson</a>
+    <a href="/teacher/add-quiz" class="btn btn-outline-light btn-lg px-4 fw-semibold">Add Quiz</a>
+  </div>
+<% } else if (role === 'admin') { %>
+
 
     <% } else if (role === 'admin') { %>
       <!-- ADMIN LOGGED IN -->

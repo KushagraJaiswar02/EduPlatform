@@ -1,9 +1,101 @@
-<% for(u of users){ %>
-    <%= u.name %> &nbsp; &nbsp; &nbsp; 
-    <%= u.email %> &nbsp; &nbsp; &nbsp; 
-    <%= u.profile %> &nbsp; &nbsp; &nbsp; 
-    <%= u.role %> &nbsp; &nbsp; &nbsp; 
-    <%= u.isActive %> &nbsp; &nbsp; &nbsp; 
-    <%= u.name %>
-    <br>
-<% } %>
+<%- include('../partials/header') %>
+
+<style>
+  .user-table-card {
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .user-status-active {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+
+  .user-status-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+  }
+
+  .badge-role {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: .8rem;
+  }
+
+  .badge-student { background:#dbeafe; color:#1e40af; }
+  .badge-teacher { background:#fef3c7; color:#92400e; }
+  .badge-admin   { background:#fde68a; color:#78350f; }
+
+  .fade-in { animation: fadeIn .35s ease both; }
+  @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<div class="container mt-4 fade-in">
+  <h2 class="fw-bold mb-4">👥 All Users</h2>
+
+  <div class="card shadow-sm user-table-card">
+    <div class="table-responsive">
+      <table class="table table-hover table-striped align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Profile</th>
+            <th>Role</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <% users.forEach(u => { %>
+            <tr>
+              <td><strong><%= u.name %></strong></td>
+
+              <td><%= u.email %></td>
+
+              <td>
+                <% if (u.profile) { %>
+                  <small class="text-muted">
+                    Total Quizzes: <%= u.profile.totalQuizzesTaken || 0 %> <br>
+                    Avg. Score: <%= u.profile.averageScore || 0 %>
+                  </small>
+                <% } else { %>
+                  <span class="text-muted">—</span>
+                <% } %>
+              </td>
+
+              <td>
+                <% if (u.role === 'student') { %>
+                  <span class="badge-role badge-student">Student</span>
+                <% } else if (u.role === 'teacher') { %>
+                  <span class="badge-role badge-teacher">Teacher</span>
+                <% } else if (u.role === 'admin') { %>
+                  <span class="badge-role badge-admin">Admin</span>
+                <% } %>
+              </td>
+
+              <td>
+                <% if (u.isActive) { %>
+                  <span class="user-status-active">Active</span>
+                <% } else { %>
+                  <span class="user-status-inactive">Inactive</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

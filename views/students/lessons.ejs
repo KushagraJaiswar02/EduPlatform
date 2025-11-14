@@ -1,67 +1,119 @@
 <%- include('../partials/header') %>
 
-<div class="container mt-4">
+<style>
+  /* Page styling */
+  .lesson-card {
+    border-radius: 14px;
+    transition: 0.25s ease;
+  }
+
+  .lesson-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+
+  .lesson-snippet {
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .badge-class {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.4s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .lesson-card h5 {
+      font-size: 1rem;
+    }
+  }
+</style>
+
+<div class="container mt-4 fade-in">
 
   <!-- HEADER + FILTER -->
   <div class="d-flex justify-content-between align-items-center mb-4">
+
     <h2 class="fw-bold">📚 Lessons</h2>
 
-    <!-- CLASS FILTER DROPDOWN -->
     <form method="GET" action="/student/lessons">
-      <select name="class" class="form-select form-select-sm" onchange="this.form.submit()">
-
+      <select 
+        name="class" 
+        class="form-select form-select-sm shadow-sm" 
+        style="min-width: 140px;"
+        onchange="this.form.submit()"
+      >
         <option value="">All Classes</option>
 
         <% classes.forEach(cls => { %>
-          <option value="<%= cls._id %>"
+          <option value="<%= cls._id %>" 
             <%= selectedClass == cls._id ? "selected" : "" %>>
             Class <%= cls.classNumber %>
           </option>
         <% }) %>
-
       </select>
     </form>
+
   </div>
 
+  <!-- NO LESSONS -->
   <% if (!lessons || lessons.length === 0) { %>
 
-    <p class="text-muted text-center">No lessons available.</p>
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <i class="bi bi-journal-x text-muted" style="font-size: 2.6rem;"></i>
+      </div>
+      <h5 class="fw-semibold">No lessons found</h5>
+      <p class="text-muted small">Try changing the class filter above.</p>
+    </div>
 
   <% } else { %>
 
-    <div class="row g-3">
+    <!-- LESSON GRID -->
+    <div class="row g-4">
 
       <% lessons.forEach(lesson => { %>
-        <div class="col-md-4">
+      <div class="col-md-4 col-sm-6">
 
-          <div class="card h-100 shadow-sm">
-            <div class="card-body">
+        <div class="card lesson-card shadow-sm h-100">
+          <div class="card-body">
 
-              <h5 class="card-title">
-                <%= lesson.title %>
-              </h5>
+            <!-- Title -->
+            <h5 class="card-title fw-semibold"><%= lesson.title %></h5>
 
-              <p class="text-muted small mb-1">
-                <strong>Subject:</strong> <%= lesson.subject %>
-              </p>
-
-              <p class="text-muted small mb-2">
-                <strong>Class:</strong>
-                <%= lesson.classRef ? lesson.classRef.classNumber : "N/A" %>
-              </p>
-
-              <p class="card-text">
-                <%= lesson.content.substring(0, 80) %>...
-              </p>
-
-              <a href="/student/lesson/<%= lesson._id %>" class="btn btn-primary btn-sm">
-                View Lesson
-              </a>
-
+            <!-- Meta -->
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge-class">Class <%= lesson.classRef?.classNumber || "N/A" %></span>
+              <span class="text-muted small"><%= lesson.subject %></span>
             </div>
-          </div>
 
+            <!-- Snippet -->
+            <p class="lesson-snippet mb-3">
+              <%= lesson.content.substring(0, 90) %>...
+            </p>
+
+            <!-- Button -->
+            <a href="/student/lesson/<%= lesson._id %>" 
+               class="btn btn-primary btn-sm w-100 fw-semibold">
+              View Lesson →
+            </a>
+
+          </div>
         </div>
+
+      </div>
       <% }) %>
 
     </div>
