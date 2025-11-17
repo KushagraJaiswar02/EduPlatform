@@ -57,7 +57,7 @@
 
             <% quiz.questions.forEach((q, index) => { %>
 
-              <div class="question-block p-3 mb-4">
+              <div class="question-block p-3 mb-4" data-correct="<%= q.answer %>">
                 <h6 class="fw-bold mb-3">
                   <%= index + 1 %>. <%= q.question %>
                 </h6>
@@ -99,5 +99,44 @@
     </div>
   </div>
 </div>
+
+<script>
+  document.querySelector('form').addEventListener('submit', function(e) {
+    // Agar internet nahi hai (Offline)
+    if (!navigator.onLine) {
+      e.preventDefault(); // Server par bhejna rokein
+
+      let score = 0;
+      let total = 0;
+      const questions = document.querySelectorAll('.question-block');
+
+      questions.forEach((block, index) => {
+        total++;
+        const correctAnswer = block.getAttribute('data-correct');
+        // User ka selected answer dhundhein
+        const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+        
+        // Reset colors
+        block.style.border = "1px solid #e5e7eb";
+        block.style.backgroundColor = "transparent";
+
+        if (selectedOption) {
+            if (selectedOption.value === correctAnswer) {
+              score++;
+              block.style.border = "2px solid #198754"; // Green border
+              block.style.backgroundColor = "#d1fae5"; // Light green bg
+            } else {
+               block.style.border = "2px solid #dc3545"; // Red border
+               block.style.backgroundColor = "#f8d7da"; // Light red bg
+            }
+        }
+      });
+
+      // Result Alert
+      alert(`⚠️ You are OFFLINE.\n\nYour Score: ${score} / ${total}\n\n(Result not saved to server properly)`);
+    }
+  });
+</script>
+
 
 <%- include('../partials/footer') %>
